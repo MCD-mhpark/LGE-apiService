@@ -5,6 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var EloquaApi = require('eloqua-sdk');
 var engine = require('ejs-locals');
+var oracledb = require('oracledb');
+var dbConfig = require('./config/dbconfig.js');
 
 var eloqua_config = {
   sitename: 'TechnologyPartnerGoldenPlanet',
@@ -14,6 +16,19 @@ var eloqua_config = {
 
 global.eloqua = new EloquaApi(eloqua_config);
 
+// console.log(process.platform);
+console.log(dbConfig);
+
+oracledb.getConnection(dbConfig, function (err, conn) {
+  console.log(123);
+    if(err){
+        console.log('접속 실패', err.stack);
+        return;
+    }
+    global.ora_conn = conn;
+    console.log('접속 성공');
+    
+});
 
 var index =  require('./routes/index'); 
 var log =  require('./routes/log'); 
@@ -28,6 +43,7 @@ var bscard_app_bulk_syncAction= require('./routes/bscard_app/Bulk/contacts/syncA
 var bscard_app_data_contacts = require('./routes/bscard_app/Data/contacts');
 
 var iam_system_users = require('./routes/iam/system/users');
+const dbconfig = require('./config/dbconfig.js');
 
 var app = express();
  
@@ -57,6 +73,7 @@ app.use('/iam/system/users', iam_system_users);
 
 
 
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -72,5 +89,9 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+
+
+
 
 module.exports = app;

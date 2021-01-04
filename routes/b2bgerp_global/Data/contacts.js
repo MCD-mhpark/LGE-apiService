@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-
+var history = require('./history.js');
 
 /* Contacts */
 
@@ -146,5 +146,13 @@ router.delete('/delete/:id', function (req, res, next) {
         console.error(err.message);
       });
 });
+
+router.get('/dbtest', function (req, res, next) {
+    console.log("Eloqua OracleXE DB test");
+    console.log(history);
+    history.resultLog(res , "SELECT");
+});
+
+
 
 module.exports = router;
