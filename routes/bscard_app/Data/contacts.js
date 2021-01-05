@@ -1,147 +1,216 @@
 var express = require('express');
 var router = express.Router();
 
-
+//명함앱 계정 contacts 값 187 인 녀석으로 계산 
 /* Contacts */
-router.get('/:email/:depth', function (req, res, next) {
-  var emailAddress =  req.params.email;
-  var depth = req.params.depth ; 
+router.get('/search_all', function (req, res, next) {
+  var emailAddress =  req.query.email;
+  var depth = req.query.depth ; 
   // var queryString = {
   //   search : '?emailAddress=' + emailAddress,
   //   depth : depth,
   // }
   
-  var queryString = {
-    search : '?emailAddress=' + emailAddress,
-    depth : depth,
-    count : 1000,
-    limit : 1000
-  }
+  var queryString ;
+
+  if(emailAddress) queryString.search = "?emailAddress=" + emailAddress;
+  if(depth) queryString.depth = depth ; 
+  console.log(quertString);
+
   
-    eloqua.data.contacts.get(queryString).then((result) => {
-      console.log(result.data);
-      res.json(result.data);
-    }).catch((err) => {
-      console.error(err);
-    });
+  eloqua.data.contacts.get(queryString).then((result) => {
+    console.log(result.data);
+    // res.json(result.data);
+    res.json(true);
+  }).catch((err) => {
+    console.error(err);
+    res.json(false);
+  });
+});
+
+router.get('/search_one', function (req, res, next) {
+  console.log(1);
+  var id = req.query.id ; 
+  var emailAddress =  req.query.email;
+  // var depth = req.params.depth ; 
+  var depth =  req.query.depth; 
+  var viewId = req.query.viewId;
+  // var queryString = {
+  //   search : '?emailAddress=' + emailAddress,
+  //   depth : depth,
+  // }
+  
+  var queryString = { }  ;
+  console.log(req.query);
+  console.log(queryString);
+  queryString['search'] = emailAddress ? "?emailAddress=" + emailAddress  : "";
+  queryString['depth'] = depth ? depth : "";
+  queryString['viewId'] = viewId ? viewId : "";
+
+  // if(emailAddress) queryString['search'] = "?emailAddress=" + emailAddress ;
+  console.log(queryString);
+
+  
+  eloqua.data.contacts.getOne( id , queryString).then((result) => {
+    console.log(result.data);
+    res.json(result.data);
+    // res.json(true);
+  }).catch((err) => {
+    console.error(err);
+    res.json(false);
+  });
 });
 
 /* Contacts */
 router.get('/', function (req, res, next) {
 
   eloqua.data.contacts.get(req.query.queryString).then((result) => {
-    res.json(result.data);
+    // res.json(result.data);
+    res.json(true);
   }).catch((err) => {
     console.error(err);
+    res.json(false);
   });
 });
 
 router.get('/one/:id', function (req, res, next) {
 
- 
+  console.log(req.params.id);
     eloqua.data.contacts.getOne(req.params.id  ).then((result) => {
       console.log(result.data);
-      res.json(result.data);
+      // res.json(result.data);
+      res.json(true);
     }).catch((err) => {
       console.error(err);
+      res.json(false);
     });
 });
 
 router.post('/create', function (req, res, next) {
 
+  console.log("create call");
     //body 예시
-    /*const data = this.#parent._validate(
-      [
-        'accessedAt',
-        'accountId',
-        'accountname',
-        'address1',
-        'address2',
-        'address3',
-        'bouncebackDate',
-        'businessPhone',
-        'city',
-        'country',
-        'createdAt',
-        'createdBy',
-        'currentStatus',
-        'depth',
-        'description',
-        'emailAddress',
-        'emailFormatPreference',
-        'fax',
-        'fieldValues',
-        'firstName',
-        'id',
-        'isBounceback',
-        'isSubscribed',
-        'lastName',
-        'mobilePhone',
-        'name',
-        'permissions',
-        'postalCode',
-        'province',
-        'salesPerson',
-        'subscriptionDate',
-        'title',
-        'type',
-        'unsubscriptionDate',
-        'updatedAt',
-        'updatedBy',
-      ],
-      contact,
-    );
-    */
+    req.body = {
+      "address1": "P.O.Box 72202 - 00200",
+      "address2": "6th Floor, Lonrho House ",
+      "address3": "Standard Street, City Centre",
+      "businessPhone": "2540312885",
+      "city": "Copenhagen",
+      "country": "Denmark",
+      "emailAddress": "fortinbras@norway.com",
+      "fax": "2540312886",
+      "firstName": "Fort",
+      "lastName": "Fortinbras",
+      "mobilePhone": "2540312887",
+      "postalCode": "2620",
+      "province": "Malmo",
+      "salesPerson": "Hamlet",
+      "title": "Actor",
+    }
 
     eloqua.data.contacts.create( req.body ).then((result) => {
         console.log(result.data);
-        res.json(result.data);
+        // res.json(result.data);
+        res.json(true);
       }).catch((err) => {
         console.error(err);
+        res.json(false);
       });
 });
 
 router.put('/update/:id', function (req, res, next) {
 
     //body 예시
-    /*{
-        "type": "ContactField",
-    "id": "100248",
-    "createdAt": "1591600620",
-    "createdBy": "9",
-    "depth": "complete",
-    "name": "SPC_CARD_REGI_DATE",
-    "updatedAt": "1591600620",
-    "updatedBy": "9",
-    "dataType": "date",
-    "displayType": "text",
-    "internalName": "C_SPC_CARD_REGI_DATE1",
-    "isCaseSensitive": "false",
-    "isReadOnly": "false",
-    "isRequired": "false",
-    "isStandard": "false",
-    "outputFormatId": "5",
-    "isAccountLinkageField": "false",
-    "isProtected": "false",
-    "showTrustedVisitorsOnly": "true",
-    "updateType": "always"
-    }*/
+   
  
     eloqua.data.contacts.update(req.params.id, req.body ).then((result) => {
         console.log(result.data);
-        res.json(result.data);
+        // res.json(result.data);
+        res.json(true);
       }).catch((err) => {
         console.error(err);
+        res.json(false);
       });
 });
 
 router.delete('/delete/:id', function (req, res, next) {
     eloqua.data.contacts.delete(req.params.id).then((result) => {
         console.log(result.data);
-        res.json(result.data);
+        // res.json(result.data);
+        res.json(true);
       }).catch((err) => {
         console.error(err.message);
+        res.json(false);
       });
 });
+
+router.get('/test', function (req, res, next) {
+  console.log(eloqua.assets.contacts);
+
+  eloqua.assets.contacts.fields.get().then((result) => {
+      console.log(result.data);
+      res.json(result.data);
+      // res.json(true);
+    }).catch((err) => {
+      console.error(err.message);
+      res.json(false);
+    });
+});
+
+router.get('/test2', function (req, res, next) {
+  console.log(eloqua.data.contacts);
+    var queryString = {
+    depth : "complete"
+  }
+  var id = 187;
+  var viewid = 0;
+  eloqua.bulk.contacts.filters.get().then((result) => {
+      console.log(result.data);
+      res.json(result.data);
+      // res.json(true);
+    }).catch((err) => {
+      console.error(err.message);
+      res.json(false);
+    });
+});
+
+
+
+router.get('/test3', function (req, res, next) {
+  console.log(eloqua.data.contacts);
+    var queryString = {
+    depth : "complete"
+  }
+  var id = 187;
+  var viewid = 100007;
+  eloqua.data.contacts.filters.get(id , viewid).then((result)=>{
+      console.log(result.data);
+      res.json(result.data);
+      // res.json(true);
+    }).catch((err) => {
+      console.error(err.message);
+      res.json(false);
+    });
+});
+
+
+
+router.get('/test4', function (req, res, next) {
+  console.log(eloqua.data.contacts);
+    var queryString = {
+    depth : "complete"
+  }
+  var id = 187;
+  // var viewid = 100007;
+  eloqua.bulk.contacts.lists.get(id).then((result)=>{
+      console.log(result.data);
+      res.json(result.data);
+      // res.json(true);
+    }).catch((err) => {
+      console.error(err.message);
+      res.json(false);
+    });
+});
+
 
 module.exports = router;

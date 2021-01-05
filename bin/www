@@ -12,7 +12,14 @@ var http = require('http');
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '8080');
+// 회사명 : LGElectronics
+// 명함앱 : Lg_api.Card - 8001
+// B2B GERP : Lg_api.B2b_global - 8002
+// B2B KR : Lg_api.B2b_kr- 8003
+// 고객통합 : Lg_api.Integrated- 8004
+// IAM : Lg_api.Iam- 8005
+// 전부 비밀번호 :  QWer1234!@
+var port = normalizePort(process.env.PORT || '8001');
 app.set('port', port);
 
 /**

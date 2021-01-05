@@ -41,8 +41,6 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/one/:id', function (req, res, next) {
-
- 
     eloqua.data.contacts.getOne(req.params.id  ).then((result) => {
       res.json(result.data);
     }).catch((err) => {
@@ -148,9 +146,9 @@ router.delete('/delete/:id', function (req, res, next) {
 });
 
 router.get('/dbtest', function (req, res, next) {
-    console.log("Eloqua OracleXE DB test");
-    console.log(history);
-    history.resultLog(res , "SELECT");
+    // console.log("Eloqua OracleXE DB test");
+    // console.log(history);
+    // history.resultLog(res , "SELECT");
 });
 
 

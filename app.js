@@ -5,30 +5,37 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var EloquaApi = require('eloqua-sdk');
 var engine = require('ejs-locals');
-var oracledb = require('oracledb');
-var dbConfig = require('./config/dbconfig.js');
+// var oracledb = require('oracledb');
+// var dbConfig = require('./config/dbconfig.js');
 
+// 회사명 : LGElectronics
+// 명함앱 : Lg_api.Card - 8001
+// B2B GERP : Lg_api.B2b_global - 8002
+// B2B KR : Lg_api.B2b_kr- 8003
+// 고객통합 : Lg_api.Integrated- 8004
+// IAM : Lg_api.Iam- 8005
+// 전부 비밀번호 :  QWer1234!@
 var eloqua_config = {
-  sitename: 'TechnologyPartnerGoldenPlanet',
-  username: 'Keonhee.Lee',
-  password: 'Gp7181811!@'
+  sitename: 'LGElectronics',
+  username: 'Lg_api.Card',
+  password: 'QWer1234!@'
 };
 
 global.eloqua = new EloquaApi(eloqua_config);
 
 // console.log(process.platform);
-console.log(dbConfig);
+// console.log(dbConfig);
 
-oracledb.getConnection(dbConfig, function (err, conn) {
-  console.log(123);
-    if(err){
-        console.log('접속 실패', err.stack);
-        return;
-    }
-    global.ora_conn = conn;
-    console.log('접속 성공');
-    
-});
+// oracle XE를 로컬에 설치하여 산기평에서 테스트 불가
+// oracledb.getConnection(dbConfig, function (err, conn) {
+//   console.log(123);
+//     if(err){
+//         console.log('접속 실패', err.stack);
+//         return;
+//     }
+//     global.ora_conn = conn;
+//     console.log('접속 성공');
+// });
 
 var index =  require('./routes/index'); 
 var log =  require('./routes/log'); 
