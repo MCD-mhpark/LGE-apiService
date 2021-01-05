@@ -68,13 +68,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/index', index);
 app.use('/log', log);
-app.use('/b2bgerp_global/data/contacts', b2bgerp_global_data_contacts);
-app.use('/b2bgerp_kr_us/data/contacts', b2bgerp_kr_us_data_contacts);
-app.use('/cs_integration/data/contacts', cs_integration_data_contacts);
+app.use('/b2bgerp_global/contacts', b2bgerp_global_data_contacts);
+app.use('/b2bgerp_kr_us/contacts', b2bgerp_kr_us_data_contacts);
+app.use('/cs_integration/contacts', cs_integration_data_contacts);
 
-app.use('/bscard_app/bulk/contacts/syncAction', bscard_app_bulk_syncAction);
-app.use('/bscard_app/bulk/contacts/imports', bscard_app_bulk_contacts);
-app.use('/bscard_app/data/contacts', bscard_app_data_contacts);
+app.use('/bscard_app/contacts/syncAction', bscard_app_bulk_syncAction);
+app.use('/bscard_app/contacts/imports', bscard_app_bulk_contacts);
+app.use('/bscard_app/contacts', bscard_app_data_contacts);
 
 app.use('/iam/system/users', iam_system_users);
 

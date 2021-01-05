@@ -5,17 +5,14 @@ var router = express.Router();
 /* Contacts */
 router.get('/search_all', function (req, res, next) {
   var emailAddress =  req.query.email;
-  var depth = req.query.depth ; 
-  // var queryString = {
-  //   search : '?emailAddress=' + emailAddress,
-  //   depth : depth,
-  // }
+  var depth =  req.query.depth; 
+  var viewId = req.query.viewId;
   
-  var queryString ;
+  var queryString = {};
 
-  if(emailAddress) queryString.search = "?emailAddress=" + emailAddress;
-  if(depth) queryString.depth = depth ; 
-  console.log(quertString);
+  queryString['search'] = emailAddress ? "?emailAddress=" + emailAddress  : "";
+  queryString['depth'] = depth ? depth : "";
+  queryString['viewId'] = viewId ? viewId : "";
 
   
   eloqua.data.contacts.get(queryString).then((result) => {
@@ -29,28 +26,17 @@ router.get('/search_all', function (req, res, next) {
 });
 
 router.get('/search_one', function (req, res, next) {
-  console.log(1);
   var id = req.query.id ; 
-  var emailAddress =  req.query.email;
-  // var depth = req.params.depth ; 
   var depth =  req.query.depth; 
-  var viewId = req.query.viewId;
   // var queryString = {
   //   search : '?emailAddress=' + emailAddress,
   //   depth : depth,
   // }
   
   var queryString = { }  ;
-  console.log(req.query);
-  console.log(queryString);
-  queryString['search'] = emailAddress ? "?emailAddress=" + emailAddress  : "";
+
   queryString['depth'] = depth ? depth : "";
-  queryString['viewId'] = viewId ? viewId : "";
 
-  // if(emailAddress) queryString['search'] = "?emailAddress=" + emailAddress ;
-  console.log(queryString);
-
-  
   eloqua.data.contacts.getOne( id , queryString).then((result) => {
     console.log(result.data);
     res.json(result.data);
@@ -59,31 +45,6 @@ router.get('/search_one', function (req, res, next) {
     console.error(err);
     res.json(false);
   });
-});
-
-/* Contacts */
-router.get('/', function (req, res, next) {
-
-  eloqua.data.contacts.get(req.query.queryString).then((result) => {
-    // res.json(result.data);
-    res.json(true);
-  }).catch((err) => {
-    console.error(err);
-    res.json(false);
-  });
-});
-
-router.get('/one/:id', function (req, res, next) {
-
-  console.log(req.params.id);
-    eloqua.data.contacts.getOne(req.params.id  ).then((result) => {
-      console.log(result.data);
-      // res.json(result.data);
-      res.json(true);
-    }).catch((err) => {
-      console.error(err);
-      res.json(false);
-    });
 });
 
 router.post('/create', function (req, res, next) {
@@ -95,9 +56,9 @@ router.post('/create', function (req, res, next) {
       "address2": "6th Floor, Lonrho House ",
       "address3": "Standard Street, City Centre",
       "businessPhone": "2540312885",
-      "city": "Copenhagen",
-      "country": "Denmark",
-      "emailAddress": "fortinbras@norway.com",
+      "city": "Copenhagen1",
+      "country": "Denmark1",
+      "emailAddress": "fortinbras1@norway.com",
       "fax": "2540312886",
       "firstName": "Fort",
       "lastName": "Fortinbras",
