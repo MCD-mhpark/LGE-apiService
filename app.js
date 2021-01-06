@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var EloquaApi = require('eloqua-sdk');
 var engine = require('ejs-locals');
+var request = require('request');
 // var oracledb = require('oracledb');
 // var dbConfig = require('./config/dbconfig.js');
 
@@ -15,14 +16,38 @@ var engine = require('ejs-locals');
 // 고객통합 : Lg_api.Integrated- 8004
 // IAM : Lg_api.Iam- 8005
 // 전부 비밀번호 :  QWer1234!@
-var eloqua_config = {
+var bscard_eloqua_config = {
+  sitename: 'LGElectronics',
+  username: 'Lg_api.Card',
+  password: 'QWer1234!@'
+};
+var b2bgerp_eloqua_config = {
+  sitename: 'LGElectronics',
+  username: 'Lg_api.Card',
+  password: 'QWer1234!@'
+};
+var b2bkr_eloqua_config = {
+  sitename: 'LGElectronics',
+  username: 'Lg_api.Card',
+  password: 'QWer1234!@'
+};
+var csintergration_eloqua_config = {
+  sitename: 'LGElectronics',
+  username: 'Lg_api.Card',
+  password: 'QWer1234!@'
+};
+var iam_eloqua_config = {
   sitename: 'LGElectronics',
   username: 'Lg_api.Card',
   password: 'QWer1234!@'
 };
 
-global.eloqua = new EloquaApi(eloqua_config);
-
+global.bscard_eloqua = new EloquaApi(bscard_eloqua_config);
+global.b2bgerp_eloqua = new EloquaApi(b2bgerp_eloqua_config);
+global.b2bkr_eloqua = new EloquaApi(b2bkr_eloqua_config);
+global.csintergration_eloqua = new EloquaApi(csintergration_eloqua_config);
+global.iam_eloqua = new EloquaApi(iam_eloqua_config);
+global.logManager = require('./routes/common/history.js');
 // console.log(process.platform);
 // console.log(dbConfig);
 

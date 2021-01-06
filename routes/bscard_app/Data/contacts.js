@@ -3,19 +3,108 @@ var router = express.Router();
 
 //명함앱 계정 contacts 값 187 인 녀석으로 계산 
 /* Contacts */
-router.get('/search_all', function (req, res, next) {
-  var emailAddress =  req.query.email;
-  var depth =  req.query.depth; 
-  var viewId = req.query.viewId;
+
+
+//하나의 이메일 검색값으로 여러 contacts id를 조회 
+// 조회순서에 따른 데이터는 보장되지 않는다 (ex labeltest_2 , labeltest_1로 조회했을 경우 결과값이 labeltest_1, labeltest_2로 나옴)
+async function getIDs(email_list, depth){
   
   var queryString = {};
-
-  queryString['search'] = emailAddress ? "?emailAddress=" + emailAddress  : "";
+  var emailString = "?";
+  for(var i = 0 ; email_list.length > i ; i++ ){
+    emailString += "emailAddress'" + email_list[i] + "'";
+  }
+  queryString['search'] = emailString;
   queryString['depth'] = depth ? depth : "";
-  queryString['viewId'] = viewId ? viewId : "";
+
+  console.log(queryString);
+  var ids = [];
+  await bscard_eloqua.data.contacts.get(queryString).then((result) => { 
+    // console.log(result.data);
+    console.log(result.data.total);
+    if(result.data.total > 0 ){
+      data =  result.data.elements.map(function(k){
+        return k.id;
+      });
+      console.log(ids);
+    }
+    return ids;
+
+  }).catch((err) => {
+    console.error(err);
+    
+  });
+  return data;
+}
+
+
+
+router.get('/all', async function (req, res, next) {
+  var queryString = {
+    depth : req.query.depth
+  };
+  
+  
+  await bscard_eloqua.data.contacts.get(queryString).then((result) => { 
+    console.log(result.data);
+    // res.json(true);
+    res.json(result.data);
+  }).catch((err) => {
+    console.error(err);
+    res.json(false);
+  });
+ 
+});
+
+router.get('/test', async function (req, res, next) {
+
+  var ids = req.query.ids;
+
+  var queryString = {
+    search :  "?emailAddress='labeltest_2@goldenplanet.co.kr'emailAddress='labeltest_1@goldenplanet.co.kr'" ,
+    depth : "minimal"
+  };
 
   
-  eloqua.data.contacts.get(queryString).then((result) => {
+  
+  await bscard_eloqua.data.contacts.get(queryString).then((result) => { 
+    console.log(result.data);
+    // res.json(true);
+    res.json(result.data);
+  }).catch((err) => {
+    console.error(err);
+    res.json(false);
+  });
+ 
+});
+
+
+//다수의 이메일 검색값으로 여러 contacts id를 조회
+router.get('/search_all', async function (req, res, next) {
+  console.log(123);
+  var emails =  req.query.emails;
+  var ids = manySearch_getIDs(emails , "minimal");
+  
+  await bscard_eloqua.data.contacts.get(queryString).then((result) => { 
+    console.log(result.data);
+    // res.json(true);
+    res.json(result.data);
+  }).catch((err) => {
+    console.error(err);
+    res.json(false);
+  });
+ 
+});
+
+router.get('/search_one', function (req, res, next) {
+  var email = req.query.email;
+  var depth =  req.query.depth; 
+
+  var queryString = {}  ;
+
+  var id = oneSearch_getIDs(email , "minimal");
+
+  bscard_eloqua.data.contacts.getOne( id , queryString).then((result) => {
     console.log(result.data);
     // res.json(result.data);
     res.json(true);
@@ -25,29 +114,7 @@ router.get('/search_all', function (req, res, next) {
   });
 });
 
-router.get('/search_one', function (req, res, next) {
-  var id = req.query.id ; 
-  var depth =  req.query.depth; 
-  // var queryString = {
-  //   search : '?emailAddress=' + emailAddress,
-  //   depth : depth,
-  // }
-  
-  var queryString = { }  ;
-
-  queryString['depth'] = depth ? depth : "";
-
-  eloqua.data.contacts.getOne( id , queryString).then((result) => {
-    console.log(result.data);
-    res.json(result.data);
-    // res.json(true);
-  }).catch((err) => {
-    console.error(err);
-    res.json(false);
-  });
-});
-
-router.post('/create', function (req, res, next) {
+router.post('/create', async function (req, res, next) {
 
   console.log("create call");
     //body 예시
@@ -68,8 +135,9 @@ router.post('/create', function (req, res, next) {
       "salesPerson": "Hamlet",
       "title": "Actor",
     }
-
-    eloqua.data.contacts.create( req.body ).then((result) => {
+    var data = req.body;
+    for(var i = 0 ; data.length > i ; i++ ){
+      await bscard_eloqua.data.contacts.create( data[i] ).then((result) => {
         console.log(result.data);
         // res.json(result.data);
         res.json(true);
@@ -77,25 +145,33 @@ router.post('/create', function (req, res, next) {
         console.error(err);
         res.json(false);
       });
+    }
+
+    
 });
 
-router.put('/update/:id', function (req, res, next) {
+router.put('/update/:id', async function (req, res, next) {
 
-    //body 예시
-   
- 
-    eloqua.data.contacts.update(req.params.id, req.body ).then((result) => {
-        console.log(result.data);
-        // res.json(result.data);
-        res.json(true);
-      }).catch((err) => {
-        console.error(err);
-        res.json(false);
-      });
+  // email 검색 예시 jtlim* , *@goldenplanet.co.kr 같이 쓴다.
+  var email = req.body.email;
+  var ids = getIDs(email);
+
+  for(var i = 0; ids.length > i ; i++){
+    ids[i]
+  }
+  
+  bscard_eloqua.data.contacts.update(req.params.id, req.body ).then((result) => {
+      console.log(result.data);
+      // res.json(result.data);
+      res.json(true);
+    }).catch((err) => {
+      console.error(err);
+      res.json(false);
+    });
 });
 
 router.delete('/delete/:id', function (req, res, next) {
-    eloqua.data.contacts.delete(req.params.id).then((result) => {
+  bscard_eloqua.data.contacts.delete(req.params.id).then((result) => {
         console.log(result.data);
         // res.json(result.data);
         res.json(true);
@@ -104,74 +180,5 @@ router.delete('/delete/:id', function (req, res, next) {
         res.json(false);
       });
 });
-
-router.get('/test', function (req, res, next) {
-  console.log(eloqua.assets.contacts);
-
-  eloqua.assets.contacts.fields.get().then((result) => {
-      console.log(result.data);
-      res.json(result.data);
-      // res.json(true);
-    }).catch((err) => {
-      console.error(err.message);
-      res.json(false);
-    });
-});
-
-router.get('/test2', function (req, res, next) {
-  console.log(eloqua.data.contacts);
-    var queryString = {
-    depth : "complete"
-  }
-  var id = 187;
-  var viewid = 0;
-  eloqua.bulk.contacts.filters.get().then((result) => {
-      console.log(result.data);
-      res.json(result.data);
-      // res.json(true);
-    }).catch((err) => {
-      console.error(err.message);
-      res.json(false);
-    });
-});
-
-
-
-router.get('/test3', function (req, res, next) {
-  console.log(eloqua.data.contacts);
-    var queryString = {
-    depth : "complete"
-  }
-  var id = 187;
-  var viewid = 100007;
-  eloqua.data.contacts.filters.get(id , viewid).then((result)=>{
-      console.log(result.data);
-      res.json(result.data);
-      // res.json(true);
-    }).catch((err) => {
-      console.error(err.message);
-      res.json(false);
-    });
-});
-
-
-
-router.get('/test4', function (req, res, next) {
-  console.log(eloqua.data.contacts);
-    var queryString = {
-    depth : "complete"
-  }
-  var id = 187;
-  // var viewid = 100007;
-  eloqua.bulk.contacts.lists.get(id).then((result)=>{
-      console.log(result.data);
-      res.json(result.data);
-      // res.json(true);
-    }).catch((err) => {
-      console.error(err.message);
-      res.json(false);
-    });
-});
-
 
 module.exports = router;

@@ -3,13 +3,13 @@ var router = express.Router();
 
 /* Contacts */
 router.get('/', function (req, res, next) {
-      eloqua.bulk.contacts.imports.get().then((result) => {
-        console.log(result.data);
-        res.json(result.data);
-      }).catch((err) => {
-        console.error(err);
-      });
-  });
+    bscard_eloqua.bulk.contacts.imports.get().then((result) => {
+    console.log(result.data);
+    res.json(result.data);
+    }).catch((err) => {
+    console.error(err);
+    });
+});
 
 /* Contacts */
 router.get('/one/:id', function (req, res, next) {
@@ -18,7 +18,7 @@ router.get('/one/:id', function (req, res, next) {
 
    
 
-    eloqua.bulk.contacts.imports.getOne(req.params.id).then((result) => {
+    bscard_eloqua.bulk.contacts.imports.getOne(req.params.id).then((result) => {
         console.log(result.data);
         res.json(result.data);
     }).catch((err) => {
@@ -29,7 +29,7 @@ router.get('/one/:id', function (req, res, next) {
 // contact bulk data 가져오기 정의 만들기
 router.post('/create/' , function (req,res,next) {
 
-    //* req.body 참조 url = https://docs.oracle.com/en/cloud/saas/marketing/eloqua-develop/Developers/BulkAPI/Tutorials/Import.htm
+    //* req.body 참조 url = https://docs.oracle.com/en/cloud/saas/marketing/bscard_eloqua-develop/Developers/BulkAPI/Tutorials/Import.htm
     // body
     /*
     * {
@@ -43,7 +43,7 @@ router.post('/create/' , function (req,res,next) {
                "isSyncTriggeredOnImport" : "false"
             } */
 
-    eloqua.bulk.contacts.imports.create(req.body).then((result) => {
+    bscard_eloqua.bulk.contacts.imports.create(req.body).then((result) => {
         console.log(result.data);
         res.json(result.data);
     }).catch((err) => {
@@ -55,7 +55,7 @@ router.post('/create/' , function (req,res,next) {
 // contact bulk data 가져오기 정의 업데이트
 router.post('/update/' , function (req,res,next) {
 
-    //* req.body 참조 url = https://docs.oracle.com/en/cloud/saas/marketing/eloqua-develop/Developers/BulkAPI/Tutorials/Import.htm
+    //* req.body 참조 url = https://docs.oracle.com/en/cloud/saas/marketing/bscard_eloqua-develop/Developers/BulkAPI/Tutorials/Import.htm
     // body
     /*
     * {
@@ -69,7 +69,7 @@ router.post('/update/' , function (req,res,next) {
                "isSyncTriggeredOnImport" : "false"
             } */
 
-    eloqua.bulk.contacts.imports.update(req.body).then((result) => {
+    bscard_eloqua.bulk.contacts.imports.update(req.body).then((result) => {
         console.log(result.data);
         res.json(result.data);
     }).catch((err) => {
@@ -94,7 +94,7 @@ router.post('/uploadData/:id' , function (req,res,next) {
     // // req.body = upData;
     // req.body = upData;
 
-    eloqua.bulk.contacts.imports.uploadData(req.params.id , req.body).then((result) => {
+    bscard_eloqua.bulk.contacts.imports.uploadData(req.params.id , req.body).then((result) => {
         console.log(result.data);
         res.json(result.data);
     }).catch((err) => {

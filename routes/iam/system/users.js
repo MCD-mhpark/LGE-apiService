@@ -6,7 +6,7 @@ router.get('/', function (req, res, next) {
   var queryString = {
     depth : "complete"
   }
-    eloqua.system.users.get(queryString).then((result) => {
+    iam_eloqua.system.users.get(queryString).then((result) => {
       console.log(result.data);
       res.json(result.data);
     }).catch((err) => {
@@ -19,7 +19,7 @@ router.get('/one/:id', function (req, res, next) {
   var queryString = {
     depth : "complete"
   }
-    eloqua.system.users.getOne(req.params.id , queryString).then((result) => {
+    iam_eloqua.system.users.getOne(req.params.id , queryString).then((result) => {
       console.log(result.data);
       res.json(result.data);
     }).catch((err) => {
@@ -48,7 +48,7 @@ router.post('/create', function (req, res, next) {
     //   lastName: "lim",
       
     // }
-    eloqua.system.users.create( req.body).then((result) => {
+    iam_eloqua.system.users.create( req.body).then((result) => {
         console.log(result.data);
         res.json(result.data);
       }).catch((err) => {
@@ -59,7 +59,7 @@ router.post('/create', function (req, res, next) {
 
 router.put('/update/:id', function (req, res, next) {
 
-    eloqua.system.users.update(req.params.id, req.body ).then((result) => {
+    iam_eloqua.system.users.update(req.params.id, req.body ).then((result) => {
         console.log(result.data);
         res.json(result.data);
       }).catch((err) => {
@@ -69,7 +69,7 @@ router.put('/update/:id', function (req, res, next) {
 
 
 router.delete('/delete/:id', function (req, res, next) {
-    eloqua.system.users.delete(req.params.id).then((result) => {
+    iam_eloqua.system.users.delete(req.params.id).then((result) => {
         console.log(result.data);
         res.json(result.data);
       }).catch((err) => {

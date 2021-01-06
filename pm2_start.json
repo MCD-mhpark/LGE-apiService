@@ -1,0 +1,17 @@
+{
+    "apps": [{
+        "script": "./bin/www",
+        "watch": true,
+        "ignore_watch": [
+            "public",
+            "node_modules",
+            "node_module"
+        ],
+        "env": {
+            "name": "lg_apiservice",
+            "NODE_ENV": "production"
+        },
+        "instances": 1,
+        "exec_mode": "cluster"
+    }]
+}

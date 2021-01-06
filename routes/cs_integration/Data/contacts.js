@@ -19,7 +19,7 @@ router.get('/:email/:depth', function (req, res, next) {
     limit : 1000
   }
   
-    eloqua.data.contacts.get(queryString).then((result) => {
+    csintergration_eloqua.data.contacts.get(queryString).then((result) => {
       console.log(result.data);
       res.json(result.data);
     }).catch((err) => {
@@ -30,7 +30,7 @@ router.get('/:email/:depth', function (req, res, next) {
 /* Contacts */
 router.get('/', function (req, res, next) {
 
-    eloqua.data.contacts.get(req.query.queryString).then((result) => {
+    csintergration_eloqua.data.contacts.get(req.query.queryString).then((result) => {
       res.json(result.data);
     }).catch((err) => {
       console.error(err);
@@ -40,7 +40,7 @@ router.get('/', function (req, res, next) {
 router.get('/one/:id', function (req, res, next) {
 
  
-    eloqua.data.contacts.getOne(req.params.id  ).then((result) => {
+    csintergration_eloqua.data.contacts.getOne(req.params.id  ).then((result) => {
       console.log(result.data);
       res.json(result.data);
     }).catch((err) => {
@@ -94,7 +94,7 @@ router.post('/create', function (req, res, next) {
     );
     */
 
-    eloqua.data.contacts.create( req.body ).then((result) => {
+    csintergration_eloqua.data.contacts.create( req.body ).then((result) => {
         console.log(result.data);
         res.json(result.data);
       }).catch((err) => {
@@ -128,7 +128,7 @@ router.put('/update/:id', function (req, res, next) {
     "updateType": "always"
     }*/
  
-    eloqua.data.contacts.update(req.params.id, req.body ).then((result) => {
+    csintergration_eloqua.data.contacts.update(req.params.id, req.body ).then((result) => {
         console.log(result.data);
         res.json(result.data);
       }).catch((err) => {
@@ -137,7 +137,7 @@ router.put('/update/:id', function (req, res, next) {
 });
 
 router.delete('/delete/:id', function (req, res, next) {
-    eloqua.data.contacts.delete(req.params.id).then((result) => {
+    csintergration_eloqua.data.contacts.delete(req.params.id).then((result) => {
         console.log(result.data);
         res.json(result.data);
       }).catch((err) => {
