@@ -4,7 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var EloquaApi = require('eloqua-sdk');
-var engine = require('ejs-locals');
+// var engine = require('ejs-locals');
 var request = require('request');
 // var oracledb = require('oracledb');
 // var dbConfig = require('./config/dbconfig.js');
@@ -80,9 +80,9 @@ const dbconfig = require('./config/dbconfig.js');
 var app = express();
  
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'html');
-app.engine('html', engine);
+// app.set('views', path.join(__dirname, 'views'));
+// app.set('view engine', 'html');
+// app.engine('html', engine);
 
 app.use(logger('dev'));
 app.use(express.json());
