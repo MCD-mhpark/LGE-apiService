@@ -38,7 +38,6 @@ async function getIDs(email_list, depth){
 }
 
 
-
 router.get('/all', async function (req, res, next) {
   var queryString = {
     depth : req.query.depth
@@ -99,15 +98,15 @@ router.get('/search_all', async function (req, res, next) {
 router.get('/search_one', function (req, res, next) {
   var email = req.query.email;
   var depth =  req.query.depth; 
-
+  var id = req.query.id;
   var queryString = {}  ;
 
-  var id = oneSearch_getIDs(email , "minimal");
+  // var id = oneSearch_getIDs(email , "minimal");
 
   bscard_eloqua.data.contacts.getOne( id , queryString).then((result) => {
     console.log(result.data);
-    // res.json(result.data);
-    res.json(true);
+    res.json(result.data);
+    // res.json(true);
   }).catch((err) => {
     console.error(err);
     res.json(false);
