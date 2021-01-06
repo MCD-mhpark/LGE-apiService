@@ -7,29 +7,27 @@ var router = express.Router();
 
 //하나의 이메일 검색값으로 여러 contacts id를 조회 
 // 조회순서에 따른 데이터는 보장되지 않는다 (ex labeltest_2 , labeltest_1로 조회했을 경우 결과값이 labeltest_1, labeltest_2로 나옴)
-async function getIDs(email_list, depth){
+async function getIDs(email_list, depth , api_type){
   
   var queryString = {};
   var emailString = "?";
   for(var i = 0 ; email_list.length > i ; i++ ){
-    emailString += "emailAddress'" + email_list[i] + "'";
+    emailString += "emailAddress='" + email_list[i] + "'";
   }
   queryString['search'] = emailString;
   queryString['depth'] = depth ? depth : "";
 
   console.log(queryString);
-  var ids = [];
+  var data ;
   await bscard_eloqua.data.contacts.get(queryString).then((result) => { 
     // console.log(result.data);
     console.log(result.data.total);
     if(result.data.total > 0 ){
-      data =  result.data.elements.map(function(k){
-        return k.id;
-      });
-      console.log(ids);
-    }
-    return ids;
 
+      if(api_type == 'data') data =  result.data.elements.map(function(k){   return k.id;   });
+      else if(api_type == 'id') data = result.data;
+      // console.log(data);
+    }
   }).catch((err) => {
     console.error(err);
     
@@ -42,8 +40,6 @@ router.get('/all', async function (req, res, next) {
   var queryString = {
     depth : req.query.depth
   };
-  
-  
   await bscard_eloqua.data.contacts.get(queryString).then((result) => { 
     console.log(result.data);
     // res.json(true);
@@ -79,29 +75,21 @@ router.get('/test', async function (req, res, next) {
 
 
 //다수의 이메일 검색값으로 여러 contacts id를 조회
-router.get('/search_all', async function (req, res, next) {
-  console.log(123);
-  var emails =  req.query.emails;
-  var ids = manySearch_getIDs(emails , "minimal");
+router.post('/search_all', async function (req, res, next) {
+  // emails 예제 ["jtlim1@goldenplanet.co.kr" , "jtlim2@goldenplanet.co.kr" .. ]
+  var email_list =  req.body.email_list;
+  var data = await getIDs(email_list , "minimal" , "id");
+
+  if(data.total > 0) res.json(data);
+  else res.json(false);
   
-  await bscard_eloqua.data.contacts.get(queryString).then((result) => { 
-    console.log(result.data);
-    // res.json(true);
-    res.json(result.data);
-  }).catch((err) => {
-    console.error(err);
-    res.json(false);
-  });
- 
 });
 
 router.get('/search_one', function (req, res, next) {
   var email = req.query.email;
-  var depth =  req.query.depth; 
-  var id = req.query.id;
   var queryString = {}  ;
 
-  // var id = oneSearch_getIDs(email , "minimal");
+  var id = oneSearch_getIDs(email , "minimal");
 
   bscard_eloqua.data.contacts.getOne( id , queryString).then((result) => {
     console.log(result.data);
@@ -179,5 +167,10 @@ router.delete('/delete/:id', function (req, res, next) {
         res.json(false);
       });
 });
+
+
+
+
+
 
 module.exports = router;

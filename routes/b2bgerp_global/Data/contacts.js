@@ -3,7 +3,7 @@ var router = express.Router();
 
 
 /* Contacts */
-console.log(__dirname);
+
 // 조건검색 참고 자료
 router.get('/:email/:depth', function (req, res, next) {
   var emailAddress =  req.params.email;
@@ -149,7 +149,6 @@ router.get('/dbtest', function (req, res, next) {
     // console.log(history);
     // history.resultLog(res , "SELECT");
 });
-
 
 
 module.exports = router;

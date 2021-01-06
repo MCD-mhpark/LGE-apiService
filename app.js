@@ -16,6 +16,7 @@ var request = require('request');
 // 고객통합 : Lg_api.Integrated- 8004
 // IAM : Lg_api.Iam- 8005
 // 전부 비밀번호 :  QWer1234!@
+
 var bscard_eloqua_config = {
   sitename: 'LGElectronics',
   username: 'Lg_api.Card',
@@ -23,22 +24,22 @@ var bscard_eloqua_config = {
 };
 var b2bgerp_eloqua_config = {
   sitename: 'LGElectronics',
-  username: 'Lg_api.Card',
+  username: 'Lg_api.B2b_global',
   password: 'QWer1234!@'
 };
 var b2bkr_eloqua_config = {
   sitename: 'LGElectronics',
-  username: 'Lg_api.Card',
+  username: 'Lg_api.B2b_kr',
   password: 'QWer1234!@'
 };
 var csintergration_eloqua_config = {
   sitename: 'LGElectronics',
-  username: 'Lg_api.Card',
+  username: 'Lg_api.Integrated',
   password: 'QWer1234!@'
 };
 var iam_eloqua_config = {
   sitename: 'LGElectronics',
-  username: 'Lg_api.Card',
+  username: 'Lg_api.Iam',
   password: 'QWer1234!@'
 };
 
@@ -74,6 +75,8 @@ var bscard_app_bulk_contacts= require('./routes/bscard_app/Bulk/contacts/imports
 var bscard_app_bulk_syncAction= require('./routes/bscard_app/Bulk/contacts/syncAction');
 var bscard_app_data_contacts = require('./routes/bscard_app/Data/contacts');
 
+var etc_function = require('./routes/common/etc_function');
+
 var iam_system_users = require('./routes/iam/system/users');
 const dbconfig = require('./config/dbconfig.js');
 
@@ -101,7 +104,11 @@ app.use('/bscard_app/contacts/syncAction', bscard_app_bulk_syncAction);
 app.use('/bscard_app/contacts/imports', bscard_app_bulk_contacts);
 app.use('/bscard_app/contacts', bscard_app_data_contacts);
 
-app.use('/iam/system/users', iam_system_users);
+app.use('/etc_function/', etc_function);
+
+
+
+app.use('/iam/users', iam_system_users);
 
 
 
