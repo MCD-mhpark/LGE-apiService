@@ -7,11 +7,12 @@ var EloquaApi = require('eloqua-sdk');
 // var engine = require('ejs-locals');
 var request = require('request');
 var schedule = require('node-schedule');
+var converter = require('./routes/common/converters');
 var Jobs;
 // var oracledb = require('oracledb');
 // var dbConfig = require('./config/dbconfig.js');
 
-// 회사명 : LGElectronics
+// 회사명 : LGElectronicsd
 // 명함앱 : Lg_api.Card - 8001
 // B2B GERP : Lg_api.B2b_global - 8002
 // B2B KR : Lg_api.B2b_kr- 8003
@@ -112,8 +113,6 @@ app.use('/etc_function/', etc_function);
 
 
 app.use('/iam/users', iam_system_users);
-
-
 
 
 // catch 404 and forward to error handler

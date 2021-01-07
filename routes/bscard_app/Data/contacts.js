@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-
+var converters = require('../../common/converters');
 //명함앱 계정 contacts 값 187 인 녀석으로 계산 
 /* Contacts */
 
@@ -61,7 +61,7 @@ router.get('/test', async function (req, res, next) {
   };
 
   
-  
+  console.log(converter);
   await bscard_eloqua.data.contacts.get(queryString).then((result) => { 
     console.log(result.data);
     // res.json(true);
@@ -107,24 +107,30 @@ router.post('/create', async function (req, res, next) {
 
   console.log("create call");
     //body 예시
-    req.body = {
-      "address1": "P.O.Box 72202 - 00200",
-      "address2": "6th Floor, Lonrho House ",
-      "address3": "Standard Street, City Centre",
-      "businessPhone": "2540312885",
-      "city": "Copenhagen1",
-      "country": "Denmark1",
-      "emailAddress": "fortinbras1@norway.com",
-      "fax": "2540312886",
-      "firstName": "Fort",
-      "lastName": "Fortinbras",
-      "mobilePhone": "2540312887",
-      "postalCode": "2620",
-      "province": "Malmo",
-      "salesPerson": "Hamlet",
-      "title": "Actor",
-    }
+    // req.body = {
+    //   "address1": "P.O.Box 72202 - 00200",
+    //   "address2": "6th Floor, Lonrho House ",
+    //   "address3": "Standard Street, City Centre",
+    //   "businessPhone": "2540312885",
+    //   "city": "Copenhagen1",
+    //   "country": "Denmark1",
+    //   "emailAddress": "fortinbras1@norway.com",
+    //   "fax": "2540312886",
+    //   "firstName": "Fort",
+    //   "lastName": "Fortinbras",
+    //   "mobilePhone": "2540312887",
+    //   "postalCode": "2620",
+    //   "province": "Malmo",
+    //   "salesPerson": "Hamlet",
+    //   "title": "Actor",
+    // }
+
+  
     var data = req.body;
+    console.log(req.body);
+    
+    
+    return;
     for(var i = 0 ; data.length > i ; i++ ){
       await bscard_eloqua.data.contacts.create( data[i] ).then((result) => {
         console.log(result.data);
@@ -142,12 +148,12 @@ router.post('/create', async function (req, res, next) {
 router.put('/update/:id', async function (req, res, next) {
 
   // email 검색 예시 jtlim* , *@goldenplanet.co.kr 같이 쓴다.
-  var email = req.body.email;
-  var ids = getIDs(email);
+  // var email = req.body.email;
+  // var ids = getIDs(email);
 
-  for(var i = 0; ids.length > i ; i++){
-    ids[i]
-  }
+  // for(var i = 0; ids.length > i ; i++){
+  //   ids[i]
+  // }
   
   bscard_eloqua.data.contacts.update(req.params.id, req.body ).then((result) => {
       console.log(result.data);
