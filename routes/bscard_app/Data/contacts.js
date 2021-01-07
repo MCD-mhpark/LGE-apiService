@@ -1,3 +1,4 @@
+const { json } = require('express');
 var express = require('express');
 var router = express.Router();
 var converters = require('../../common/converters');
@@ -176,9 +177,107 @@ router.delete('/delete/:id', function (req, res, next) {
       });
 });
 
+router.post('/test1/', async function (req, res, next) {
+  var eloqua_send_data;
+  
+  var array_cnt = Object.keys(req.body).length;     console.log('받은 JSON ARRAY COUNT : ' +  Object.keys(req.body).length);
+
+  if( array_cnt > 0)
+  {
+    eloqua_send_data = Convert_bscard_data(req.body);  
+
+    for(var i = 0 ; eloqua_send_data.length > i ; i++ ){
+      await bscard_eloqua.data.contacts.create( eloqua_send_data[i] ).then((result) => {
+        
+        //배열 명함정보 상태값 채크 - 성공여부 등
+
+        res.json(true);
 
 
+      }).catch((err) => {
 
+        //배열 명함정보 상태값 채크 - 성공여부 등
+        console.error(err);
+        res.json(false);
+      });
+    }
+
+    console.log(eloqua_send_data);
+  }
+
+  //리턴정보 필요 ( 배열 명함정보 상태값 채크 - 성공여부 등 )
+
+  res.json((req.body));
+});
+
+
+function Convert_bscard_data(bscard_json_array_data)
+{
+  
+  var return_data = [{}];
+  var array_cnt = Object.keys(bscard_json_array_data).length;
+  if( array_cnt > 0)
+  {
+    for( var i = 0; i< array_cnt; i++)
+    {
+      return_data[i].userId = bscard_json_array_data[i].userId;
+      return_data[i].userCode = bscard_json_array_data[i].userCode;
+      return_data[i].product = bscard_json_array_data[i].product;
+      return_data[i].first_name = bscard_json_array_data[i].first_name; //필수값
+      return_data[i].last_name = bscard_json_array_data[i].last_name; //필수값
+      return_data[i].company = bscard_json_array_data[i].company;
+      return_data[i].rank = bscard_json_array_data[i].rank;
+      return_data[i].hp = bscard_json_array_data[i].hp;
+      return_data[i].tel = bscard_json_array_data[i].tel;
+      return_data[i].fax = bscard_json_array_data[i].fax;
+      return_data[i].addr1 = bscard_json_array_data[i].addr1; //== "" ? undefined : bscard_json_array_data[i].addr1;
+      return_data[i].addr2 = bscard_json_array_data[i].addr2; //
+      return_data[i].email = bscard_json_array_data[i].email; // 필수값
+      return_data[i].homepage = bscard_json_array_data[i].homepage;
+      return_data[i].etc1 = bscard_json_array_data[i].etc1;
+      return_data[i].etc2 = bscard_json_array_data[i].etc2;
+      return_data[i].mailingDate = bscard_json_array_data[i].mailingDate;
+      return_data[i].subscriptionDate = bscard_json_array_data[i].subscriptionDate;
+
+      valdationCheck(return_data[i]);
+    }
+  }
+  return return_data;
+}
+
+function valdationCheck(bscard_json_array_data)
+{
+  var return_data = [{}];
+  var array_cnt = Object.keys(bscard_json_array_data).length;
+  if( array_cnt > 0)
+  {
+    for( var i = 0; i< array_cnt; i++)
+    {
+      return_data[i].userId = bscard_json_array_data[i].userId;
+      return_data[i].userCode = bscard_json_array_data[i].userCode;
+      return_data[i].product = bscard_json_array_data[i].product;
+
+      return_data[i].first_name = bscard_json_array_data[i].first_name; //필수값
+      return_data[i].lastName = bscard_json_array_data[i].last_name; //필수값
+      return_data[i].company = bscard_json_array_data[i].company;
+      return_data[i].rank = bscard_json_array_data[i].rank;
+      return_data[i].mobilePhone = bscard_json_array_data[i].hp;
+      return_data[i].tel = bscard_json_array_data[i].tel;
+      return_data[i].fax = bscard_json_array_data[i].fax;
+      return_data[i].address1 = bscard_json_array_data[i].addr1; //== "" ? undefined : bscard_json_array_data[i].addr1;
+      return_data[i].address2 = bscard_json_array_data[i].addr2; //
+      return_data[i].emailAddress = bscard_json_array_data[i].email; // 필수값
+      return_data[i].homepage = bscard_json_array_data[i].homepage;
+      return_data[i].etc1 = bscard_json_array_data[i].etc1;
+      return_data[i].etc2 = bscard_json_array_data[i].etc2;
+      return_data[i].mailingDate = bscard_json_array_data[i].mailingDate;
+      return_data[i].subscriptionDate = bscard_json_array_data[i].subscriptionDate;
+
+      valdationCheck(return_data[i]);
+    }
+  }
+  return return_data;
+}
 
 
 module.exports = router;
