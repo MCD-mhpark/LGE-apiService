@@ -178,7 +178,7 @@ router.post('/create', async function (req, res, next) {
     //   ]
     // create 쪽 산기평에 반영하고 박기범님한테 메일전송 ,
     // search_all 쪽 알려주고 input 값 전달할것
-
+    console.log(req.body);
     var data =  converters.bscard(req.body);
     console.log(data);
     var result_count = 0;

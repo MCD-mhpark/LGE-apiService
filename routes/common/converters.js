@@ -68,9 +68,6 @@ exports.bscard = function(request_data){
             return_data.push(return_item);
             
     }
-
-    console.log(return_data);
-    console.log(return_data[0].fieldValues);
     return return_data;
 
 // ex :   [
