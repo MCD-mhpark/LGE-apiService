@@ -1,6 +1,34 @@
 var express = require('express');
 var router = express.Router();
 
+async function getIDs(email_list, depth , api_type){
+  
+  var queryString = {};
+  var emailString = "?";
+  for(var i = 0 ; email_list.length > i ; i++ ){
+    emailString += "emailAddress='" + email_list[i] + "'";
+  }
+  queryString['search'] = emailString;
+  queryString['depth'] = depth ? depth : "";
+
+  console.log(queryString);
+  var data ;
+  await bscard_eloqua.data.contacts.get(queryString).then((result) => { 
+    // console.log(result.data);
+    console.log(result.data.total);
+    if(result.data.total > 0 ){
+
+      if(api_type == 'data') data =  result.data.elements.map(function(k){   return k.id;   });
+      else if(api_type == 'id') data = result.data;
+      // console.log(data);
+    }
+  }).catch((err) => {
+    console.error(err);
+    
+  });
+  return data;
+}
+
 /* Users */
 router.get('/', function (req, res, next) {
   var queryString = {

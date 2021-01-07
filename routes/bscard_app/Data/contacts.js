@@ -87,9 +87,11 @@ router.post('/search_all', async function (req, res, next) {
 
 router.get('/search_one', function (req, res, next) {
   var email = req.query.email;
+ 
   var queryString = {}  ;
 
-  var id = oneSearch_getIDs(email , "minimal");
+  // var id = getIDs(email , "minimal");
+  var id = req.query.id;
 
   bscard_eloqua.data.contacts.getOne( id , queryString).then((result) => {
     console.log(result.data);
