@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-
+var httpRequest = require('../../common/httpRequest');
 
 /* Contacts */
 
@@ -136,18 +136,35 @@ router.put('/update/:id', function (req, res, next) {
 });
 
 router.delete('/delete/:id', function (req, res, next) {
-    b2bgerp_eloqua.data.contacts.delete(req.params.id).then((result) => {
-        console.log(result.data);
-        res.json(result.data);
-      }).catch((err) => {
-        console.error(err.message);
-      });
+  b2bgerp_eloqua.data.contacts.delete(req.params.id).then((result) => {
+      console.log(result.data);
+      res.json(result.data);
+    }).catch((err) => {
+      console.error(err.message);
+    });
 });
 
 router.get('/dbtest', function (req, res, next) {
     // console.log("b2bgerp_eloqua OracleXE DB test");
     // console.log(history);
     // history.resultLog(res , "SELECT");
+});
+
+router.get('/req_data', function (req, res, next) {
+  var id = 941;
+  b2bgerp_eloqua.data.contacts.getOne(id).then((result) => {
+    console.log(result.data);
+    httpRequest.sender("http://localhost:8001/b2bgerp_global/contacts/req_data_yn", "POST" , result.data);
+  }).catch((err) => {
+    console.error(err.message);
+  });
+});
+
+// 가상의 LG API GATEWAY의 
+router.post('/req_data_yn', function (req, res, next) {
+  console.log("call req_data_yn");
+
+  console.log(req.body);
 });
 
 

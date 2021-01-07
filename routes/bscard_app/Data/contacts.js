@@ -8,7 +8,7 @@ var converters = require('../../common/converters');
 
 //하나의 이메일 검색값으로 여러 contacts id를 조회 
 // 조회순서에 따른 데이터는 보장되지 않는다 (ex labeltest_2 , labeltest_1로 조회했을 경우 결과값이 labeltest_1, labeltest_2로 나옴)
-async function getIDs(email_list, depth , api_type){
+async function getContacts(email_list, depth , api_type){
   
   var queryString = {};
   var emailString = "?";
@@ -19,21 +19,25 @@ async function getIDs(email_list, depth , api_type){
   queryString['depth'] = depth ? depth : "";
 
   console.log(queryString);
-  var data ;
+  var contacts_data ;
   await bscard_eloqua.data.contacts.get(queryString).then((result) => { 
     // console.log(result.data);
-    console.log(result.data.total);
-    if(result.data.total > 0 ){
+    // console.log(result.data.total);
+    
+    if(result.data.total && result.data.total > 0 ){
 
-      if(api_type == 'data') data =  result.data.elements.map(function(k){   return k.id;   });
-      else if(api_type == 'id') data = result.data;
-      // console.log(data);
+      if(api_type == 'id') contacts_data =  result.data.elements.map(function(k){   return k.id;   });
+      else if(api_type == 'data') contacts_data = result.data;
+      console.log(contacts_data);
+
     }
   }).catch((err) => {
     console.error(err);
     
   });
-  return data;
+  console.log(12345);
+  console.log(contacts_data);
+  return contacts_data;
 }
 
 
@@ -79,9 +83,10 @@ router.get('/test', async function (req, res, next) {
 router.post('/search_all', async function (req, res, next) {
   // emails 예제 ["jtlim1@goldenplanet.co.kr" , "jtlim2@goldenplanet.co.kr" .. ]
   var email_list =  req.body.email_list;
-  var data = await getIDs(email_list , "minimal" , "id");
+  var depth = req.body.depth;
+  var contacts_data = await getContacts(email_list , depth , "data");
 
-  if(data.total > 0) res.json(data);
+  if(contacts_data.total && contacts_data.total > 0) res.json(contacts_data);
   else res.json(false);
   
 });
@@ -91,7 +96,7 @@ router.get('/search_one', function (req, res, next) {
  
   var queryString = {}  ;
 
-  // var id = getIDs(email , "minimal");
+  // var id = getContacts(email , "minimal");
   var id = req.query.id;
 
   bscard_eloqua.data.contacts.getOne( id , queryString).then((result) => {
@@ -126,22 +131,78 @@ router.post('/create', async function (req, res, next) {
     //   "title": "Actor",
     // }
 
-  
-    var data = req.body;
-    console.log(req.body);
-    
-    
-    return;
-    for(var i = 0 ; data.length > i ; i++ ){
+
+    // req.body =  [
+    //     {
+    //       "userId":"dslim", 
+    //       "userCode":"LGEKR", 
+    //       "product":"all", 
+    //       "first_name":"대선17", 
+    //       "last_name":"임17", 
+    //       "company":"intellicode", 
+    //       "rank":"데이터 서비스 사업부 /부장", 
+    //       "hp":"010.7402.0722", 
+    //       "tel":"031 252.9127", 
+    //       "fax":"031.629.7826",                    
+    //       "addr1":"(16229) 경기도 수원시 영통구광교로 105 경기R&DB센터 705호", 
+    //       "addr2":"", 
+    //       "email":"dslim17@intellicode.co.kr", 
+    //       "homepage":"http://goldenplanet.co.kr",
+    //       "etc1":"test용", 
+    //       "etc2":"", 
+    //       "mailingDate":"2019-12-29 19:48:08", 
+    //       "subscriptionDate":"1577616544" ,
+          
+    //     },
+    //     {
+    //       "userId":"dslim", 
+    //       "userCode":"LGEKR", 
+    //       "product":"all", 
+    //       "first_name":"대선18", 
+    //       "last_name":"임18", 
+    //       "company":"intellicode", 
+    //       "rank":"데이터 서비스 사업부 /부장", 
+    //       "hp":"010.7402.0722", 
+    //       "tel":"031 252.9127", 
+    //       "fax":"031.629.7826",                    
+    //       "addr1":"(16229) 경기도 수원시 영통구광교로 105 경기R&DB센터 705호", 
+    //       "addr2":"", 
+    //       "email":"dslim18@intellicode.co.kr", 
+    //       "homepage":"http://goldenplanet.co.kr",
+    //       "etc1":"test용", 
+    //       "etc2":"", 
+    //       "mailingDate":"2019-12-29 19:48:08", 
+    //       "subscriptionDate":"1577616544" ,
+          
+    //     }
+    //   ]
+    // create 쪽 산기평에 반영하고 박기범님한테 메일전송 ,
+    // search_all 쪽 알려주고 input 값 전달할것
+
+    var data =  converters.bscard(req.body);
+    console.log(data);
+    var result_count = 0;
+    var result_list = [];
+
+    for(var i = 0 ; data.length > i ; i++){
       await bscard_eloqua.data.contacts.create( data[i] ).then((result) => {
         console.log(result.data);
         // res.json(result.data);
-        res.json(true);
+        result_list.push(result.data);
+        result_count++;
       }).catch((err) => {
         console.error(err);
-        res.json(false);
+        
       });
+
     }
+
+    console.log("send_data count : " + data.length + "  ::: result_count : " + result_count );
+    if(result_list.length > 0) res.json(result_list);
+    else res.json(false);
+    
+    
+    
 
     
 });
@@ -245,39 +306,7 @@ function Convert_bscard_data(bscard_json_array_data)
   return return_data;
 }
 
-function valdationCheck(bscard_json_array_data)
-{
-  var return_data = [{}];
-  var array_cnt = Object.keys(bscard_json_array_data).length;
-  if( array_cnt > 0)
-  {
-    for( var i = 0; i< array_cnt; i++)
-    {
-      return_data[i].userId = bscard_json_array_data[i].userId;
-      return_data[i].userCode = bscard_json_array_data[i].userCode;
-      return_data[i].product = bscard_json_array_data[i].product;
 
-      return_data[i].first_name = bscard_json_array_data[i].first_name; //필수값
-      return_data[i].lastName = bscard_json_array_data[i].last_name; //필수값
-      return_data[i].company = bscard_json_array_data[i].company;
-      return_data[i].rank = bscard_json_array_data[i].rank;
-      return_data[i].mobilePhone = bscard_json_array_data[i].hp;
-      return_data[i].tel = bscard_json_array_data[i].tel;
-      return_data[i].fax = bscard_json_array_data[i].fax;
-      return_data[i].address1 = bscard_json_array_data[i].addr1; //== "" ? undefined : bscard_json_array_data[i].addr1;
-      return_data[i].address2 = bscard_json_array_data[i].addr2; //
-      return_data[i].emailAddress = bscard_json_array_data[i].email; // 필수값
-      return_data[i].homepage = bscard_json_array_data[i].homepage;
-      return_data[i].etc1 = bscard_json_array_data[i].etc1;
-      return_data[i].etc2 = bscard_json_array_data[i].etc2;
-      return_data[i].mailingDate = bscard_json_array_data[i].mailingDate;
-      return_data[i].subscriptionDate = bscard_json_array_data[i].subscriptionDate;
-
-      valdationCheck(return_data[i]);
-    }
-  }
-  return return_data;
-}
 
 
 module.exports = router;

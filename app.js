@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var EloquaApi = require('eloqua-sdk');
 // var engine = require('ejs-locals');
-var request = require('request');
+
 var schedule = require('node-schedule');
 var converter = require('./routes/common/converters');
 var Jobs;
@@ -136,35 +136,14 @@ app.use(function(err, req, res, next) {
 function schedule_Request(uniqe_jobs_name , url ,  time , method){
   console.log(123);
   // var schedate = sec + ' ' + minutes + ' ' + hours + ' * * ' + weekindex;
-  var headers = {
-    'User-Agent': 'Super Agent/0.0.1',
-    'Content-Type': "application/xml"
-  }
+ 
 
 
 
   //test data
  
   Jobs = schedule.scheduleJob(uniqe_jobs_name,time,async function(){
-    console.log(new Date());
-    var options = {
-      url : url,
-      method: method,
-      headers:headers,
-      encoding:'binary',
-      qs: {
-        'apiKey': '201501195EQW98965',
-        'year':'2014'
-      }
-    };
     
-    request(options, function (error, response, body) {
-	    if(error) console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
-	    if (!error && response.statusCode == 200) {
-        console.log(body);
-			 
-	    }
-    });
 
   });
 }
