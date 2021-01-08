@@ -86,9 +86,9 @@ router.post('/search_all', async function (req, res, next) {
   var depth = req.body.depth;
   var contacts_data = await getContacts(email_list , depth , "data");
 
-  if(contacts_data.total && contacts_data.total > 0) res.json(contacts_data);
+  if(contacts_data && contacts_data.total > 0) res.json(contacts_data);
   else res.json(false);
-  
+    
 });
 
 router.get('/search_one', function (req, res, next) {
@@ -188,11 +188,16 @@ router.post('/create', async function (req, res, next) {
       await bscard_eloqua.data.contacts.create( data[i] ).then((result) => {
         console.log(result.data);
         // res.json(result.data);
-        result_list.push(result.data);
+        result_list.push({
+          email : data[i].email,
+          status : 200 ,
+          message : "success"
+        });
         result_count++;
       }).catch((err) => {
-        console.error(err);
-        
+        console.log(err.response.status);
+        console.log(err.response.statusText);
+        // console.error(err);
       });
 
     }
