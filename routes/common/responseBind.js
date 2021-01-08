@@ -1,3 +1,0 @@
-exports.errorMessageBind(total , ){
-    
-}
