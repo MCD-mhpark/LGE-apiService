@@ -5,14 +5,19 @@ var converters = require('../../common/converters');
 
 //하나의 이메일 검색값으로 여러 contacts id를 조회 
 // 조회순서에 따른 데이터는 보장되지 않는다 (ex labeltest_2 , labeltest_1로 조회했을 경우 결과값이 labeltest_1, labeltest_2로 나옴)
-async function getContacts(email_list, depth ){
+async function getContacts(data_list, depth ){
     
     var queryString = {};
-    var emailString = "?";
+    var emailString = "";
+    var email_list = [];
+    if(data_list){
+        email_list = data_list;
+        emailString += "?";
+    } 
     for(var i = 0 ; email_list.length > i ; i++ ){
         emailString += "emailAddress='" + email_list[i] + "'";
     }
-    queryString['search'] = emailString;
+    queryString['search'] = emailString ;
     queryString['depth'] = depth ? depth : "";
 
     console.log(queryString);
@@ -88,7 +93,6 @@ router.get('/all', async function (req, res, next) {
 router.post('/search_all', async function (req, res, next) {
     // emails 예제 ["jtlim1@goldenplanet.co.kr" , "jtlim2@goldenplanet.co.kr" .. ]
     var email_list =  req.body.email_list;
-    console.log(email_list);
     var depth = req.body.depth;
     var contacts_data = await getContacts(email_list , depth );
 
@@ -181,10 +185,12 @@ router.post('/create', async function (req, res, next) {
         //     }
         //   ]
      
-    console.log(req.body);
+
     var data =  converters.bscard(req.body);
-    console.log(data);
-    var result_count = 0;
+
+    var form = {};
+    var success_count = 0;
+    var failed_count = 0;
     var result_list = [];
 
     for(var i = 0 ; data.length > i ; i++){
@@ -196,7 +202,7 @@ router.post('/create', async function (req, res, next) {
             status : 200 ,
             message : "success"
         });
-        result_count++;
+        success_count++;
     }).catch((err) => {
         console.log(err.response.status);
         console.log(err.response.statusText);
@@ -205,13 +211,18 @@ router.post('/create', async function (req, res, next) {
             status : err.response.status ? err.response.status : "ETC Error",
             message : err.response.statusText ? err.response.statusText : "UnknownTest Error"
         });
+        failed_count++;
     });
 
     }
 
-    console.log("send_data count : " + data.length + "  ::: result_count : " + result_count );
-    if(result_list.length > 0) res.json(result_list);
-    else res.json(false);
+    console.log("total count : " + data.length + "  ::: success_count : " + success_count + "  ::: failed_count : " + success_count );
+    form.total = data.length;
+    form.success_count = success_count;
+    form.failed_count = failed_count;
+    form.result_list = result_list;
+ 
+    res.json(form);
     
     
 });
@@ -229,17 +240,18 @@ router.put('/update/', async function (req, res, next) {
     console.log(2);
     console.log(bs_data);
     
-    var result_count = 0;
-    var result_list = [];
+   
 
+    var form = {};
+    var success_count = 0;
+    var failed_count = 0;
+    var result_list = [];
     
     
     for(var i = 0 ; bs_data.length > i ; i++){
         console.log(bs_data[i].id)
         var id = bs_data[i].id;
-        // delete  bs_data[i].eloqua_id;
-        console.log("update send_data");
-        console.log(bs_data[i]);
+        
         await bscard_eloqua.data.contacts.update( id, bs_data[i] ).then((result) => {
             console.log(result.data);
             // res.json(result.data);
@@ -248,7 +260,8 @@ router.put('/update/', async function (req, res, next) {
                 status : 200 ,
                 message : "success"
             });
-            result_count++;
+
+            success_count++;
         }).catch((err) => {
             console.log(err.response.status);
             console.log(err.response.statusText);
@@ -265,13 +278,20 @@ router.put('/update/', async function (req, res, next) {
                     message : "Not Found Eloqua Data for Update "
                 });
             }
+
+            failed_count++;
            
         });
     }
 
-    console.log("update_data count : " + bs_data.length + "  ::: update_count : " + result_count );
-    if(result_list.length > 0) res.json(result_list);
-    else res.json(false);
+    console.log("total count : " + bs_data.length + "  ::: success_count : " + success_count + "  ::: failed_count : " + success_count );
+    form.total = bs_data.length;
+    form.success_count = success_count;
+    form.failed_count = failed_count;
+    form.result_list = result_list;
+ 
+    res.json(form);
+
 });
 
 router.delete('/delete', async function (req, res, next) {
@@ -287,7 +307,10 @@ router.delete('/delete', async function (req, res, next) {
     delete_data = await mappedContacts(delete_data , "partial");
     // console.log(delete_data);
     
-  
+    var form = {};
+    var success_count = 0;
+    var failed_count = 0;
+
     var result_list = [];
     for (var i =0; delete_data.length > i ; i++){
         console.log(delete_data[i]);
@@ -300,6 +323,7 @@ router.delete('/delete', async function (req, res, next) {
                 status : 200 ,
                 message : "success"
             });
+            success_count++;
         }).catch((err) => {
             console.log("delete error");
             console.log(err);
@@ -316,14 +340,21 @@ router.delete('/delete', async function (req, res, next) {
                     status : err.response.status ? err.response.status : "ETC Error",
                     message : err.response.statusText ? err.response.statusText : "Unknown Error"
                 });
+               
             }
+            failed_count++;
            
         });
         
     }
 
-    if(result_list.length > 0) res.json(result_list);
-    else res.json(false);
+    console.log("total count : " + delete_data.length + "  ::: success_count : " + success_count + "  ::: failed_count : " + success_count );
+    form.total = delete_data.length;
+    form.success_count = success_count;
+    form.failed_count = failed_count;
+    form.result_list = result_list;
+ 
+    res.json(form);
     
 });
 
