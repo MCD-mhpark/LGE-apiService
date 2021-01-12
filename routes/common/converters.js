@@ -45,28 +45,59 @@ exports.bscard = function(request_data){
 
        
         var customValues_list = [] ;
-        var customValues_count = 0;
+
         if( item.rank && item.rank != ""){
             var rank_data = { "id" : "100238" , "value" : item.rank}; //100238 Department custom field
             customValues_list.push(rank_data);
-            customValues_count++;
         } 
         if( item.homepage && item.homepage != ""){
             var website_data = { "id" : "100252" , "value" : item.homepage}; //100252 website custom field
             customValues_list.push(website_data);
-            customValues_count++;
         }
         if( item.userCode && item.userCode != ""){
             var usercode_data = { "id" : "100196" , "value" : item.userCode}; //100252 Subsidiary custom field
             customValues_list.push(usercode_data);
-            customValues_count++;
         }
         if( item.product && item.product != ""){
             var product_data = { "id" : "100229" , "value" : item.product}; //100252 Business Unit custom field
             customValues_list.push(product_data);
-            customValues_count++;
         }
-        if(customValues_count > 0)  return_item.fieldValues = customValues_list;
+
+        
+        
+        
+        
+        
+        
+       
+
+
+        if( item.mailingDate && item.mailingDate != ""){
+            var mailingDate_data = { "id" : "" , "value" : item.mailingDate}; //100252 Business Unit custom field
+            customValues_list.push(mailingDate_data);
+        }
+        if( item.subscriptionDate && item.subscriptionDate != ""){
+            var subscriptionDate_data = { "id" : "" , "value" : item.subscriptionDate}; //100252 Business Unit custom field
+            customValues_list.push(subscriptionDate_data);
+        }
+        if( item.campaignName && item.campaignName != ""){
+            var campaignName_data = { "id" : "" , "value" : item.campaignName}; //100252 Business Unit custom field
+            customValues_list.push(campaignName_data);
+        }
+        if( item.campaignDate && item.campaignDate != ""){
+            var campaignDate_data = { "id" : "" , "value" : item.campaignDate}; //100252 Business Unit custom field
+            customValues_list.push(campaignDate_data);
+        }
+        if( item.customerProduct && item.customerProduct != ""){
+            var customerProduct_data = { "id" : "" , "value" : item.customerProduct}; //100252 Business Unit custom field
+            customValues_list.push(customerProduct_data);
+        }
+        if( item.krMkt && item.krMkt != ""){
+            var krMkt_data = { "id" : "" , "value" : item.krMkt}; //100252 Business Unit custom field
+            customValues_list.push(krMkt_data);
+        }
+
+        if(customValues_list.length > 0)  return_item.fieldValues = customValues_list;
         return_data.push(return_item);
             
     }
@@ -95,6 +126,15 @@ exports.bscard = function(request_data){
 //   }, 
 // ]
 }
+
+exports.standardField_Valid = function(str){
+    (!str || str == "" ) ? null : return_item.id = item.id; 
+}
+
+exports.customField_Valid = function(str){
+    
+}
+
 
 
 

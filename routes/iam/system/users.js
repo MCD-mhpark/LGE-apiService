@@ -105,4 +105,18 @@ router.delete('/delete/:id', function (req, res, next) {
       });
 });
 
+router.get('/security_groups', function (req, res, next) {
+  var queryString = {
+    depth : "complete"
+  }
+    iam_eloqua.system.users.security_groups(queryString).then((result) => {
+      console.log(result.data);
+      res.json(result.data);
+    }).catch((err) => {
+      console.error(err);
+    });
+});
+
+
+
 module.exports = router;
