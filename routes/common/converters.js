@@ -2,7 +2,6 @@
 
 exports.b2bgerp = function(eloqua_data){
     console.log("b2bgerp_Convert");
-
 },
 exports.b2bkr = function(eloqua_data){
     console.log("b2bkr_Convert");
