@@ -357,21 +357,47 @@ router.delete('/delete', async function (req, res, next) {
     
 });
 
-router.post('/test', async function (req, res, next) {
+router.post('/specific_search', async function (req, res, next) {
     var queryString = {}  ;
 
     // var id = getContacts(email , "minimal");
     var queryString = {};
-    var field = req.body.field;
-    var operator = req.body.operator;
-    var values =  req.body.values;
-    var depth =  req.body.depth;
+    var query_list = [];
+    query_list = req.body.items;
     
-    queryString['search'] = "?firstName='" + values + "'";
+    console.log(query_list);
+    var depth =  req.body.depth;
+    var search_text = "";
+    for(var i = 0; query_list.length > i ; i++){
+        var item = query_list[i];
+        console.log(item);
+        search_text += item.field + item.operator + "'" + item.value + "'";
+    }
+    queryString['search'] = search_text;
     queryString['depth'] = depth ? depth : "";
 
     console.log(queryString);
     bscard_eloqua.data.contacts.get(  queryString).then((result) => {
+        console.log(result.data);
+        res.json(result.data);
+        // res.json(true);
+    }).catch((err) => {
+        console.error(err);
+        res.json(false);
+    });
+
+
+});
+
+router.get('/test2', async function (req, res, next) {
+    var queryString = {}  ;
+
+    // var id = getContacts(email , "minimal");
+    
+    queryString['depth'] = "complete";
+
+    console.log(queryString);
+    bscard_eloqua.data.accounts.get(  queryString).then((result) => {
         console.log(result.data);
         res.json(result.data);
         // res.json(true);
