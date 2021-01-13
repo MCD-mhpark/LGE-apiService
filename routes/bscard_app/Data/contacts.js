@@ -2,6 +2,7 @@ const { json } = require('express');
 var express = require('express');
 var router = express.Router();
 var converters = require('../../common/converters');
+var utils = require('../../common/utils');
 
 //하나의 이메일 검색값으로 여러 contacts id를 조회 
 // 조회순서에 따른 데이터는 보장되지 않는다 (ex labeltest_2 , labeltest_1로 조회했을 경우 결과값이 labeltest_1, labeltest_2로 나옴)
@@ -100,7 +101,7 @@ router.post('/search_all', async function (req, res, next) {
 
 });
 
-router.get('/search_one', function (req, res, next) {
+router.get('/search_one', function (req, res, next) {git 
     var queryString = {}  ;
 
     // var id = getContacts(email , "minimal");
@@ -390,23 +391,10 @@ router.post('/specific_search', async function (req, res, next) {
 });
 
 router.get('/test2', async function (req, res, next) {
-    var queryString = {}  ;
-
-    // var id = getContacts(email , "minimal");
-    
-    queryString['depth'] = "complete";
-
-    console.log(queryString);
-    bscard_eloqua.data.accounts.get(  queryString).then((result) => {
-        console.log(result.data);
-        res.json(result.data);
-        // res.json(true);
-    }).catch((err) => {
-        console.error(err);
-        res.json(false);
-    });
-
-
+    //ex date = 2019-12-29 19:48:08
+    //ex unix =  1577616544
+    // console.log(utils.timeConverter("GET_UNIX", "2019-12-29 19:48:08"));
+    console.log(utils.timeConverter("GET_DATE", 1577616544));
 });
 
 
