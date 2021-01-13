@@ -5,7 +5,7 @@ var httpRequest = require('../../common/httpRequest');
 /* Contacts */
 
 //BANT 조건 Eloqua 조회 함수
-async function get_b2bgerp_bant_data() {
+async function get_b2bgerp_global_bant_data() {
   //BANT 조건
   var queryString = {
     //search : 'emailAddress=' + emailAddress,
@@ -76,7 +76,7 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data)
     console.log(contacts_data.elements[i].accountName);
 
     if( contacts_data.elements[i].accountName != undefined) result_item.ACCOUNT = contacts_data.elements[i].accountName;
-    
+
 
 
 
@@ -119,7 +119,7 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data)
 router.get('/', async function (req, res, next) {
 
   //BANT기준 B2B GERP GLOBAL CONTACTS 조회
-  var contacts_data = await get_b2bgerp_bant_data();
+  var contacts_data = await get_b2bgerp_global_bant_data();
 
   if( contacts_data != null )
   {

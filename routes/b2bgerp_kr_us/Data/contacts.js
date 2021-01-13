@@ -4,179 +4,137 @@ var router = express.Router();
 
 
 /* Contacts */
+//BANT 조건 Eloqua 조회 함수
+async function get_b2bgerp_kr_bant_data() {
+  //BANT 조건
+  var queryString = {
+    //search : 'emailAddress=' + emailAddress,
+    depth: "complete",
+    count: 1000,
+    //page: 2,
+    //MAX LIMIT 1000
+    //limit: 1000
+    count: 10
+    //limit: 10
+  }
+  var contacts_data;
 
-function B2B_GERP_KR_ENTITY(){
-  this.INTERFACE_ID = "Eloqua",
-  this.LEAD_NAME = "";        //리드네임
-  this.SITE_NAME = "";				//사이트네임
-  this.LEAD_SOURCE_TYPE = "09"	//default 09
-  this.ENTRY_TYPE  = "L"        //default L
-  this.ACCOUNT = "";          //회사
-  this.CONTACT_POINT = "";    //연락처(현업 협의 정의)
-  this.CORPORATION = "";      //법인정보
-  this.OWNER = "";            //데이터 없음
-  this.ADDRESS = "";          //현업확인
-  this.DESCRIPTION = "";      //설명 Comments, message, inquiry-to-buy-message 필드 중 하나
-  this.ATTRIBUTE_3 = "";      //픽리스트 eloqua 확인 
-  this.ATTRIBUTE_4 = "";      //이메일
-  this.ATTRIBUTE_5 = "";      //전화번호
-  this.ATTRIBUTE_6 = "";      //확인필요
-  this.ATTRIBUTE_7 = "";      //지역 - 국가 eloqua filed 정보
-  this.ATTRIBUTE_8 = "";      //넷중 하나 또는 4개의 필드 정보 합 ( 확인 필요 )
-  this.ATTRIBUTE_10 = "";     //데이터 없음
-  this.ATTRIBUTE_11 = "";     //사업부코드( 코드마스터 필요 ) 예) HE    LGE 앞자리 빼는지 확인 필요
-  this.REGISTER_DATE = "";    //어떤 날짜 정보인지 확인 필요
-  this.TRANSFER_DATE = "";    //어떤 날짜 정보인지 확인 필요
-  this.TRANSFER_FLAG = "";		//TRANSFER_FLAG N , Y 값의 용도 확인 필요
-  this.LAST_UPDATE_DATE = ""; //데이터 없음
-  this.API_G_CODE = "";       //API 구분코드 추가요건 사항
+  await b2bgerp_eloqua.data.contacts.get(queryString).then((result) => {
+    console.log(result.data);
+
+    console.log("true");
+
+    if (result.data.total && result.data.total > 0) {
+      contacts_data = result.data;
+      console.log(contacts_data);
+    }
+  }).catch((err) => {
+    console.error(err.message);
+    return null;
+  });
+  return contacts_data;
 }
 
-// 조건검색 참고 자료
-router.get('/:email/:depth', function (req, res, next) {
-  var emailAddress =  req.params.email;
-  var depth = req.params.depth ; 
-  // var queryString = {
-  //   search : '?emailAddress=' + emailAddress,
-  //   depth : depth,
-  // }
+function B2B_GERP_KR_ENTITY(){
+  this.INTERFACE_ID = "";           //인터페이스아이디
+  this.ESTIMATION_ID = "";          //견적번호
+  this.ESTIMATION_SEQ_NO = "";      //NUMBER		견적상세번호
+  this.CUSTOMER_NAME = "";          //VARCHAR2(300)		고객명  ( 회사명 인듯 합니다. )
+  this.BIZ_REGISTER_NO = "";        //VARCHAR2(20)		사업자등록번호
+  this.CORP_REGISTER_NO = "";       //VARCHAR2(20)		법인등록번호
+  this.POSTAL_CODE = "";            //VARCHAR2(20)		우편번호
+  this.BASE_ADDR  = "";             //VARCHAR2(2000)		기본주소
+  this.DETAIL_ADDR = "";            //VARCHAR2(2000)		상세주소
+  this.PHONE_NO = "";               //VARCHAR2(30)		전화번호
+  this.EMAIL_ADDR = "";             //VARCHAR2(256)		전자우편주소
+  this.CONTACT_NAME = "";           //VARCHAR2(300)		담당자명
+  this.CONTACT_PHONE_NO = "";       //VARCHAR2(30)		담당자전화번호
+  this.CONTACT_CELLULAR_NO = "";    //VARCHAR2(30)		담당자이동전화번호
+  this.CONTACT_EMAIL_ADDR = "";     //VARCHAR2(256)		담당자전자우편주소
+  this.ESTIMATE_REGISTER_DATE = ""; //DATE		견적등록일
+  this.ESTIMATE_UPDATE_DATE = "";   //DATE		견적수정일
+  this.ESTIMATE_UPDATE_FLAG = "";   //VARCHAR2(1)		견적수정여부
+  this.MODEL_CODE = "";             //VARCHAR2(30)		모델코드
+  this.ITEM_QTY = "";               //NUMBER		품목수량
+  this.REGISTER_DATE = "";          //DATE		등록일자
+  this.LAST_UPDATE_DATE = "";       //DATE		최종수정일자
+  this.UPDATE_TYPE_CODE = "";       //VARCHAR2(30)		변경구분(UPDATE/INSERT)
+  this.RECEIVE_DATE = "";			      //DATE		수신일자
+  this.PROCESSING_FLAG = "";	      //VARCHAR2(1)		처리여부
+  this.PROCESSING_DATE = "";	      //DATE		처리일자
+  this.PROCESS_CONTEXT = "";	      //VARCHAR2(256)		처리컨텍스트
+  this.CUST_REMARK = "";			      //VARCHAR2(4000)		고객요청사항
+  this.PRODUCT_DESC = "";			      //VARCHAR2(200)		제품설명
+  this.ATTRIBUTE_1 = "";			      //VARCHAR2(500)		예비1
+  this.ATTRIBUTE_2 = "";			      //VARCHAR2(500)		예비2
+  this.ATTRIBUTE_3 = "";			      //VARCHAR2(500)		
+  this.ATTRIBUTE_4 = "";			      //VARCHAR2(500)		
+  this.ATTRIBUTE_5 = "";			      //VARCHAR2(500)		
+  this.ATTRIBUTE_6 = "";			      //VARCHAR2(500)		
+  this.ATTRIBUTE_7 = "";			      //VARCHAR2(500)		
+  this.ATTRIBUTE_8 = "";			      //VARCHAR2(500)		
+  this.ATTRIBUTE_9 = "";			      //VARCHAR2(500)		
+  this.ATTRIBUTE_10	= "";		        //VARCHAR2(500)		
+  this.ATTRIBUTE_11 = "";			      //VARCHAR2(500)		
+  this.ATTRIBUTE_12 = "";			      //VARCHAR2(500)		
+}
+
+//Eloqua Data B2B GERP Global Mapping 데이터 생성
+function Convert_B2BGERP_KR_DATA(contacts_data)
+{
+  var result_data = [];
   
-  var queryString = {
-    search : '?emailAddress=' + emailAddress,
-    depth : depth,
-    count : 1000,
-    limit : 1000
+  for( var i = 0; i < contacts_data.elements.length; i++)
+  {
+    var result_item = new B2B_GERP_KR_ENTITY();
+
+    console.log(contacts_data.elements[i]);
+    console.log(contacts_data.elements[i].accountName);
+
+    if( contacts_data.elements[i].accountName != undefined) result_item.ACCOUNT = contacts_data.elements[i].accountName;
+
+    result_data.push(result_item);
   }
-  
-    b2bkr_eloqua.data.contacts.get(queryString).then((result) => {
-      console.log(result.data);
-      res.json(result.data);
-    }).catch((err) => {
-      console.error(err);
-    });
+
+  return result_data;
+}
+
+router.get('/', async function (req, res, next) {
+
+  //BANT기준 B2B GERP GLOBAL CONTACTS 조회
+  var contacts_data = await get_b2bgerp_kr_bant_data();
+
+  if( contacts_data != null )
+  {
+    //Eloqua Contacts 조회
+    var request_data = Convert_B2BGERP_KR_DATA(contacts_data);
+    
+    res.json(request_data);
+  }
+    
+  //API Gateway 데이터 전송
+
+  //Log
+  //res.json(true);
+
 });
 
-/* Contacts */
-router.get('/', function (req, res, next) {
-
-  // var queryString = {
-  //   depth : "complete"
-  // }
-  
-  
-    b2bkr_eloqua.data.contacts.get(req.query.queryString).then((result) => {
-      res.json(result.data);
-    }).catch((err) => {
-      console.error(err);
-    });
+router.get('/req_data', function (req, res, next) {
+  var id = 941;
+  b2bgerp_eloqua.data.contacts.getOne(id).then((result) => {
+    console.log(result.data);
+    httpRequest.sender("http://localhost:8001/b2bgerp_kr_us/contacts/req_data_yn", "POST" , result.data);
+  }).catch((err) => {
+    console.error(err.message);
+  });
 });
 
-router.get('/one/:id', function (req, res, next) {
+// 가상의 LG API GATEWAY의 
+router.post('/req_data_yn', function (req, res, next) {
+  console.log("call req_data_yn");
 
- 
-    b2bkr_eloqua.data.contacts.getOne(req.params.id  ).then((result) => {
-      console.log(result.data);
-      res.json(result.data);
-    }).catch((err) => {
-      console.error(err);
-    });
+  console.log(req.body);
 });
 
-router.post('/create', function (req, res, next) {
-
-    //body 예시
-    /*const data = this.#parent._validate(
-      [
-        'accessedAt',
-        'accountId',
-        'accountname',
-        'address1',
-        'address2',
-        'address3',
-        'bouncebackDate',
-        'businessPhone',
-        'city',
-        'country',
-        'createdAt',
-        'createdBy',
-        'currentStatus',
-        'depth',
-        'description',
-        'emailAddress',
-        'emailFormatPreference',
-        'fax',
-        'fieldValues',
-        'firstName',
-        'id',
-        'isBounceback',
-        'isSubscribed',
-        'lastName',
-        'mobilePhone',
-        'name',
-        'permissions',
-        'postalCode',
-        'province',
-        'salesPerson',
-        'subscriptionDate',
-        'title',
-        'type',
-        'unsubscriptionDate',
-        'updatedAt',
-        'updatedBy',
-      ],
-      contact,
-    );
-    */
-
-    b2bkr_eloqua.data.contacts.create( req.body ).then((result) => {
-        console.log(result.data);
-        res.json(result.data);
-      }).catch((err) => {
-        console.error(err);
-      });
-});
-
-router.put('/update/:id', function (req, res, next) {
-
-    //body 예시
-    /*{
-        "type": "ContactField",
-    "id": "100248",
-    "createdAt": "1591600620",
-    "createdBy": "9",
-    "depth": "complete",
-    "name": "SPC_CARD_REGI_DATE",
-    "updatedAt": "1591600620",
-    "updatedBy": "9",
-    "dataType": "date",
-    "displayType": "text",
-    "internalName": "C_SPC_CARD_REGI_DATE1",
-    "isCaseSensitive": "false",
-    "isReadOnly": "false",
-    "isRequired": "false",
-    "isStandard": "false",
-    "outputFormatId": "5",
-    "isAccountLinkageField": "false",
-    "isProtected": "false",
-    "showTrustedVisitorsOnly": "true",
-    "updateType": "always"
-    }*/
- 
-    b2bkr_eloqua.data.contacts.update(req.params.id, req.body ).then((result) => {
-        console.log(result.data);
-        res.json(result.data);
-      }).catch((err) => {
-        console.error(err);
-      });
-});
-
-router.delete('/delete/:id', function (req, res, next) {
-    b2bkr_eloqua.data.contacts.delete(req.params.id).then((result) => {
-        console.log(result.data);
-        res.json(result.data);
-      }).catch((err) => {
-        console.error(err.message);
-      });
-});
 
 module.exports = router;
