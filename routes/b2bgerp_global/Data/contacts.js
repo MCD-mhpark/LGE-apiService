@@ -7,32 +7,38 @@ var httpRequest = require('../../common/httpRequest');
 //BANT 조건 Eloqua 조회 함수
 async function get_b2bgerp_global_bant_data() {
   //BANT 조건
-  var queryString = {
-    //search : 'emailAddress=' + emailAddress,
-    depth: "complete",
-    count: 1000,
-    //page: 2,
-    //MAX LIMIT 1000
-    //limit: 1000
-    count: 10
-    //limit: 10
-  }
-  var contacts_data;
+	var BantList = [ "C_AS_Needs1", "C_AS_Authority1", "C_AS_Budget1", "C_AS_TimeLine1",
+	"C_Vertical_Needs1", "C_Vertical_Timeline1", "C_Vertical_Budget1", "C_Vertical_Authority1",
+	"C_ID_Needs1", "C_ID_TimeLine1", "C_ID_Budget1", "C_ID_Authority1",
+	"C_IT_Needs1", "C_IT_TimeLine1", "C_IT_Budget1", "C_IT_Authority1",
+	"C_Solar_Authority1", "C_Solar_Needs1", "C_Solar_TimeLine1", "C_Solar_Budget1", "C_Solar_Needs_Business_Customer_1" ,
+	"C_CLS_Needs1", "C_CLS_TimeLine1", "C_CLS_Budget1", "C_CLS_Authority1",
+	"C_CM_Needs1", "C_CM_TimeLine1", "C_CM_Budget1", "C_CM_Authority1" ];
 
-  await b2bgerp_eloqua.data.contacts.get(queryString).then((result) => {
-    console.log(result.data);
+	var BantList = [ "C_AS_Needs1", "C_AS_Authority1", "C_AS_Budget1", "C_AS_TimeLine1" ];
+	var contacts_data;
+	var queryString = {}
+	var queryText = "";
+	
+	for(var i =0 ; BantList.length > i ; i++){
+		queryText += BantList[i] + "!=''" 
+	}
+	queryString['search'] = queryText;
+	queryString['depth'] = "complete";
+	console.log(queryString);
 
-    console.log("true");
+    await b2bgerp_eloqua.data.contacts.get(queryString).then((result) => {
+    
 
-    if (result.data.total && result.data.total > 0) {
-      contacts_data = result.data;
-      console.log(contacts_data);
-    }
-  }).catch((err) => {
-    console.error(err.message);
-    return null;
-  });
-  return contacts_data;
+		if (result.data.total && result.data.total > 0) {
+			contacts_data = result.data;
+			// res.json( result.data);
+		}
+    }).catch((err) => {
+		console.error(err.message);
+		return null;
+    });
+    return contacts_data;
 }
 
 function B2B_GERP_GLOBAL_ENTITY(){
@@ -85,21 +91,23 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data)
 
 router.get('/', async function (req, res, next) {
 
-  //BANT기준 B2B GERP GLOBAL CONTACTS 조회
-  var contacts_data = await get_b2bgerp_global_bant_data();
+	//BANT기준 B2B GERP GLOBAL CONTACTS 조회
+	var contacts_data = await get_b2bgerp_global_bant_data();
 
-  if( contacts_data != null )
-  {
-    //Eloqua Contacts 조회
-    var request_data = Convert_B2BGERP_GLOBAL_DATA(contacts_data);
-    
-    res.json(request_data);
-  }
-    
-  //API Gateway 데이터 전송
+	res.json(contacts_data);
+	return;
+	if( contacts_data != null )
+	{
+		//Eloqua Contacts 조회
+		var request_data = Convert_B2BGERP_GLOBAL_DATA(contacts_data);
+		
+		res.json(request_data);
+	}
+		
+	//API Gateway 데이터 전송
 
-  //Log
-  //res.json(true);
+	//Log
+	//res.json(true);
 
 });
 
