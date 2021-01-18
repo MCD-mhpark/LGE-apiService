@@ -77,41 +77,8 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data)
 
     if( contacts_data.elements[i].accountName != undefined) result_item.ACCOUNT = contacts_data.elements[i].accountName;
 
-
-
-
     result_data.push(result_item);
   }
-
-//B2B GERP Mapping Json Create
-
-    /*INTERFACE_ID
-    o	LEAD_NAME					리드네임
-    o	SITE_NAME					사이트네임
-    o	LEAD_SOURCE_TYPE					default 09
-    o	ENTRY_TYPE					default L
-    o	ACCOUNT					회사
-    o	CONTACT_POINT					연락처(현업 협의 정의)
-    o	CORPORATION					법인정보
-    o	OWNER					데이터 없음
-    x	ADDRESS					현업확인
-      DESCRIPTION					설명 Comments, message, inquiry-to-buy-message 필드 중 하나
-    o	ATTRIBUTE_3					픽리스트 eloqua 확인 
-    o	ATTRIBUTE_4					이메일
-    o	ATTRIBUTE_5					전화번호
-    o	ATTRIBUTE_6					확인필요
-    o	ATTRIBUTE_7					지역 - 국가 eloqua filed 정보
-    o	ATTRIBUTE_8					넷중 하나 또는 4개의 필드 정보 합 ( 확인 필요 )
-    o	ATTRIBUTE_10					데이터 없음
-    o	ATTRIBUTE_11					사업부코드( 코드마스터 필요 ) 예) HE    LGE 앞자리 빼는지 확인 필요
-    o	REGISTER_DATE					어떤 날짜 정보인지 확인 필요
-    o	TRANSFER_DATE					어떤 날짜 정보인지 확인 필요
-    o	TRANSFER_FLAG					 TRANSFER_FLAG N , Y 값의 용도 확인 필요
-    o	LAST_UPDATE_DATE					데이터 없음
-    API 분류코드					 추가요건 사항
-    */
-
-
 
   return result_data;
 }
