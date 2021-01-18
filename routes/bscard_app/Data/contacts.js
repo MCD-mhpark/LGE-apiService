@@ -390,6 +390,7 @@ router.post('/specific_search', async function (req, res, next) {
 
 });
 
+// time convert 테스트
 router.get('/test2', async function (req, res, next) {
     //ex date = 2019-12-29 19:48:08
     //ex unix =  1577616544
@@ -397,5 +398,18 @@ router.get('/test2', async function (req, res, next) {
     console.log(utils.timeConverter("GET_DATE", 1577616544));
 });
 
+// eloqua api를 통한 create 나 update 시 유효한 이름을 찾기위함
+router.post('/test3', async function (req, res, next) {
+    console.log("test3 call");
+    console.log(req.body);
+    bscard_eloqua.data.contacts.create(req.body).then((result) => {
+        console.log(result.data);
+        res.json(result.data);
+        // res.json(true);
+    }).catch((err) => {
+        console.error(err);
+        res.json(false);
+    });
+});
 
 module.exports = router;
