@@ -24,7 +24,8 @@ async function get_b2bgerp_global_bant_data() {
 		queryText += BantList[i] + "!=''" 
 	}
 	queryString['search'] = queryText;
-	queryString['depth'] = "complete";
+ 	 queryString['depth'] = "complete";
+ 	 queryString['count'] = 10;
 	console.log(queryString);
 
     await b2bgerp_eloqua.data.contacts.get(queryString).then((result) => {
@@ -94,8 +95,8 @@ router.get('/', async function (req, res, next) {
 	//BANT기준 B2B GERP GLOBAL CONTACTS 조회
 	var contacts_data = await get_b2bgerp_global_bant_data();
 
-	res.json(contacts_data);
-	return;
+	// res.json(contacts_data);
+	// return;
 	if( contacts_data != null )
 	{
 		//Eloqua Contacts 조회
@@ -105,10 +106,10 @@ router.get('/', async function (req, res, next) {
 	}
 		
 	//API Gateway 데이터 전송
-
+  
 	//Log
 	//res.json(true);
-
+  return;
 });
 
 
