@@ -12,6 +12,37 @@ var Jobs;
 // var oracledb = require('oracledb');
 // var dbConfig = require('./config/dbconfig.js');
 
+var FolderPath = '../';
+var fs = require('fs');
+
+function get_system_foldername()
+{
+  var result_data = "";
+
+  fs.readdir(FolderPath, function(error, filelist){
+
+    console.log(filelist);
+  
+    if (filelist != null && filelist.length > 0) {
+      for(i=0; i<filelist.length; i++)
+      {
+        switch(filelist[i])
+        {
+          case "bscard": result_data = "bscard"; break;
+          case "iam": result_data = "iam"; break;
+          case "b2bgerp_global": result_data = "b2bgerp_global"; break;
+          case "b2bgerp_kr": result_data = "b2bgerp_kr"; break;
+          case "cs_intergration": result_data = "cs_intergration"; break;
+        }
+      }
+    }
+  });
+
+  return result_data;
+}
+qa 
+
+
 // 회사명 : LGElectronicsd
 // 명함앱 : Lg_api.Card - 8001
 // B2B GERP : Lg_api.B2b_global - 8002

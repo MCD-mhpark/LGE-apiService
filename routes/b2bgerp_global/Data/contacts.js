@@ -17,7 +17,11 @@ async function get_b2bgerp_global_bant_data() {
 	"C_CLS_Needs1", "C_CLS_TimeLine1", "C_CLS_Budget1", "C_CLS_Authority1",
 	"C_CM_Needs1", "C_CM_TimeLine1", "C_CM_Budget1", "C_CM_Authority1" ];
 
-	var BantList = [ "C_AS_Needs1", "C_AS_Authority1", "C_AS_Budget1", "C_AS_TimeLine1" ];
+  var BantList = [ "C_AS_Needs1", "C_AS_Authority1", "C_AS_Budget1", "C_AS_TimeLine1" ];
+  var BantList1 = ["C_Vertical_Needs1", "C_Vertical_Timeline1", "C_Vertical_Budget1", "C_Vertical_Authority1" ];
+  var BantList2 = [ "C_AS_Needs1", "C_AS_Authority1", "C_AS_Budget1", "C_AS_TimeLine1" ];
+  var BantList3 = [ "C_AS_Needs1", "C_AS_Authority1", "C_AS_Budget1", "C_AS_TimeLine1" ];
+
 	var contacts_data;
 	var queryString = {}
 	var queryText = "";
@@ -28,13 +32,14 @@ async function get_b2bgerp_global_bant_data() {
 	queryString['search'] = queryText;
  	 queryString['depth'] = "complete";
  	 queryString['count'] = 10;
-	console.log(queryString);
+	//console.log(queryString);
 
     await b2bgerp_eloqua.data.contacts.get(queryString).then((result) => {
     
 
 		if (result.data.total && result.data.total > 0) {
-			contacts_data = result.data;
+      contacts_data = result.data;
+      console.log(result.data);
 			// res.json( result.data);
 		}
     }).catch((err) => {
@@ -69,6 +74,27 @@ function B2B_GERP_GLOBAL_ENTITY(){
     this.TRANSFER_FLAG = "";		//TRANSFER_FLAG N , Y 값의 용도 확인 필요
     this.LAST_UPDATE_DATE = ""; //데이터 없음
     this.API_G_CODE = "";       //API 구분코드 추가요건 사항
+
+    // this.Budget = "";     
+    // this.Authority = "";   
+    // this.Needs = "";       
+    // this.Timeline = "";  
+
+    // this.Privacy Policy(YN) = "";
+    // this.Privacy Policy Date = "";
+    // this.TransferOutsideEEA(YN) = ""; 
+    // this.TransferOutsideEEA Date = "";
+    // this.division = "";
+
+    // Budget
+    // Authority
+    // Needs
+    // Timeline
+    // Privacy Policy(YN)
+    // Privacy Policy Date
+    // TransferOutsideEEA(YN)
+    // TransferOutsideEEA Date
+    // division
 }
 
 //Eloqua Data B2B GERP Global Mapping 데이터 생성
@@ -81,38 +107,73 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data)
   {
     var result_item = new B2B_GERP_GLOBAL_ENTITY();
 
-    console.log(contacts_data.elements[i]);
-    console.log(contacts_data.elements[i].accountName);
+    //console.log(contacts_data.elements[i]);
+    //console.log(contacts_data.elements[i].accountName);
 
     result_item.INTERFACE_ID = "Eloqua" // this.INTERFACE_ID = "Eloqua",
 
-    //리드네임 {{Business Unit}}_{{Subsidiary}}_{{Platform}}_{{Activity}}_{{Date}}
-    //리드네임 {{100229}}_{{100196}}_{{100202}}_{{100206}}
-    //100202	Platform&Activity
-    //100310	Platform&Activity History
-    //100026 Date Created
-    //100027 Date Modified
     var s_BusinessUnit;
     var s_Subsidiary;
     var s_Platform_Action;
     var s_Date;
+
     for(var fieldValue in contacts_data.elements[i].fieldValues){
       var fieldValue_id = contacts_data.elements[i].fieldValues[fieldValue].id;
       var fieldValue_value = contacts_data.elements[i].fieldValues[fieldValue].value;
-
-      //리드네임 {{Business Unit}}_{{Subsidiary}}_{{Platform}}_{{Activity}}_{{Date}}
-      //리드네임 {{100229}}_{{100196}}_{{100202}}_{{100206}}
-      //순서 매핑 작업필요
-      if (fieldValue_id == 100229 || fieldValue_id == 100196 || fieldValue_id == 100202 || fieldValue_id == 100206 )
+      
+      if (fieldValue_id == 100229 || fieldValue_id == 100196 || fieldValue_id == 100202 || fieldValue_id == 100026 )
       {
-        if (fieldValue != undefined) {
-          result_item.LEAD_NAME += fieldValue_value + '_';
+        if( fieldValue_id == 100229)
+        {
+          if( fieldValue_value != undefined)
+          {
+            s_BusinessUnit = fieldValue_value + '_';
+          }
+          else
+          {
+            s_BusinessUnit = 'NODATA_';
+          }
         }
-        else {
-          result_item.LEAD_NAME += 'NODATA_';
+
+        if( fieldValue_id == 100196)
+        {
+          if( fieldValue_value != undefined)
+          {
+            s_Subsidiary = fieldValue_value + '_';
+          }
+          else
+          {
+            s_Subsidiary = 'NODATA_';
+          }
+        }
+
+        if( fieldValue_id == 100202)
+        {
+          if( fieldValue_value != undefined)
+          {
+            s_Platform_Action = fieldValue_value + '_';
+          }
+          else
+          {
+            s_Platform_Action = 'NODATA_';
+          }
+        }
+
+        if( fieldValue_id == 100026)
+        {
+          if( fieldValue_value != undefined)
+          {
+            s_Date = fieldValue_value;
+          }
+          else
+          {
+            s_Date = 'NODATA';
+          }
         }
       }
 
+      
+      
       // result_item.ATTRIBUTE_7 = "";      //지역 - 국가 eloqua filed 정보
       // region 100069
       if(fieldValue_id == 100069)
@@ -134,6 +195,17 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data)
 
     }
     
+    //리드네임 {{Business Unit}}_{{Subsidiary}}_{{Platform}}_{{Activity}}_{{Date}}
+    //리드네임 {{100229}}_{{100196}}_{{100202}}_{{100026}}
+    //100202	Platform&Activity
+    //100310	Platform&Activity History
+    //100026 Date Created
+    //100027 Date Modified
+    //리드네임 {{Business Unit}}_{{Subsidiary}}_{{Platform}}_{{Activity}}_{{Date}}
+    //리드네임 {{100229}}_{{100196}}_{{100202}}_{{100026}}
+    //console.log('BU : ' + s_BusinessUnit + ' | SUB : '+ s_Subsidiary + ' | PA : ' + s_Platform_Action + ' | D : ' + s_Date);
+    result_item.LEAD_NAME = s_BusinessUnit + s_Subsidiary + s_Platform_Action + s_Date;
+
     //SITE_NAME ( 현장명 매핑필드 확인 )
     result_item.SITE_NAME = "";
 
@@ -213,19 +285,6 @@ router.get('/', async function (req, res, next) {
 	//res.json(true);
   return;
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 router.get('/req_data', function (req, res, next) {
   var id = 941;
