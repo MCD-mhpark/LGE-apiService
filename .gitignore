@@ -4,18 +4,16 @@
 
 /.pnp
 .pnp.js
-
+# Dependency directories
+# /node_modules/**
+/node_modules/*
+!/node_modules/eloqua-sdk
 
 # testing
 /coverage
 
 # production
 /build
-
-# Dependency directories
-/node_modules/**
-/node_modules/*
-!/node_modules/eloqua-sdk
 
 # misc
 .DS_Store
