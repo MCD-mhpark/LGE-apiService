@@ -18,7 +18,7 @@ async function get_b2bgerp_kr_bant_data() {
     //limit: 10
   }
   var contacts_data;
-
+  queryString = { search : "emailAddress='hso_Test@goldenplanet.co.kr'" , depth: "complete"};
   await b2bgerp_eloqua.data.contacts.get(queryString).then((result) => {
     console.log(result.data);
 
@@ -104,7 +104,7 @@ function Convert_B2BGERP_KR_DATA(contacts_data)
 
 
     //우편번호
-    if(item.postalCode != undefined) result_item.postalCode = contacts_data.elements[i].postalCode;
+    if(item.postalCode != undefined) result_item.POSTAL_CODE = contacts_data.elements[i].postalCode;
 
     //기본주소
     if( item.address1 != undefined) result_item.BASE_ADDR = contacts_data.elements[i].address1;
