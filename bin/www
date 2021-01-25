@@ -21,7 +21,6 @@ switch(__dirname)
   case "/home/opc/LGE/cs_integration/bin" : port = normalizePort(process.env.PORT || '9005'); break;
   default :  port = normalizePort(process.env.PORT || '8001'); break;
 }
-
 /**
  * Get port from environment and store in Express.
  */
