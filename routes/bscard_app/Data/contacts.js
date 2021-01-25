@@ -121,13 +121,11 @@ router.get('/search_one/:id', function (req, res, next) {
 
 router.post('/search_ids', function (req, res, next) {
     var queryString = {
-        depth : "complete"
+        ids : req.body.ids,
+        depth : req.body.depth ? req.body.depth : "complete"
     }  ;
 
-
-  
-    
-    bscard_eloqua.data.contacts.getOne( req.params.id, queryString).then((result) => {
+    bscard_eloqua.data.contacts.getMulti( queryString).then((result) => {
         console.log(result.data);
         res.json(result.data);
         // res.json(true);

@@ -7,7 +7,6 @@ var EloquaApi = require('eloqua-sdk');
 // var engine = require('ejs-locals');
 
 var schedule = require('node-schedule');
-var converter = require('./routes/common/converters');
 var Jobs;
 // var oracledb = require('oracledb');
 // var dbConfig = require('./config/dbconfig.js');
@@ -15,13 +14,14 @@ var Jobs;
 var FolderPath = '../';
 var fs = require('fs');
 
+
 function get_system_foldername()
 {
   var result_data = "";
 
   fs.readdir(FolderPath, function(error, filelist){
 
-    console.log(filelist);
+    
   
     if (filelist != null && filelist.length > 0) {
       for(i=0; i<filelist.length; i++)
