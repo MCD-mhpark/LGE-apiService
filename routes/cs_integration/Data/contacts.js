@@ -16,6 +16,11 @@ async function get_INTEGRATION_DB_bant_data() {
     count: 10
     //limit: 10
   }
+
+  // Test Code 한줄
+  queryString = { search : "emailAddress='hso_Test@goldenplanet.co.kr'" , depth: "complete"};
+  
+  
   var contacts_data;
 
   await b2bgerp_eloqua.data.contacts.get(queryString).then((result) => {
@@ -37,10 +42,10 @@ async function get_INTEGRATION_DB_bant_data() {
 function INTEGRATION_DB_ENTITY(){
   this.INTERFACE_ID = "";               //PK	HQ , USSolar, USID
   this.PROSPECT_ID = "";                //apc14000350967, ilc14000349979 ( Eloqua Contact ID )
-  this.FIRST_NAME = "";                 //이름
-  this.LAST_NAME = "";                  //성
-  this.EMAIL = "";                      //이메일
-  this.ACCOUNT = "";                    //회사명
+  this.FIRST_NAME = "";                 //이름 O
+  this.LAST_NAME = "";                  //성 O
+  this.EMAIL = "";                      //이메일 O
+  this.ACCOUNT = "";                    //회사명 O
   this.LAST_ACTIVITY_AT = "";           //Date			( date type )  ( 참여 활동 날짜 Eloqua 확인 ) 
   this.CAMPAIGN = "";
   this.NOTES = "";                      //필드확인필요 ( ex ) therma V, accustorahe )
@@ -49,15 +54,15 @@ function INTEGRATION_DB_ENTITY(){
   this.WEBSITE = "";                    //웹사이트
   this.JOB_TITLE = "";                  //타이틀 롤
   this.FUNCTION = "";                   
-  this.COUNTRY = "";                    //국가
-  this.ADDRESS_ONE = "";                //주소1
-  this.ADDRESS_TWO = "";                //주소2
-  this.CITY = "";                       //도시
-  this.STATE = "";                      //주
+  this.COUNTRY = "";                    //국가 O
+  this.ADDRESS_ONE = "";                //주소1 O
+  this.ADDRESS_TWO = "";                //주소2 O
+  this.CITY = "";                       //도시 O
+  this.STATE = "";                      //주 O
   this.TERRITORY = "";                  //있음
-  this.ZIP = "";                        //있음
-  this.PHONE = "";                      //있음
-  this.FAX = "";                        //있음
+  this.ZIP = "";                        //있음 O
+  this.PHONE = "";                      //있음 O
+  this.FAX = "";                        //있음 O
   this.SOURCE = "";                     //플랫폼 AND 액티비티 인지 확인필요  
   this.ANNUAL_REVENUE = "";             
   this.EMPLOYEES = "";                  //매핑정보 존재 여부 확인필요
@@ -125,12 +130,47 @@ function Convert_INTEGRATION_DB_DATA(contacts_data)
   
   for( var i = 0; i < contacts_data.elements.length; i++)
   {
+	var item = contacts_data.elements[i];
     var result_item = new INTEGRATION_DB_ENTITY();
 
-    console.log(contacts_data.elements[i]);
-    console.log(contacts_data.elements[i].accountName);
+    console.log(item);
+    console.log(item.accountName);
 
-    if( contacts_data.elements[i].accountName != undefined) result_item.ACCOUNT = contacts_data.elements[i].accountName;
+    if( item.firstName) result_item.FIRST_NAME = item.firstName;
+    if( item.lastName) result_item.LAST_NAME = item.lastName;
+    if( item.emailAddress) result_item.EMAIL = item.emailAddress;
+
+    if( item.accountname) result_item.ACCOUNT = item.accountname;
+    if( item.country) result_item.COUNTRY = item.country;
+    if( item.address1) result_item.ADDRESS_ONE = item.address1;
+    if( item.address2) result_item.ADDRESS_TWO = item.address2;
+    if( item.city) result_item.CITY = item.city;
+    if( item.province) result_item.STATE = item.province;
+    if( item.postalCode) result_item.ZIP = item.postalCode;
+    if( item.mobilePhone) result_item.PHONE = item.mobilePhone;
+	if( item.fax) result_item.FAX = item.fax;
+	if( item.createdAt) result_item.CREATED_DATE = item.createdAt;
+	if( item.updatedAt) result_item.UPDATED_DATE = item.updatedAt;
+
+
+    for(var j = 0; j < item.fieldValues.length ; j ++){
+		var field_item = item.fieldValues[j];
+
+		if(!field_item.value) continue;
+		if(field_item.id == "100032") result_item.PROSPECT_ID = field_item.value;
+
+		if(field_item.id == "100187") result_item.TERRITORY = field_item.value;
+		
+		if(field_item.id == "100250") result_item.SOURCE = field_item.value;
+		if(field_item.id == "100047") result_item.ANNUAL_REVENUE = field_item.value;
+		if(field_item.id == "100184") result_item.EMPLOYEES = field_item.value;
+		if(field_item.id == "100046") result_item.INDUSTRY = field_item.value;
+		if(field_item.id == "100253") result_item.YEARS_IN_BUSINESS = field_item.value;
+		if(field_item.id == "100017") result_item.SALUTATION = field_item.value;
+		if(field_item.id == "100229") result_item.BUSINESS_UNIT_1 = field_item.value;
+		if(field_item.id == "100243") result_item.LANGUAGE = field_item.value;
+
+	}
 
     result_data.push(result_item);
   }

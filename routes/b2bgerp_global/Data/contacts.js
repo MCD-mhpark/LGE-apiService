@@ -17,10 +17,10 @@ async function get_b2bgerp_global_bant_data() {
 	"C_CLS_Needs1", "C_CLS_TimeLine1", "C_CLS_Budget1", "C_CLS_Authority1",
 	"C_CM_Needs1", "C_CM_TimeLine1", "C_CM_Budget1", "C_CM_Authority1" ];
 
-  var BantList = [ "C_AS_Needs1", "C_AS_Authority1", "C_AS_Budget1", "C_AS_TimeLine1" ];
-  var BantList1 = ["C_Vertical_Needs1", "C_Vertical_Timeline1", "C_Vertical_Budget1", "C_Vertical_Authority1" ];
-  var BantList2 = [ "C_AS_Needs1", "C_AS_Authority1", "C_AS_Budget1", "C_AS_TimeLine1" ];
-  var BantList3 = [ "C_AS_Needs1", "C_AS_Authority1", "C_AS_Budget1", "C_AS_TimeLine1" ];
+	var BantList = [ "C_AS_Needs1", "C_AS_Authority1", "C_AS_Budget1", "C_AS_TimeLine1" ];
+	var BantList1 = ["C_Vertical_Needs1", "C_Vertical_Timeline1", "C_Vertical_Budget1", "C_Vertical_Authority1" ];
+	var BantList2 = [ "C_AS_Needs1", "C_AS_Authority1", "C_AS_Budget1", "C_AS_TimeLine1" ];
+	var BantList3 = [ "C_AS_Needs1", "C_AS_Authority1", "C_AS_Budget1", "C_AS_TimeLine1" ];
 
 	var contacts_data;
 	var queryString = {}
@@ -29,9 +29,14 @@ async function get_b2bgerp_global_bant_data() {
 	for(var i =0 ; BantList.length > i ; i++){
 		queryText += BantList[i] + "!=''" 
 	}
+
+	// Test Code 한줄
+	queryText = "emailAddress='hso_Test@goldenplanet.co.kr'"
+	
+
 	queryString['search'] = queryText;
- 	 queryString['depth'] = "complete";
- 	 queryString['count'] = 10;
+ 	queryString['depth'] = "complete";
+ 	queryString['count'] = 10;
 	//console.log(queryString);
 
     await b2bgerp_eloqua.data.contacts.get(queryString).then((result) => {
