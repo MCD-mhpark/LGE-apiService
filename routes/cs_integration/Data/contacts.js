@@ -186,7 +186,7 @@ router.get('/', async function (req, res, next) {
     //Eloqua Contacts 조회
     var request_data = Convert_INTEGRATION_DB_DATA(contacts_data);
     
-    res.json(request_data);
+    res.json({ContentList:request_data});;
   }
     
   //API Gateway 데이터 전송
