@@ -133,8 +133,7 @@ function Convert_INTEGRATION_DB_DATA(contacts_data)
 	var item = contacts_data.elements[i];
     var result_item = new INTEGRATION_DB_ENTITY();
 
-    console.log(item);
-    console.log(item.accountName);
+   
 
     if( item.firstName) result_item.FIRST_NAME = item.firstName;
     if( item.lastName) result_item.LAST_NAME = item.lastName;
@@ -151,7 +150,6 @@ function Convert_INTEGRATION_DB_DATA(contacts_data)
 	if( item.fax) result_item.FAX = item.fax;
 	if( item.createdAt) result_item.CREATED_DATE = item.createdAt;
 	if( item.updatedAt) result_item.UPDATED_DATE = item.updatedAt;
-
 
     for(var j = 0; j < item.fieldValues.length ; j ++){
 		var field_item = item.fieldValues[j];
