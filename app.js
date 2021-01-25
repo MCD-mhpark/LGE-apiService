@@ -3,7 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var EloquaApi = require('./public/modules/eloqua-sdk');
+var EloquaApi = require('eloqua-sdk');
 // var engine = require('ejs-locals');
 
 var schedule = require('node-schedule');
