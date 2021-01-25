@@ -10,10 +10,12 @@ var app = require('../app');
 var debug = require('debug')('eloqua-api:server');
 var http = require('http');
 
+console.log(__dirname);
 /**
  * Get port from environment and store in Express.
  */
 
+ 
 // 회사명 : LGElectronics
 // 명함앱 : Lg_api.Card - 8001
 // B2B GERP : Lg_api.B2b_global - 8002
