@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 var FolderPath = '../';
 var fs = require('fs');
- 
 
 /**
  * Module dependencies.
@@ -43,6 +42,7 @@ fs.readdir(FolderPath, function(error, filelist){
     }
   }
 })
+console.log("port : " + port);
 
 app.set('port', port);
 
