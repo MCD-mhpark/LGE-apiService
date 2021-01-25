@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
+var converters = require('../../../common/converters');
 
-/* Contacts */
+/* Bluk 가져오기 정의에 대한 data 전체 검색 */
 router.get('/', function (req, res, next) {
     bscard_eloqua.bulk.contacts.imports.get().then((result) => {
     console.log(result.data);
@@ -11,13 +12,9 @@ router.get('/', function (req, res, next) {
     });
 });
 
-/* Contacts */
+/* Bluk 가져오기 정의에 대한 data 1건 검색 */
 router.get('/one/:id', function (req, res, next) {
-
-
-
-   
-
+    
     bscard_eloqua.bulk.contacts.imports.getOne(req.params.id).then((result) => {
         console.log(result.data);
         res.json(result.data);
@@ -81,20 +78,42 @@ router.post('/update/' , function (req,res,next) {
 // contact bulk data 가져오기 정의 업데이트 , 현재 contact 데이터에 대해서 100 , 1000 , 10000건의 데이터 업로드를 TEST
 router.post('/uploadData/:id' , function (req,res,next) {
 
-    // var upData = [];
-    //
-    // for(var i = 0 ; i < 10000; i++){
-    //     upData.push({
-    //         firstName: "ljtt" + i,
-    //         lastName: "goldt" + i,
-    //         emailAddress: "ljt" +i+"@tribonstest.com"}
-    //     )
-    // }
-    //
-    // // req.body = upData;
-    // req.body = upData;
+ 
+    console.log(11);
+    var data = req.body.data;
+    // var data = [];
+    // for(var i = 0;  1000 > i ; i++){
+    //     var one_data = {
+    //         "userId":"dslim",
+    //         "userCode":"LGEKR",
+    //         "product":"all",
+    //         "first_name":"대선3",
+    //         "last_name":"임3",
+    //         "company":"intellicode",
+    //         "rank":"데이터서비스사업부/부장",
+    //         "hp":"010.7402.0722",
+    //         "tel":"031252.9127",
+    //         "fax":"031.629.7826",
+    //         "addr1":"(16229)경기도수원시영통구광교로105경기R&DB센터705호",
+    //         "addr2":"",
+    //         "email": "dskim" +  i +"@intellicode.co.kr",
+    //         "homepage":"http://goldenplanet.co.kr",
+    //         "etc1":"test용",
+    //         "etc2":"",
+    //         "mailingDate":"2019-12-2919:48:08",
+    //         "subscriptionDate":"1577616544"
+    //     }
 
-    bscard_eloqua.bulk.contacts.imports.uploadData(req.params.id , req.body).then((result) => {
+    //     data.push(one_data);
+    // }
+
+    console.log(data);
+    
+    
+    var bulk_data = converters.bluk_bscard(data);
+
+    console.log(bulk_data);
+    bscard_eloqua.bulk.contacts.imports.uploadData(req.params.id , bulk_data).then((result) => {
         console.log(result.data);
         res.json(result.data);
     }).catch((err) => {

@@ -101,13 +101,33 @@ router.post('/search_all', async function (req, res, next) {
 
 });
 
-router.get('/search_one', function (req, res, next) {git 
-    var queryString = {}  ;
+router.get('/search_one/:id', function (req, res, next) {
+    var queryString = {
+        depth : "complete"
+    }  ;
 
-    // var id = getContacts(email , "minimal");
-    var id = req.query.id;
 
-    bscard_eloqua.data.contacts.getOne( id , queryString).then((result) => {
+    console.log(req.params.id);
+    
+    bscard_eloqua.data.contacts.getOne( req.params.id, queryString).then((result) => {
+        console.log(result.data);
+        res.json(result.data);
+        // res.json(true);
+    }).catch((err) => {
+        console.error(err);
+        res.json(false);
+    });
+});
+
+router.post('/search_ids', function (req, res, next) {
+    var queryString = {
+        depth : "complete"
+    }  ;
+
+
+  
+    
+    bscard_eloqua.data.contacts.getOne( req.params.id, queryString).then((result) => {
         console.log(result.data);
         res.json(result.data);
         // res.json(true);
@@ -187,32 +207,32 @@ router.post('/create', async function (req, res, next) {
      
 
     var data =  converters.bscard(req.body);
-
+    console.log(data);
     var form = {};
     var success_count = 0;
     var failed_count = 0;
     var result_list = [];
 
     for(var i = 0 ; data.length > i ; i++){
-    await bscard_eloqua.data.contacts.create( data[i] ).then((result) => {
-        console.log(result.data);
-        // res.json(result.data);
-        result_list.push({
-            email : data[i].emailAddress,
-            status : 200 ,
-            message : "success"
+        await bscard_eloqua.data.contacts.create( data[i] ).then((result) => {
+            console.log(result.data);
+            // res.json(result.data);
+            result_list.push({
+                email : data[i].emailAddress,
+                status : 200 ,
+                message : "success"
+            });
+            success_count++;
+        }).catch((err) => {
+            console.log(err.response.status);
+            console.log(err.response.statusText);
+            result_list.push({
+                email : data[i].emailAddress,
+                status : err.response.status ? err.response.status : "ETC Error",
+                message : err.response.statusText ? err.response.statusText : "UnknownTest Error"
+            });
+            failed_count++;
         });
-        success_count++;
-    }).catch((err) => {
-        console.log(err.response.status);
-        console.log(err.response.statusText);
-        result_list.push({
-            email : data[i].emailAddress,
-            status : err.response.status ? err.response.status : "ETC Error",
-            message : err.response.statusText ? err.response.statusText : "UnknownTest Error"
-        });
-        failed_count++;
-    });
 
     }
 

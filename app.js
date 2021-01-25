@@ -40,7 +40,7 @@ function get_system_foldername()
 
   return result_data;
 }
-qa 
+
 
 
 // 회사명 : LGElectronicsd
