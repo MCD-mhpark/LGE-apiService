@@ -87,16 +87,95 @@ function Convert_B2BGERP_KR_DATA(contacts_data)
   for( var i = 0; i < contacts_data.elements.length; i++)
   {
     var result_item = new B2B_GERP_KR_ENTITY();
+    var item = contacts_data.elements[i];
 
-    if( contacts_data.elements[i].accountName != undefined) result_item.ACCOUNT = contacts_data.elements[i].accountName;
-    if( contacts_data.elements[i].accountName != undefined) result_item.ACCOUNT = contacts_data.elements[i].accountName;
-    if( contacts_data.elements[i].accountName != undefined) result_item.ACCOUNT = contacts_data.elements[i].accountName;
-    if( contacts_data.elements[i].accountName != undefined) result_item.ACCOUNT = contacts_data.elements[i].accountName;
-    if( contacts_data.elements[i].accountName != undefined) result_item.ACCOUNT = contacts_data.elements[i].accountName;
-    if( contacts_data.elements[i].accountName != undefined) result_item.ACCOUNT = contacts_data.elements[i].accountName;
-    if( contacts_data.elements[i].accountName != undefined) result_item.ACCOUNT = contacts_data.elements[i].accountName;
-    if( contacts_data.elements[i].accountName != undefined) result_item.ACCOUNT = contacts_data.elements[i].accountName;
-    
+    //인터페이스아이디
+    result_item.INTERFACE_ID = "ELOQUA_0004";
+    //견적번호 X
+    // result_item.ESTIMATION_ID = "";
+    //견적상세번호 X
+    // result_item.ESTIMATION_SEQ_NO = "";
+    //고객명 X
+    // result_item.CUSTOMER_NAME = "";
+    //사업자등록번호 X
+    //result_item.BIZ_REGISTER_NO = ''
+    //법인등록번호 X
+    //result_item.CORP_REGISTER_NO = ''
+
+
+    //우편번호
+    if(item.postalCode != undefined) result_item.postalCode = contacts_data.elements[i].postalCode;
+
+    //기본주소
+    if( item.address1 != undefined) result_item.BASE_ADDR = contacts_data.elements[i].address1;
+
+    //상세주소
+    if( item.address2 != undefined) result_item.DETAIL_ADDR = contacts_data.elements[i].address2;
+
+    //전화번호
+    if( item.mobilePhone != undefined) result_item.PHONE_NO = contacts_data.elements[i].mobilePhone;
+
+    //전자우편주소
+    if( item.emailAddress != undefined) result_item.EMAIL_ADDR = contacts_data.elements[i].emailAddress;
+    //담당자명
+    //result_item.CONTACT_NAME = ''
+
+    //담당자전화번호
+    //result_item.CONTACT_PHONE_NO = ''
+
+    //담당자이동전화번호
+    //result_item.CONTACT_CELLULAR_NO = ''
+
+    //담당자전자우편주소
+    //result_item.CONTACT_EMAIL_ADDR = ''
+
+    //견적등록일
+    //result_item.ESTIMATE_REGISTER_DATE = ''
+
+    //견적수정일
+    //result_item.ESTIMATE_UPDATE_DATE = ''
+
+    //견적수정여부
+    //result_item.ESTIMATE_UPDATE_FLAG = ''
+
+    //모델코드
+    //result_item.MODEL_CODE = ''
+
+    //품목수량
+    //result_item.ITEM_QTY = ''
+
+    //등록일자
+    //result_item.REGISTER_DATE = ''
+
+    //최종수정일자
+    //result_item.LAST_UPDATE_DATE = ''
+
+    //변경구분
+    //result_item.UPDATE_TYPE_CODE = ''
+
+    //수신일자
+    //result_item.RECEIVE_DATE = ''
+
+    //처리여부
+    //result_item.PROCESSING_FLAG = ''
+
+    //처리일자
+    //result_item.PROCESSING_DATE = ''
+
+    //처리컨텍스트
+    //result_item.PROCESS_CONTEXT = ''
+
+    //고객요청사항
+    //result_item.CUST_REMARK = ''
+
+    //제품설명
+    //result_item.CUST_REMARK = ''
+
+    //예비1
+    //result_item.ATTRIBUTE_1 = ''
+
+    //예비2
+    //result_item.ATTRIBUTE_2 = ''
 
     result_data.push(result_item);
   }
