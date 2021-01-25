@@ -5,9 +5,10 @@
 /.pnp
 .pnp.js
 # Dependency directories
+!/node_modules/eloqua-sdk
 /node_modules/**
 /node_modules/*
-!/node_modules/eloqua-sdk
+
 
 # testing
 /coverage
