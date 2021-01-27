@@ -9,8 +9,6 @@
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "ejs-locals": "^1.0.2",
-    "eloqua-oauth": "^2.0.1",
-    "eloqua-rest-api": "^1.0.18",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "install": "^0.13.0",
