@@ -58,7 +58,7 @@ function B2B_GERP_GLOBAL_ENTITY(){
     this.INTERFACE_ID = "ELOQUA_0003",
     this.LEAD_NAME = "";        //리드네임 [MQL]Subsidiary_BU_Platform&Activity_Register Date+Hour 값을 조합
     this.SITE_NAME = "";				//사이트네임
-    this.LEAD_SOURCE_NAME = "";	//사이트네임 Platform&Activity 필드 매핑
+    this.LEAD_SOURCE_NAME = "";	//리드소스 네임 Platform&Activity 필드 매핑
     this.LEAD_SOURCE_TYPE = "11";//default 11 ? Eloqua에서 넘어오는 값이면 By Marketing, 영업인원이 수기입할 경우 By Sales로 지정
     this.ENTRY_TYPE  = "L"      //default L
     this.ACCOUNT = "";          //회사
@@ -66,7 +66,7 @@ function B2B_GERP_GLOBAL_ENTITY(){
 
     this.CORPORATION = "";      //법인정보
     this.OWNER = "";            //데이터 없음
-    this.ADDRESS = "";          //현업확인
+    this.ADDRESS = "";          //현업확인 Address1 + Address2 + Address3
     this.DESCRIPTION = "";      //설명 Comments, message, inquiry-to-buy-message 필드 중 하나
 
     this.ATTRIBUTE_3 = "";      //픽리스트 eloqua 확인 
@@ -103,168 +103,125 @@ function B2B_GERP_GLOBAL_ENTITY(){
 
 }
 
-//Eloqua Data B2B GERP Global Mapping 데이터 생성
-function Convert_B2BGERP_GLOBAL_DATA(contacts_data)
-{
+function GetCustomFiledValue(contacts_customfields, customfieldID) {
 
-  var result_data = [];
-  
-  for( var i = 0; i < contacts_data.elements.length; i++)
-  {
-    var result_item = new B2B_GERP_GLOBAL_ENTITY();
+  var result_data = null;
 
-    //console.log(contacts_data.elements[i]);
-    //console.log(contacts_data.elements[i].accountName);
+  for (var fieled_index in contacts_customfields) {
+    var fieldValue_id = contacts_customfileds[fieled_index].id;
+    var fieldValue_value = contacts_customfileds[fieled_index].value;
 
-    result_item.INTERFACE_ID = "Eloqua" // this.INTERFACE_ID = "Eloqua",
-
-    var s_BusinessUnit;
-    var s_Subsidiary;
-    var s_Platform_Action;
-    var s_Date;
-
-    for(var fieldValue in contacts_data.elements[i].fieldValues){
-      var fieldValue_id = contacts_data.elements[i].fieldValues[fieldValue].id;
-      var fieldValue_value = contacts_data.elements[i].fieldValues[fieldValue].value;
-      
-      if (fieldValue_id == 100229 || fieldValue_id == 100196 || fieldValue_id == 100202 || fieldValue_id == 100026 )
-      {
-        if( fieldValue_id == 100229)
-        {
-          if( fieldValue_value != undefined)
-          {
-            s_BusinessUnit = fieldValue_value + '_';
-          }
-          else
-          {
-            s_BusinessUnit = 'NODATA_';
-          }
-        }
-
-        if( fieldValue_id == 100196)
-        {
-          if( fieldValue_value != undefined)
-          {
-            s_Subsidiary = fieldValue_value + '_';
-          }
-          else
-          {
-            s_Subsidiary = 'NODATA_';
-          }
-        }
-
-        if( fieldValue_id == 100202)
-        {
-          if( fieldValue_value != undefined)
-          {
-            s_Platform_Action = fieldValue_value + '_';
-          }
-          else
-          {
-            s_Platform_Action = 'NODATA_';
-          }
-        }
-
-        if( fieldValue_id == 100026)
-        {
-          if( fieldValue_value != undefined)
-          {
-            s_Date = fieldValue_value;
-          }
-          else
-          {
-            s_Date = 'NODATA';
-          }
-        }
+    if (fieldValue_id == customfieldID) {
+      if (fieldValue_value != undefined) {
+        result_data = fieldValue_value;
       }
-
-      
-      
-      // result_item.ATTRIBUTE_7 = "";      //지역 - 국가 eloqua filed 정보
-      // region 100069
-      if(fieldValue_id == 100069)
-      {
-        if( fieldValue_value != undefined)
-        {
-          result_item.ATTRIBUTE_7 += fieldValue_value;
-        }
+      else {
+        result_data = null;
       }
-
-    // result_item.ATTRIBUTE_8 = "";      //넷중 하나 또는 4개의 필드 정보 합 ( 확인 필요 )
-    // result_item.ATTRIBUTE_10 = "";     //데이터 없음
-    // result_item.ATTRIBUTE_11 = "";     //사업부코드( 코드마스터 필요 ) 예) HE    LGE 앞자리 빼는지 확인 필요
-    // result_item.REGISTER_DATE = "";    //어떤 날짜 정보인지 확인 필요
-    // result_item.TRANSFER_DATE = "";    //어떤 날짜 정보인지 확인 필요
-    // result_item.TRANSFER_FLAG = "";		//TRANSFER_FLAG N , Y 값의 용도 확인 필요
-    // result_item.LAST_UPDATE_DATE = ""; //데이터 없음
-    // result_item.API_G_CODE = "";       //API 구분코드 추가요건 사항
-
     }
-    
-    //리드네임 {{Business Unit}}_{{Subsidiary}}_{{Platform}}_{{Activity}}_{{Date}}
-    //리드네임 {{100229}}_{{100196}}_{{100202}}_{{100026}}
-    //100202	Platform&Activity
-    //100310	Platform&Activity History
-    //100026 Date Created
-    //100027 Date Modified
-    //리드네임 {{Business Unit}}_{{Subsidiary}}_{{Platform}}_{{Activity}}_{{Date}}
-    //리드네임 {{100229}}_{{100196}}_{{100202}}_{{100026}}
-    //console.log('BU : ' + s_BusinessUnit + ' | SUB : '+ s_Subsidiary + ' | PA : ' + s_Platform_Action + ' | D : ' + s_Date);
-    result_item.LEAD_NAME = s_BusinessUnit + s_Subsidiary + s_Platform_Action + s_Date;
+  }
+  return result_data;
+}
 
-    //SITE_NAME ( 현장명 매핑필드 확인 )
-    result_item.SITE_NAME = "";
+function GetDataValue(contacts_fieldvalue) {
+  if (contacts_field != undefined) {
+    return contacts_fieldvalue;
+  }
+  else {
+    return "";
+  }
+}
 
-    //LEAD_SOURCE_TYPE ( LGE에서 매핑 코드 따주시기로함 DEFAULT 09)
-    result_item.LEAD_SOURCE_TYPE = "09"
+//Eloqua Data B2B GERP Global Mapping 데이터 생성
+function Convert_B2BGERP_GLOBAL_DATA(contacts_data) {
+  var result_data = [];
 
-    //ENTRY_TYPE ( LGE에서 매핑 코드 따주시기로함 DEFAULT 09)
-    result_item.ENTRY_TYPE = "L"
+  for (var i = 0; i < contacts_data.elements.length; i++) {
+    try {
+      var result_item = new B2B_GERP_GLOBAL_ENTITY();
 
-    //ACCOUNT ( 회사 )
-    if( contacts_data.elements[i].accountName != undefined) result_item.ACCOUNT = contacts_data.elements[i].accountName;
-    
-    // result_item.CONTACT_POINT = "";    //연락처(현업 협의 정의)
-    if( contacts_data.elements[i].mobilePhone != undefined) result_item.CONTACT_POINT = contacts_data.elements[i].mobilePhone;
+      result_item.INTERFACE_ID = "ELOQUA_0003" // this.INTERFACE_ID = "ELOQUA_0003"
 
-    // result_item.CORPORATION = "";      //법인정보
-    //if( contacts_data.elements[i].mobilePhone != undefined) result_item.CONTACT_POINT = contacts_data.elements[i].mobilePhone;
+      //리드네임 [MQL]Subsidiary_BU_Platform&Activity_Register Date+Hour 값을 조합
+      //리드네임 {{Business Unit}}_{{Subsidiary}}_{{Platform}}_{{Activity}}_{{Date}}
+      //리드네임 {{100229}}_{{100196}}_{{100202}}_{{100026}}
+      result_item.LEAD_NAME =
+        GetCustomFiledValue(contacts_data.elements[i].fieldValues, 100229) +
+        GetCustomFiledValue(contacts_data.elements[i].fieldValues, 100196) +
+        GetCustomFiledValue(contacts_data.elements[i].fieldValues, 100202) +
+        GetCustomFiledValue(contacts_data.elements[i].fieldValues, 100026);
 
-    // result_item.OWNER = "";            //데이터 없음
+      //SITE_NAME ( 현장명 매핑필드 확인 )
+      result_item.SITE_NAME = "";
 
-    // result_item.ADDRESS = "";          //현업확인
-    if( contacts_data.elements[i].address1 != undefined) result_item.ADDRESS = contacts_data.elements[i].address1;
+      //리드소스 네임 Platform&Activity 필드 매핑
+      this.LEAD_SOURCE_NAME = GetCustomFiledValue(contacts_data.elements[i].fieldValues, 100196);
 
-    // result_item.DESCRIPTION = "";      //설명 Comments, message, inquiry-to-buy-message 필드 중 하나
-    if( contacts_data.elements[i].description != undefined) result_item.DESCRIPTION = contacts_data.elements[i].description;
+      // Eloqua에서 넘어오는 값이면 By Marketing, 영업인원이 수기입할 경우 By Sales로 지정
+      // default 11 (협의됨)
+      this.LEAD_SOURCE_TYPE = "11";
+      //default L
+      this.ENTRY_TYPE = "L"
 
-    // result_item.ATTRIBUTE_3 = "";      //픽리스트 eloqua 확인 
+      //ACCOUNT ( 회사 )
+      result_item.ACCOUNT = GetDataValue(contacts_data.elements[i].accountName);
 
-    // result_item.ATTRIBUTE_4 = "";      //이메일
-    if( contacts_data.elements[i].emailAddress != undefined) result_item.ATTRIBUTE_4 = contacts_data.elements[i].emailAddress;
+      //Contact Point는 Eloqua 필드 중 -> Customer Name/Email/Phone No. 를 연결 시켜 매핑 필요
+      this.CONTACT_POINT = "";
+      GetCustomFiledValue(contacts_data.elements[i].fieldValues, 100172) + "/"
+      //GetDataValue(contacts_data.elements[i].firstName) + " " + GetDataValue(contacts_data.elements[i].lastName) + "/" +
+      GetDataValue(contacts_data.elements[i].emailAddress) + "/" +
+        GetDataValue(contacts_data.elements[i].mobilePhone);
 
-    // result_item.ATTRIBUTE_5 = "";      //전화번호
-    if( contacts_data.elements[i].businessPhone != undefined) result_item.ATTRIBUTE_5 = contacts_data.elements[i].businessPhone;
-    
-    // result_item.ATTRIBUTE_6 = "";      //확인필요
+      this.CORPORATION = "";      //법인정보 (확인필요);
+      this.OWNER = "";            //(확인필요);
+      //주소정보 Address1 + Address2 + Address3
+      this.ADDRESS =
+        GetDataValue(contacts_data.elements[i].address1) + " " +
+        GetDataValue(contacts_data.elements[i].address2) + " " +
+        GetDataValue(contacts_data.elements[i].address3);
 
-    // result_item.ATTRIBUTE_8 = "";      //넷중 하나 또는 4개의 필드 정보 합 ( 확인 필요 )
-    // result_item.ATTRIBUTE_10 = "";     //데이터 없음
-    // result_item.ATTRIBUTE_11 = "";     //사업부코드( 코드마스터 필요 ) 예) HE    LGE 앞자리 빼는지 확인 필요
+      this.DESCRIPTION = GetDataValue(contacts_data.elements[i].description);      //설명 Comments, message, inquiry-to-buy-message 필드 중 하나 (확인필요)
+      //Eloqua Contact ID
+      this.ATTRIBUTE_1 = GetDataValue(contacts_data.elements[i].id);
+      this.ATTRIBUTE_2 = "";      //PRODUCT LV1의 BU 별 Budget
 
-    // result_item.REGISTER_DATE = "";    //어떤 날짜 정보인지 확인 필요
-    if( contacts_data.elements[i].createdAt != undefined) result_item.REGISTER_DATE = utils.timeConverter("GET_DATE", contacts_data.elements[i].createdAt);
+      this.ATTRIBUTE_3 = "";      //픽리스트 eloqua 확인 
+      this.ATTRIBUTE_4 = GetDataValue(contacts_data.elements[i].emailAddress);  //이메일
+      this.ATTRIBUTE_5 = GetDataValue(contacts_data.elements[i].mobilePhone);   //전화번호 (businessPhone 확인필요)
+      this.ATTRIBUTE_6 = "";      //(확인필요)
+      //지역 - 국가 eloqua filed 정보
+      this.ATTRIBUTE_7 = GetCustomFiledValue(contacts_data.elements[i].fieldValues, 100069);
 
-    result_item.TRANSFER_DATE = moment().format('YYYY-MM-DD hh:mm:ss');    //어떤 날짜 정보인지 확인 필요
+      this.ATTRIBUTE_8 = "";      //넷중 하나 또는 4개의 필드 정보 합 ( 확인 필요 )
+      this.ATTRIBUTE_9 = GetCustomFiledValue(contacts_data.elements[i].fieldValues, 100069); //(Job Function 사업부별 컬럼 확인 필요)
+      this.ATTRIBUTE_10 = GetCustomFiledValue(contacts_data.elements[i].fieldValues, 100069); //(Business Unit 사업부별 컬럼 확인 필요)
+      this.ATTRIBUTE_11 = "";     //division (확인필요) 사업부코드( 코드마스터 필요 ) 예) HE    LGE 앞자리 빼는지 확인 필요
+      this.ATTRIBUTE_12 = "";     //Seniority
+      this.ATTRIBUTE_13 = "";     //PRODUCT LV1의 BU 별 Needs
+      this.ATTRIBUTE_14 = "";     //PRODUCT LV1의 BU 별 Timeline
+      this.ATTRIBUTE_15 = "";     //Marketing Event
+      this.ATTRIBUTE_16 = "";     //Privacy Policy YN
+      this.ATTRIBUTE_17 = "";     //Privacy Policy Date
+      this.ATTRIBUTE_18 = "";     //TransferOutside EEA YN
+      this.ATTRIBUTE_19 = "";     //TransferOutside EEA Date
+      this.ATTRIBUTE_20 = "";     //ELOQUA 내 Product 1
+      this.ATTRIBUTE_21 = "";     //ELOQUA 내 Product 2 없을경우 NULL
+      this.ATTRIBUTE_22 = "";     //ELOQUA 내 Product 3 없을경우 NULL
+      this.ATTRIBUTE_23 = "";     //Vertical Type B2B GERP Global Code mapping
 
-    result_item.TRANSFER_FLAG = "Y";		//TRANSFER_FLAG N , Y 값의 용도 확인 필요
+      result_item.REGISTER_DATE = utils.timeConverter("GET_DATE", contacts_data.elements[i].createdAt);
+      result_item.TRANSFER_DATE = moment().format('YYYY-MM-DD hh:mm:ss');    //어떤 날짜 정보인지 확인 필요
+      result_item.TRANSFER_FLAG = "Y";		//TRANSFER_FLAG N , Y 값의 용도 확인 필요
+      result_item.LAST_UPDATE_DATE = utils.timeConverter("GET_DATE", contacts_data.elements[i].updatedAt);
+      this.API_G_CODE = "";       //API 구분코드 추가요건 사항
 
-    //result_item.LAST_UPDATE_DATE = ""; 
-    if( contacts_data.elements[i].updatedAt != undefined) result_item.LAST_UPDATE_DATE = utils.timeConverter("GET_DATE", contacts_data.elements[i].updatedAt);
-    
-    // result_item.API_G_CODE = "";       //API 구분코드 추가요건 사항
+      result_data.push(result_item);
+    }
+    catch (e) {
+      console.log(e);
+    }
 
-    result_data.push(result_item);
   }
 
   return result_data;
