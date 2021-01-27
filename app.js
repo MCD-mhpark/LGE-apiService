@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var methodOverride = require('method-override');
 var EloquaApi = require('eloqua-sdk');
 // var engine = require('ejs-locals');
 
@@ -14,8 +15,7 @@ var Jobs;
 var FolderPath = '../';
 var fs = require('fs');
 
-app.use(methodOverride('_method'));
-app.use(express.static(path.join(__dirname, 'public')));
+
 
 function get_system_foldername()
 {
@@ -118,6 +118,11 @@ const dbconfig = require('./config/dbconfig.js');
 const { url } = require('inspector');
 
 var app = express();
+
+var module_files = path.join(process.cwd(), '../modules');
+app.use(methodOverride('_method'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/modules', express.static(module_files));
  
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
