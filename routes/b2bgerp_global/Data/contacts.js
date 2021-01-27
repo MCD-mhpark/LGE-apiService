@@ -55,17 +55,20 @@ async function get_b2bgerp_global_bant_data() {
 }
 
 function B2B_GERP_GLOBAL_ENTITY(){
-    this.INTERFACE_ID = "Eloqua",
-    this.LEAD_NAME = "";        //리드네임
+    this.INTERFACE_ID = "ELOQUA_0003",
+    this.LEAD_NAME = "";        //리드네임 [MQL]Subsidiary_BU_Platform&Activity_Register Date+Hour 값을 조합
     this.SITE_NAME = "";				//사이트네임
-    this.LEAD_SOURCE_TYPE = "09"	//default 09
-    this.ENTRY_TYPE  = "L"        //default L
+    this.LEAD_SOURCE_NAME = "";	//사이트네임 Platform&Activity 필드 매핑
+    this.LEAD_SOURCE_TYPE = "11";//default 11 ? Eloqua에서 넘어오는 값이면 By Marketing, 영업인원이 수기입할 경우 By Sales로 지정
+    this.ENTRY_TYPE  = "L"      //default L
     this.ACCOUNT = "";          //회사
-    this.CONTACT_POINT = "";    //연락처(현업 협의 정의)
+    this.CONTACT_POINT = "";    //Contact Point는 Eloqua 필드 중 -> Customer Name/Email/Phone No. 를 연결 시켜 매핑 필요
+
     this.CORPORATION = "";      //법인정보
     this.OWNER = "";            //데이터 없음
     this.ADDRESS = "";          //현업확인
     this.DESCRIPTION = "";      //설명 Comments, message, inquiry-to-buy-message 필드 중 하나
+
     this.ATTRIBUTE_3 = "";      //픽리스트 eloqua 확인 
     this.ATTRIBUTE_4 = "";      //이메일
     this.ATTRIBUTE_5 = "";      //전화번호
@@ -80,26 +83,24 @@ function B2B_GERP_GLOBAL_ENTITY(){
     this.LAST_UPDATE_DATE = ""; //데이터 없음
     this.API_G_CODE = "";       //API 구분코드 추가요건 사항
 
-    // this.Budget = "";     
-    // this.Authority = "";   
-    // this.Needs = "";       
-    // this.Timeline = "";  
+    this.ATTRIBUTE_1 = "";      //엘로코아 CONTACT ID
+    this.ATTRIBUTE_2 = "";      //PRODUCT LV1의 BU 별 Budget
+    this.ATTRIBUTE_9 = "";      //Job Function
+    this.ATTRIBUTE_12 = "";     //Seniority
+    this.ATTRIBUTE_13 = "";     //PRODUCT LV1의 BU 별 Needs
+    this.ATTRIBUTE_14 = "";     //PRODUCT LV1의 BU 별 Timeline
+    this.ATTRIBUTE_15 = "";     //Marketing Event
+    this.ATTRIBUTE_16 = "";     //Privacy Policy YN
+    this.ATTRIBUTE_17 = "";     //Privacy Policy Date
+    this.ATTRIBUTE_18 = "";     //TransferOutside EEA YN
+    this.ATTRIBUTE_19 = "";     //TransferOutside EEA Date
+    this.ATTRIBUTE_20 = "";     //ELOQUA 내 Product 1
+    this.ATTRIBUTE_21 = "";     //ELOQUA 내 Product 2 없을경우 NULL
+    this.ATTRIBUTE_22 = "";     //ELOQUA 내 Product 3 없을경우 NULL
+    this.ATTRIBUTE_23 = "";     //Vertical Type B2B GERP Global Code mapping
 
-    // this.Privacy Policy(YN) = "";
-    // this.Privacy Policy Date = "";
-    // this.TransferOutsideEEA(YN) = ""; 
-    // this.TransferOutsideEEA Date = "";
-    // this.division = "";
+    //Building Type을 Vertical Type으로 변경하고 전사 Vertical 기준에 맞추어 매핑 필요 - LG.com내에도 항목 수정 필요하니 요청 필요함
 
-    // Budget
-    // Authority
-    // Needs
-    // Timeline
-    // Privacy Policy(YN)
-    // Privacy Policy Date
-    // TransferOutsideEEA(YN)
-    // TransferOutsideEEA Date
-    // division
 }
 
 //Eloqua Data B2B GERP Global Mapping 데이터 생성
