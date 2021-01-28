@@ -222,6 +222,7 @@ router.post('/create', async function (req, res, next) {
             });
             success_count++;
         }).catch((err) => {
+            console.log(data[i].fieldValues);
             console.log(err.response.status);
             console.log(err.response.statusText);
             result_list.push({
