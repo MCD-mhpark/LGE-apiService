@@ -153,7 +153,8 @@ class Users {
     "zipCode",
     "federationId",
     "capabilities",
-    "productPermissions"
+    "productPermissions",
+    "license1"
     ], user);
 
     return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
