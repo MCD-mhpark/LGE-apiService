@@ -57,7 +57,7 @@ router.get('/one/:id', function (req, res, next) {
 });
 
 router.post('/create', function (req, res, next) {
-
+  console.log(123);
     // var instance = {
     //   loginName: "jtt.Lim",
     //   emailAddress: "limsoftz1@naver.com",
@@ -82,6 +82,7 @@ router.post('/create', function (req, res, next) {
         res.json(result.data);
       }).catch((err) => {
         console.error(err);
+        res.json(false);
       });
 });
 
