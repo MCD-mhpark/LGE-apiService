@@ -24,7 +24,7 @@ exports.bscard = function(request_data){
       
     
            
-
+        ( !item.id || item.id == "" ) ? null : return_item.id = item.id; 
         ( !item.first_name || item.first_name == "" ) ? null : return_item.firstName = item.first_name; 
         ( !item.last_name || item.last_name == "" ) ? null : return_item.lastName = item.last_name; 
         ( !item.company || item.company == "" ) ? null : return_item.accountname = item.company;
@@ -126,7 +126,7 @@ exports.bscard = function(request_data){
 // ]
 }
 
-exports.bluk_bscard = function(request_data){
+exports.bulk_bscard = function(request_data){
 
     var return_data = [];
    
