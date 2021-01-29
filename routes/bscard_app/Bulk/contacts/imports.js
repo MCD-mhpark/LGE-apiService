@@ -76,7 +76,7 @@ router.post('/update/' , function (req,res,next) {
 })
 
 // contact bulk data 가져오기 정의 업데이트 , 현재 contact 데이터에 대해서 100 , 1000 , 10000건의 데이터 업로드를 TEST
-router.post('/uploadData' , function (req,res,next) {
+router.post('/uploadData/:id' , function (req,res,next) {
 
     var id = 305;
     // 현재 bulk 가져오기 정의 id는 305 이나 , 명함앱에 미정의된 필드가 있어서 추후에 벌크 가져오기 정의를 업데이트 해줘야한다.
