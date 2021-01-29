@@ -15,7 +15,6 @@ exports.bscard = function(request_data){
     var return_data = [];
    
     // console.log(1234);
-console.log(request_data);
     for( var i = 0; i< request_data.length; i++){
         
         var item = request_data[i];
@@ -71,34 +70,35 @@ console.log(request_data);
        
 
 
-        if( item.mailingDate && item.mailingDate != ""){
-            var mailingDate_data = { "id" : "" , "value" : item.mailingDate}; //100252 Business Unit custom field
-            customValues_list.push(mailingDate_data);
-        }
-        if( item.subscriptionDate && item.subscriptionDate != ""){
-            var subscriptionDate_data = { "id" : "" , "value" : item.subscriptionDate}; //100252 Business Unit custom field
-            customValues_list.push(subscriptionDate_data);
-        }
-        if( item.campaignName && item.campaignName != ""){
-            var campaignName_data = { "id" : "" , "value" : item.campaignName}; //100252 Business Unit custom field
-            customValues_list.push(campaignName_data);
-        }
-        if( item.campaignDate && item.campaignDate != ""){
-            var campaignDate_data = { "id" : "" , "value" : item.campaignDate}; //100252 Business Unit custom field
-            customValues_list.push(campaignDate_data);
-        }
-        if( item.customerProduct && item.customerProduct != ""){
-            var customerProduct_data = { "id" : "" , "value" : item.customerProduct}; //100252 Business Unit custom field
-            customValues_list.push(customerProduct_data);
-        }
-        if( item.krMkt && item.krMkt != ""){
-            var krMkt_data = { "id" : "" , "value" : item.krMkt}; //100252 Business Unit custom field
-            customValues_list.push(krMkt_data);
-        }
+        // if( item.mailingDate && item.mailingDate != ""){
+        //     var mailingDate_data = { "id" : "" , "value" : item.mailingDate}; //100252 Business Unit custom field
+        //     customValues_list.push(mailingDate_data);
+        // }
+        // if( item.subscriptionDate && item.subscriptionDate != ""){
+        //     var subscriptionDate_data = { "id" : "" , "value" : item.subscriptionDate}; //100252 Business Unit custom field
+        //     customValues_list.push(subscriptionDate_data);
+        // }
+        // if( item.campaignName && item.campaignName != ""){
+        //     var campaignName_data = { "id" : "" , "value" : item.campaignName}; //100252 Business Unit custom field
+        //     customValues_list.push(campaignName_data);
+        // }
+        // if( item.campaignDate && item.campaignDate != ""){
+        //     var campaignDate_data = { "id" : "" , "value" : item.campaignDate}; //100252 Business Unit custom field
+        //     customValues_list.push(campaignDate_data);
+        // }
+        // if( item.customerProduct && item.customerProduct != ""){
+        //     var customerProduct_data = { "id" : "" , "value" : item.customerProduct}; //100252 Business Unit custom field
+        //     customValues_list.push(customerProduct_data);
+        // }
+        // if( item.krMkt && item.krMkt != ""){
+        //     var krMkt_data = { "id" : "" , "value" : item.krMkt}; //100252 Business Unit custom field
+        //     customValues_list.push(krMkt_data);
+        // }
 
         if(customValues_list.length > 0)  return_item.fieldValues = customValues_list;
         return_data.push(return_item);
             
+        console.log(return_item.fieldValues);
     }
     return return_data;
 
