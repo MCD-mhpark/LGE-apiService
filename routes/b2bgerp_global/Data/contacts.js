@@ -532,9 +532,9 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
       result_item.ATTRIBUTE_13 = GetBusiness_Department_data(FieldValues_data, business_department, "Needs");     //PRODUCT LV1의 BU 별 Needs //(Nees 사업부별 컬럼 확인 필요)
       result_item.ATTRIBUTE_14 = GetBusiness_Department_data(FieldValues_data, business_department, "TimeLine");  //PRODUCT LV1의 BU 별 Timeline //(Nees 사업부별 컬럼 확인 필요)
       result_item.ATTRIBUTE_15 = GetCustomFiledValue(FieldValues_data, 100203);                                   //Marketing Eventdf //100203	Marketing Event
-      result_item.ATTRIBUTE_16 = GetCustomFiledValue(FieldValues_data, 100213);                                   //Privacy Policy YN //100213	Privacy Policy_Agreed
+      result_item.ATTRIBUTE_16 = GetCustomFiledValue(FieldValues_data, 100213) == "Yes" ? "Y" : "N";              //Privacy Policy YN //100213	Privacy Policy_Agreed
       result_item.ATTRIBUTE_17 = utils.timeConverter("GET_DATE", GetCustomFiledValue(FieldValues_data, 100199));  //Privacy Policy Date : 100199	Privacy Policy_AgreedDate
-      result_item.ATTRIBUTE_18 = GetCustomFiledValue(FieldValues_data, 100210);     //TransferOutside EEA YN : 100210	TransferOutsideCountry
+      result_item.ATTRIBUTE_18 = GetCustomFiledValue(FieldValues_data, 100210) == "Yes" ? "Y" : "N";     //TransferOutside EEA YN : 100210	TransferOutsideCountry
       result_item.ATTRIBUTE_19 = utils.timeConverter("GET_DATE", GetCustomFiledValue(FieldValues_data, 100208));  //TransferOutside EEA Date : 100208	TransferOutsideCountry_AgreedDate
       result_item.ATTRIBUTE_20 = GetBusiness_Department_data(FieldValues_data, "Product_Category");     //ELOQUA 내 Product 1 //(사업부별 컬럼 확인 필요)
       result_item.ATTRIBUTE_21 = GetBusiness_Department_data(FieldValues_data, "Product_SubCategory");  //ELOQUA 내 Product 2 없을경우 NULL // (사업부별 컬럼 확인 필요)
@@ -568,8 +568,13 @@ router.get('/', async function (req, res, next) {
     var request_data = Convert_B2BGERP_GLOBAL_DATA(contacts_data, "AS");
 
     res.json({ ContentList: request_data });
-  }
 
+    return;
+  }
+  else
+  {
+    res.json(false);
+  }
   //API Gateway 데이터 전송
 
   //Log

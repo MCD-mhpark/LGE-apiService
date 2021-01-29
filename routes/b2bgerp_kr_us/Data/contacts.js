@@ -18,7 +18,7 @@ async function get_b2bgerp_kr_bant_data() {
     //limit: 10
   }
   var contacts_data;
-  queryString = { search : "emailAddress='hso_Test@goldenplanet.co.kr'" , depth: "complete"};
+  queryString = { search: "emailAddress='hso_Test@goldenplanet.co.kr'", depth: "complete" };
   await b2bgerp_eloqua.data.contacts.get(queryString).then((result) => {
     console.log(result.data);
 
@@ -35,7 +35,7 @@ async function get_b2bgerp_kr_bant_data() {
   return contacts_data;
 }
 
-function B2B_GERP_KR_ENTITY(){
+function B2B_GERP_KR_ENTITY() {
   this.INTERFACE_ID = "";           //인터페이스아이디
   this.ESTIMATION_ID = "";          //견적번호
   this.ESTIMATION_SEQ_NO = "";      //NUMBER		견적상세번호
@@ -43,7 +43,7 @@ function B2B_GERP_KR_ENTITY(){
   this.BIZ_REGISTER_NO = "";        //VARCHAR2(20)		사업자등록번호
   this.CORP_REGISTER_NO = "";       //VARCHAR2(20)		법인등록번호
   this.POSTAL_CODE = "";            //VARCHAR2(20)		우편번호
-  this.BASE_ADDR  = "";             //VARCHAR2(2000)		기본주소
+  this.BASE_ADDR = "";             //VARCHAR2(2000)		기본주소
   this.DETAIL_ADDR = "";            //VARCHAR2(2000)		상세주소
   this.PHONE_NO = "";               //VARCHAR2(30)		전화번호
   this.EMAIL_ADDR = "";             //VARCHAR2(256)		전자우편주소
@@ -74,130 +74,460 @@ function B2B_GERP_KR_ENTITY(){
   this.ATTRIBUTE_7 = "";			      //VARCHAR2(500)		
   this.ATTRIBUTE_8 = "";			      //VARCHAR2(500)		
   this.ATTRIBUTE_9 = "";			      //VARCHAR2(500)		
-  this.ATTRIBUTE_10	= "";		        //VARCHAR2(500)		
+  this.ATTRIBUTE_10 = "";		        //VARCHAR2(500)		
   this.ATTRIBUTE_11 = "";			      //VARCHAR2(500)		
   this.ATTRIBUTE_12 = "";			      //VARCHAR2(500)		
 }
 
-//Eloqua Data B2B GERP Global Mapping 데이터 생성
-function Convert_B2BGERP_KR_DATA(contacts_data)
-{
-  var result_data = [];
-  
-  for( var i = 0; i < contacts_data.elements.length; i++)
-  {
-    var result_item = new B2B_GERP_KR_ENTITY();
-    var item = contacts_data.elements[i];
+function GetCustomFiledValue(contacts_customfields, customfieldID) {
 
-    //인터페이스아이디
-    result_item.INTERFACE_ID = "ELOQUA_0004";
-    //견적번호 X
-    // result_item.ESTIMATION_ID = "";
-    //견적상세번호 X
-    // result_item.ESTIMATION_SEQ_NO = "";
-    //고객명 X
-    // result_item.CUSTOMER_NAME = "";
-    //사업자등록번호 X
-    //result_item.BIZ_REGISTER_NO = ''
-    //법인등록번호 X
-    //result_item.CORP_REGISTER_NO = ''
+  var result_data = "";
 
+  for (var fieled_index in contacts_customfields) {
+    var fieldValue_id = contacts_customfields[fieled_index].id;
+    var fieldValue_value = contacts_customfields[fieled_index].value;
 
-    //우편번호
-    if(item.postalCode != undefined) result_item.POSTAL_CODE = contacts_data.elements[i].postalCode;
-
-    //기본주소
-    if( item.address1 != undefined) result_item.BASE_ADDR = contacts_data.elements[i].address1;
-
-    //상세주소
-    if( item.address2 != undefined) result_item.DETAIL_ADDR = contacts_data.elements[i].address2;
-
-    //전화번호
-    if( item.mobilePhone != undefined) result_item.PHONE_NO = contacts_data.elements[i].mobilePhone;
-
-    //전자우편주소
-    if( item.emailAddress != undefined) result_item.EMAIL_ADDR = contacts_data.elements[i].emailAddress;
-    //담당자명
-    //result_item.CONTACT_NAME = ''
-
-    //담당자전화번호
-    //result_item.CONTACT_PHONE_NO = ''
-
-    //담당자이동전화번호
-    //result_item.CONTACT_CELLULAR_NO = ''
-
-    //담당자전자우편주소
-    //result_item.CONTACT_EMAIL_ADDR = ''
-
-    //견적등록일
-    //result_item.ESTIMATE_REGISTER_DATE = ''
-
-    //견적수정일
-    //result_item.ESTIMATE_UPDATE_DATE = ''
-
-    //견적수정여부
-    //result_item.ESTIMATE_UPDATE_FLAG = ''
-
-    //모델코드
-    //result_item.MODEL_CODE = ''
-
-    //품목수량
-    //result_item.ITEM_QTY = ''
-
-    //등록일자
-    //result_item.REGISTER_DATE = ''
-
-    //최종수정일자
-    //result_item.LAST_UPDATE_DATE = ''
-
-    //변경구분
-    //result_item.UPDATE_TYPE_CODE = ''
-
-    //수신일자
-    //result_item.RECEIVE_DATE = ''
-
-    //처리여부
-    //result_item.PROCESSING_FLAG = ''
-
-    //처리일자
-    //result_item.PROCESSING_DATE = ''
-
-    //처리컨텍스트
-    //result_item.PROCESS_CONTEXT = ''
-
-    //고객요청사항
-    //result_item.CUST_REMARK = ''
-
-    //제품설명
-    //result_item.CUST_REMARK = ''
-
-    //예비1
-    //result_item.ATTRIBUTE_1 = ''
-
-    //예비2
-    //result_item.ATTRIBUTE_2 = ''
-
-    result_data.push(result_item);
+    if (fieldValue_id == customfieldID) {
+      if (fieldValue_value != undefined) {
+        result_data = fieldValue_value;
+        break;
+      }
+      else {
+        result_data = "";
+        break;
+      }
+    }
   }
+  return result_data;
+}
 
+function GetDataValue(contacts_fieldvalue) {
+  try {
+    if (contacts_fieldvalue != undefined) {
+      return contacts_fieldvalue;
+    }
+    else {
+      return "";
+    }
+  }
+  catch (e) {
+    console.log(e);
+    return "";
+  }
+}
+
+//business_department ( AS , CLS , CM , ID , IT , Solar , Solution )
+//key ( Job Function , Business Unit , Seniority , Needs , TimeLine )
+function GetBusiness_Department_data(fieldValues, business_department, key) {
+
+  // 100197	//Business Unit_For_User ?
+  // 100229	//Business Unit ?
+  // 100295	//Country & Business Unit Merge for Subsidiary Code ?
+
+  var result_data = "";
+  switch (business_department) {
+    case "AS":
+      switch (key) {
+        case "Job Function":
+          //100323	AS_Authority2(Job Function)
+          result_data = GetCustomFiledValue(fieldValues, 100323);
+          break;
+        case "Business Unit":
+          // 100328	//Business Unit_AS
+          result_data = GetCustomFiledValue(fieldValues, 100328);
+          break;
+        case "Seniority":
+          // 100219	AS_Authority1(Seniority)  
+          result_data = GetCustomFiledValue(fieldValues, 100219);
+          break;
+        case "Needs":
+          // 100215	AS_Needs
+          result_data = GetCustomFiledValue(fieldValues, 100215);
+          break;
+        case "TimeLine":
+          // 100221	AS_TimeLine
+          result_data = GetCustomFiledValue(fieldValues, 100221);
+          break;
+        case "Budget":
+          // 100221	AS_TimeLine
+          result_data = GetCustomFiledValue(fieldValues, 100220);
+          break;
+        case "Product_Category":
+          // 100205	AS_Product Category
+          result_data = GetCustomFiledValue(fieldValues, 100205);
+          break;
+        case "Product_SubCategory":
+          // 필드확인 필요 
+          result_data = "";
+          break;
+        case "Product_Model":
+          // 필드확인 필요 
+          result_data = "";
+          break;
+      }
+      break;
+    case "CLS":
+      switch (key) {
+        case "Job Function":
+          // 100327	CLS_Authority2(Job Function)  
+          result_data = GetCustomFiledValue(fieldValues, 100327);
+          break;
+        case "Business Unit":
+          // 100329	//Business Unit_CLS
+          result_data = GetCustomFiledValue(fieldValues, 100327);
+          break;
+        case "Seniority":
+          // 100289	CLS_Authority1(Seniority)
+          result_data = GetCustomFiledValue(fieldValues, 100289);
+          break;
+        case "Needs":
+          // 100276	CLS_Needs
+          result_data = GetCustomFiledValue(fieldValues, 100276);
+          break;
+        case "TimeLine":
+          // 100278	CLS_TimeLine
+          result_data = GetCustomFiledValue(fieldValues, 100278);
+          break;
+        case "Budget":
+          // 100279	CLS_Budget
+          result_data = GetCustomFiledValue(fieldValues, 100279);
+          break;
+
+        case "Product_Category":
+          // 100277	CLS_Product Category
+          result_data = GetCustomFiledValue(fieldValues, 100277);
+          break;
+        case "Product_SubCategory":
+          // 필드확인 필요 
+          result_data = "";
+          break;
+        case "Product_Model":
+          // 필드확인 필요 
+          result_data = "";
+          break;
+      }
+      break;
+    case "CM":
+      switch (key) {
+        case "Job Function":
+          // 100325	CM_Authority2(Job Function)
+          result_data = GetCustomFiledValue(fieldValues, 100325);
+          break;
+        case "Business Unit":
+          // 100330	//Business Unit_CM
+          result_data = GetCustomFiledValue(fieldValues, 100330);
+          break;
+        case "Seniority":
+          // 100288	CM_Authority1(Seniority)
+          result_data = GetCustomFiledValue(fieldValues, 100288);
+          break;
+        case "Needs":
+          // 100282	CM_Needs
+          result_data = GetCustomFiledValue(fieldValues, 100282);
+          break;
+        case "TimeLine":
+          // 100284	CM_TimeLine  
+          result_data = GetCustomFiledValue(fieldValues, 100284);
+          break;
+        case "Budget":
+          // 100285	CM_Budget
+          result_data = GetCustomFiledValue(fieldValues, 100285);
+          break;
+        case "Category":
+          // 100283	CM_Product Category
+          result_data = GetCustomFiledValue(fieldValues, 100283);
+          break;
+
+        case "Product_Category":
+          // 100283	CM_Product Category
+          result_data = GetCustomFiledValue(fieldValues, 100283);
+          break;
+        case "Product_SubCategory":
+          // 필드확인 필요 
+          result_data = "";
+          break;
+        case "Product_Model":
+          // 필드확인 필요 
+          result_data = "";
+          break;
+      }
+      break;
+    case "ID":
+      switch (key) {
+        case "Job Function":
+          // 100322	ID_Authority2(Job Function)
+          result_data = GetCustomFiledValue(fieldValues, 100322);
+          break;
+        case "Business Unit":
+          // 100331	//Business Unit_ID
+          result_data = GetCustomFiledValue(fieldValues, 100331);
+          break;
+        case "Seniority":
+          // 100262	ID_Authority1(Seniority)
+          result_data = GetCustomFiledValue(fieldValues, 100262);
+          break;
+        case "Needs":
+          // 100254	ID_Needs
+          result_data = GetCustomFiledValue(fieldValues, 100254);
+          break;
+        case "TimeLine":
+          // 100255	ID_TimeLine
+          result_data = GetCustomFiledValue(fieldValues, 100255);
+          break;
+        case "Budget":
+          // 100256	ID_Budget
+          result_data = GetCustomFiledValue(fieldValues, 100256);
+          break;
+        case "Product_Category":
+          // 100257	ID_Product Category
+          result_data = GetCustomFiledValue(fieldValues, 100257);
+          break;
+        case "Product_SubCategory":
+          // 100258	ID_Product_Sub-Category
+          result_data = GetCustomFiledValue(fieldValues, 100258);
+          break;
+        case "Product_Model":
+          // 100259	ID_Product_ModelName
+          result_data = GetCustomFiledValue(fieldValues, 100259);
+          break;
+      }
+      break;
+    case "IT":
+      switch (key) {
+        case "Job Function":
+          // 100214	IT_Authority2(Job Function)
+          result_data = GetCustomFiledValue(fieldValues, 100214);
+          break;
+        case "Business Unit":
+          // 100332	//Business Unit_IT
+          result_data = GetCustomFiledValue(fieldValues, 100332);
+          break;
+        case "Seniority":
+          // 100269	IT_Authority1(Seniority)
+          result_data = GetCustomFiledValue(fieldValues, 100269);
+          break;
+        case "Needs":
+          // 100264	IT_Needs
+          result_data = GetCustomFiledValue(fieldValues, 100264);
+          break;
+        case "TimeLine":
+          // 100265	IT_TimeLine
+          result_data = GetCustomFiledValue(fieldValues, 100265);
+          break;
+        case "Budget":
+          // 100266	IT_Budget
+          result_data = GetCustomFiledValue(fieldValues, 100266);
+          break;
+        case "Product_Category":
+          // 100263	IT_Product Category
+          result_data = GetCustomFiledValue(fieldValues, 100263);
+          break;
+        case "Product_SubCategory":
+          // 100296	IT_Product Subcategory
+          result_data = GetCustomFiledValue(fieldValues, 100296);
+          break;
+        case "Product_Model":
+          // 100306	IT_Product_ModelName
+          result_data = GetCustomFiledValue(fieldValues, 100306);
+          break;
+
+      }
+      break;
+    case "Solar":
+      switch (key) {
+        case "Job Function":
+          // 100324	Solar_Authority2(Job Function)  
+          result_data = GetCustomFiledValue(fieldValues, 100324);
+          break;
+        case "Business Unit":
+          // 100333	//Business Unit_Solar
+          result_data = GetCustomFiledValue(fieldValues, 100333);
+
+          break;
+        case "Seniority":
+          // 100290	Solar_Authority1(Seniority)
+          result_data = GetCustomFiledValue(fieldValues, 100290);
+          break;
+        case "Needs":
+          // 100270	Solar_Needs(Home Owner)
+          result_data = GetCustomFiledValue(fieldValues, 100270);
+          // 100291	Solar_Needs(Business Customer)    
+          result_data = GetCustomFiledValue(fieldValues, 100291);
+          break;
+        case "TimeLine":
+          // 100272	Solar_TimeLine  
+          result_data = GetCustomFiledValue(fieldValues, 100272);
+          break;
+        case "Budget":
+          // 100273	Solar_Budget
+          result_data = GetCustomFiledValue(fieldValues, 100266);
+          break;
+
+        case "Product_Category":
+          // 100271	Solar_Product Category
+          result_data = GetCustomFiledValue(fieldValues, 100271);
+          break;
+        case "Product_SubCategory":
+          // 필드확인 필요 
+          result_data = "";
+          break;
+        case "Product_Model":
+          // 필드확인 필요 
+          result_data = "";
+          break;
+
+      }
+      break;
+    case "Solution":
+      switch (key) {
+        case "Job Function":
+          // 필드확인 필요 
+          result_data = "";
+          break;
+        case "Business Unit":
+          // 100335	//Business Unit_Solution  
+          result_data = GetCustomFiledValue(fieldValues, 100335);
+          break;
+        case "Seniority":
+          // 필드확인 필요 
+          result_data = "";
+          break;
+        case "Needs":
+          // 필드확인 필요 
+          result_data = "";
+          break;
+        case "TimeLine":
+          // 필드확인 필요 
+          result_data = "";
+          break;
+        case "Budget":
+          // 필드확인 필요 
+          result_data = "";
+          break;
+        case "Product_Category":
+          // 필드확인 필요 
+          result_data = "";
+          break;
+        case "Product_SubCategory":
+          // 필드확인 필요 
+          result_data = "";
+          break;
+        case "Product_Model":
+          // 필드확인 필요 
+          result_data = "";
+          break;
+      }
+      break;
+    case "Vertical":
+      switch (key) {
+        case "Job Function":
+          // 100321	Vertical_Authority2(Job Function)      
+          result_data = GetCustomFiledValue(fieldValues, 100321);
+          break;
+        case "Business Unit":
+          // 필드확인 필요 
+          result_data = "";
+          break;
+        case "Seniority":
+          // 100228	Vertical_Authority1(Seniority)
+          result_data = GetCustomFiledValue(fieldValues, 100228);
+          break;
+        case "Needs":
+          // 100222	Vertical_Needs 
+          result_data = GetCustomFiledValue(fieldValues, 100222);
+          break;
+        case "TimeLine":
+          // 필드확인 필요 
+          result_data = "";
+          break;
+        case "Budget":
+          // 100224	Vertical_Budget
+          result_data = GetCustomFiledValue(fieldValues, 100224);
+          break;
+        case "Product_Category":
+          // 100225	Vertical_Product Category
+          result_data = GetCustomFiledValue(fieldValues, 100225);
+          break;
+        case "Product_SubCategory":
+          // 필드확인 필요 
+          result_data = "";
+          break;
+        case "Product_Model":
+          // 필드확인 필요 
+          result_data = "";
+          break;
+      }
+      break;
+  }
+  return result_data;
+}
+
+//Eloqua Data B2B GERP Global Mapping 데이터 생성
+function Convert_B2BGERP_KR_DATA(contacts_data, business_department) {
+  var result_data = [];
+
+  for (var i = 0; i < contacts_data.elements.length; i++) {
+    try {
+      var result_item = new B2B_GERP_KR_ENTITY();
+      var FieldValues_data = contacts_data.elements[i].fieldValues;
+
+      result_item.INTERFACE_ID = "ELOQUA_0004" // this.INTERFACE_ID = "ELOQUA_0004"
+      result_item.ESTIMATION_ID = "";      //견적번호 X
+      result_item.ESTIMATION_SEQ_NO = "";  //견적상세번호 X
+      result_item.CUSTOMER_NAME = "";      //고객명 X
+      result_item.BIZ_REGISTER_NO = "";    //사업자등록번호 X
+      result_item.CORP_REGISTER_NO = "";   //법인등록번호 X
+      result_item.POSTAL_CODE = GetDataValue(contacts_data.elements[i].postalCode); //우편번호
+      result_item.BASE_ADDR = GetDataValue(contacts_data.elements[i].address1); //기본주소
+      result_item.DETAIL_ADDR = GetDataValue(contacts_data.elements[i].address2) + " " + GetDataValue(contacts_data.elements[i].address3); //상세주소
+      result_item.PHONE_NO = GetDataValue(contacts_data.elements[i].mobilePhone); //전화번호
+      result_item.EMAIL_ADDR = GetDataValue(contacts_data.elements[i].emailAddress); //전자우편주소
+      result_item.CONTACT_NAME = "";         //담당자명
+      result_item.CONTACT_PHONE_NO = "";     //담당자 전화번호
+      result_item.CONTACT_CELLULAR_NO = "";  //담당자 이동전화번호
+      result_item.CONTACT_EMAIL_ADDR = "";   //담당자 전자우편주소
+      result_item.ESTIMATE_REGISTER_DATE = ""; //견적등록일
+      result_item.ESTIMATE_UPDATE_DATE = ""; //견적수정일
+      result_item.ESTIMATE_UPDATE_FLAG = ""; //견적수정여부
+      result_item.MODEL_CODE = "";           //모델코드
+      result_item.ITEM_QTY = "";          //품목수량
+      result_item.REGISTER_DATE = "";     //등록일자
+      result_item.LAST_UPDATE_DATE = "";  //최종수정일자
+      result_item.UPDATE_TYPE_CODE = "";  //변경구분
+      result_item.RECEIVE_DATE = ""; //수신일자
+      result_item.PROCESSING_FLAG = "";  //처리여부
+      result_item.PROCESSING_DATE = "";  //처리일자
+      result_item.PROCESS_CONTEXT = "";  //처리컨텍스트
+      result_item.CUST_REMARK = "";  //고객요청사항
+      result_item.CUST_REMARK = "";  //제품설명
+      result_item.ATTRIBUTE_1 = "";  //예비1
+      result_item.ATTRIBUTE_2 = "";  //예비2
+      result_data.push(result_item);
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
   return result_data;
 }
 
 router.get('/', async function (req, res, next) {
-
   //BANT기준 B2B GERP GLOBAL CONTACTS 조회
   var contacts_data = await get_b2bgerp_kr_bant_data();
 
-  if( contacts_data != null )
-  {
+  if (contacts_data != null) {
     //Eloqua Contacts 조회
-    var request_data = Convert_B2BGERP_KR_DATA(contacts_data);
-    
-    res.json({ContentList:request_data});
-  }
-    
-  //API Gateway 데이터 전송
 
+    //business_department ( AS , CLS , CM , ID , IT , Solar , Solution , Vertical )
+    var request_data = Convert_B2BGERP_KR_DATA(contacts_data, "AS");
+
+    res.json({ ContentList: request_data });
+  }
+  else
+  {
+    res.json(false);
+  }
+  //API Gateway 데이터 전송
   //Log
   //res.json(true);
 
@@ -207,7 +537,7 @@ router.get('/req_data', function (req, res, next) {
   var id = 941;
   b2bgerp_eloqua.data.contacts.getOne(id).then((result) => {
     console.log(result.data);
-    httpRequest.sender("http://localhost:8001/b2bgerp_kr_us/contacts/req_data_yn", "POST" , result.data);
+    httpRequest.sender("http://localhost:8001/b2bgerp_kr_us/contacts/req_data_yn", "POST", result.data);
   }).catch((err) => {
     console.error(err.message);
   });
@@ -219,6 +549,5 @@ router.post('/req_data_yn', function (req, res, next) {
 
   console.log(req.body);
 });
-
 
 module.exports = router;
