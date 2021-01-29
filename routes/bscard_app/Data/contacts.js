@@ -45,12 +45,16 @@ async function mappedContacts(bs_data, depth){
     var queryString = {};
     var emailString = "?";
     for(var i = 0 ; bs_data.length > i ; i++ ){
-        emailString += "emailAddress='" + bs_data[i].email + "'";
+        if(bs_data.length > 1 ) emailString += "emailAddress='" + bs_data[i].email + "'";
+        else emailString += "emailAddress=" + bs_data[i].email + "";
+
     }
     
+
     queryString['search'] = emailString;
     queryString['depth'] = depth ? depth : "";
     console.log(queryString);
+
     await bscard_eloqua.data.contacts.get(queryString).then((result) => { 
         console.log(result.data);
         // console.log(result.data.total);
@@ -259,7 +263,7 @@ router.put('/update/', async function (req, res, next) {
     console.log(2);
     console.log(bs_data);
     
-   
+  
 
 
     var form = {};
@@ -267,7 +271,8 @@ router.put('/update/', async function (req, res, next) {
     var failed_count = 0;
     var result_list = [];
     
-    
+    console.log("bs_data.length");
+    console.log(bs_data.length);
     for(var i = 0 ; bs_data.length > i ; i++){
         console.log(bs_data[i].id)
         var id = bs_data[i].id;
