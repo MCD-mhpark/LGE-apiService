@@ -43,9 +43,10 @@ async function get_b2bgerp_global_bant_data(_business_name) {
       break;
   }
 
-  var yesterday_Object = utils.today_getUnixTime();
-  var queryText = "C_DateModified>"+"'2021-02-01 00:00:01'"+ "C_DateModified<" + "'2021-02-01 23:59:59'"+ status_bant + "='MQL'";
-
+  var yesterday_Object = utils.yesterday_getDateTime();
+  var yesterday_Object = utils.today_getDateTime();
+  var queryText = "C_DateModified>"+"'" + yesterday_Object.start + " 00:00:01'"+ "C_DateModified<" + "'"+ yesterday_Object.end + " 23:59:59'"+ status_bant + "='MQL'";
+  //yesterday_getUnixTime
   queryString['search'] = queryText;
   queryString['depth'] = "complete";
   queryString['count'] = 10;
@@ -576,7 +577,7 @@ router.get('/:businessName', async function (req, res, next) {
   // return;
   if (contacts_data != null) {
     //Eloqua Contacts
-    //business_department ( AS , CLS , CM , ID , IT , Solar , Solution , Vertical )
+    //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr )
     var request_data = Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_name);
 
     res.json({ ContentList: request_data });

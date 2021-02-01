@@ -60,9 +60,9 @@ exports.yesterday_getDateTime = function (){
 
     // var today = moment().format("YYYY-MM-DD");
     let start = moment().add("-1","d").format("YYYY-MM-DD"); 
-    start = moment(start).format("YYYY-MM-DD HH:mm:ss");
+    start = moment(start).format("YYYY-MM-DD");
     let end = moment().format("YYYY-MM-DD"); 
-    end = moment(end).format("YYYY-MM-DD HH:mm:ss");
+    end = moment(end).format("YYYY-MM-DD");
 
 
     console.log(start);
@@ -84,9 +84,9 @@ exports.today_getDateTime = function (){
 
     // var today = moment().format("YYYY-MM-DD");
     let start = moment().format("YYYY-MM-DD"); 
-    start = moment(start).format("YYYY-MM-DD HH:mm:ss");
+    start = moment(start).format("YYYY-MM-DD");
     let end = moment().add("1","d").format("YYYY-MM-DD"); 
-    end = moment(end).format("YYYY-MM-DD HH:mm:ss");
+    end = moment(end).format("YYYY-MM-DD");
    
 
     console.log(start);
