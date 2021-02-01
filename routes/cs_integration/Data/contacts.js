@@ -80,10 +80,6 @@ function GetDataValue(contacts_fieldvalue) {
 //key ( Job Function , Business Unit , Seniority , Needs , TimeLine )
 function GetBusiness_Department_data(fieldValues, business_department, key) {
 
-  // 100197	//Business Unit_For_User ?
-  // 100229	//Business Unit ?
-  // 100295	//Country & Business Unit Merge for Subsidiary Code ?
-
   var result_data = "";
   switch (business_department) {
     case "AS":
@@ -296,22 +292,19 @@ function GetBusiness_Department_data(fieldValues, business_department, key) {
     case "Solar":
       switch (key) {
         case "Job Function":
-          // 100324	Solar_Authority2(Job Function)  
+          //100324	Solar_Authority2(Job Function)  
           result_data = GetCustomFiledValue(fieldValues, 100324);
           break;
         case "Business Unit":
-          // 100333	//Business Unit_Solar
+          //100333	Business Unit_Solar
           result_data = GetCustomFiledValue(fieldValues, 100333);
-
           break;
         case "Seniority":
           // 100290	Solar_Authority1(Seniority)
           result_data = GetCustomFiledValue(fieldValues, 100290);
           break;
         case "Needs":
-          // 100270	Solar_Needs(Home Owner)
-          result_data = GetCustomFiledValue(fieldValues, 100270);
-          // 100291	Solar_Needs(Business Customer)    
+          // 100291	Solar_Needs
           result_data = GetCustomFiledValue(fieldValues, 100291);
           break;
         case "TimeLine":
@@ -341,71 +334,31 @@ function GetBusiness_Department_data(fieldValues, business_department, key) {
     case "Solution":
       switch (key) {
         case "Job Function":
-          // 필드확인 필요 
-          result_data = "";
-          break;
-        case "Business Unit":
-          // 100335	//Business Unit_Solution  
-          result_data = GetCustomFiledValue(fieldValues, 100335);
-          break;
-        case "Seniority":
-          // 필드확인 필요 
-          result_data = "";
-          break;
-        case "Needs":
-          // 필드확인 필요 
-          result_data = "";
-          break;
-        case "TimeLine":
-          // 필드확인 필요 
-          result_data = "";
-          break;
-        case "Budget":
-          // 필드확인 필요 
-          result_data = "";
-          break;
-        case "Product_Category":
-          // 필드확인 필요 
-          result_data = "";
-          break;
-        case "Product_SubCategory":
-          // 필드확인 필요 
-          result_data = "";
-          break;
-        case "Product_Model":
-          // 필드확인 필요 
-          result_data = "";
-          break;
-      }
-      break;
-    case "Vertical":
-      switch (key) {
-        case "Job Function":
-          // 100321	Vertical_Authority2(Job Function)      
+          // 100321 Solution_Authority2(Job Function)  
           result_data = GetCustomFiledValue(fieldValues, 100321);
           break;
         case "Business Unit":
-          // 필드확인 필요 
-          result_data = "";
+          //100335	Business Unit_Solution
+          result_data = GetCustomFiledValue(fieldValues, 100335);
           break;
         case "Seniority":
-          // 100228	Vertical_Authority1(Seniority)
+          //100228	Solution_Authority1(Seniority)
           result_data = GetCustomFiledValue(fieldValues, 100228);
           break;
         case "Needs":
-          // 100222	Vertical_Needs 
+          //100222	Solution_Needs
           result_data = GetCustomFiledValue(fieldValues, 100222);
           break;
         case "TimeLine":
-          // 필드확인 필요 
-          result_data = "";
+          //100223	Solution_Timeline
+          result_data = GetCustomFiledValue(fieldValues, 100223);
           break;
         case "Budget":
-          // 100224	Vertical_Budget
+          //100224	Solution_Budget
           result_data = GetCustomFiledValue(fieldValues, 100224);
           break;
         case "Product_Category":
-          // 100225	Vertical_Product Category
+          //100225	Solution_Product Category
           result_data = GetCustomFiledValue(fieldValues, 100225);
           break;
         case "Product_SubCategory":

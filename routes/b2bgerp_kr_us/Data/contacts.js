@@ -3,45 +3,50 @@ var router = express.Router();
 
 /* Contacts */
 //BANT 조건 Eloqua 조회 함수
-async function get_b2bgerp_kr_bant_data() {
-  //BANT 조건
-  //BANT 조건 : Status - Contact / Pre-lead / MQL
-
-  var AS_BantList = ["C_AS_Status1"];
-  var IT_BantList = ["C_IT_Status1"];
-  var ID_BantList = ["C_ID_Status1"];
-  var Solar_BantList = ["C_Solar_Status1"];
-  var CM_BantList = ["C_CM_Status1"];
-  var CLS_BantList = ["C_CLS_Status1"];
-  var Solution_BantList = ["C_Solution_Status1"];
-  var Kr_BantList = ["C_Solution_Status1"];
+async function get_b2bgerp_kr_bant_data(_business_name) {
+  var business_name = _business_name;
+  var status_bant = "";
 
   var contacts_data;
   var queryString = {}
   var queryText = "";
 
-  for (var i = 0; BantList.length > i; i++) {
-    queryText += BantList[i] + "='MQL'"
+  switch(business_name)
+  {
+      case "AS":
+        status_bant = "C_AS_Status1";
+      break;
+      case "IT":
+        status_bant = "C_IT_Status1";
+      break;
+      case "ID":
+        status_bant = "C_ID_Status1";
+      break;
+      case "Solar":
+        status_bant = "C_Solar_Status1";
+      break;
+      case "CM":
+        status_bant = "C_CM_Status1";
+      break;
+      case "CLS":
+        status_bant = "C_CLS_Status1";
+      break;
+      case "Solution":
+        status_bant = "C_Solution_Status1";
+      case "Kr":
+        status_bant = "";
+      break;
   }
 
-  //조회날짜 Create , Update
-  //?search=updatedAt<'1417726743'updatedAt>'1417725656'
-
-  // Test Code 한줄
-  queryText = "emailAddress='hso_Test@goldenplanet.co.kr'"
-
+  var yesterday_Object = utils.yesterday_getDateTime();
+  var yesterday_Object = utils.today_getDateTime();
+  var queryText = "C_DateModified>"+"'" + yesterday_Object.start + " 00:00:01'"+ "C_DateModified<" + "'"+ yesterday_Object.end + " 23:59:59'"+ status_bant + "='MQL'";
+  //yesterday_getUnixTime
   queryString['search'] = queryText;
   queryString['depth'] = "complete";
+  //queryString['count'] = 10;
   
-  queryString['count'] = 10;
-  //console.log(queryString);
-  
-  var contacts_data;
-  queryString = { search: "emailAddress='hso_Test@goldenplanet.co.kr'", depth: "complete" };
   await b2bgerp_eloqua.data.contacts.get(queryString).then((result) => {
-    console.log(result.data);
-
-    console.log("true");
 
     if (result.data.total && result.data.total > 0) {
       contacts_data = result.data;
@@ -138,10 +143,6 @@ function GetDataValue(contacts_fieldvalue) {
 //business_department ( AS , CLS , CM , ID , IT , Solar , Solution )
 //key ( Job Function , Business Unit , Seniority , Needs , TimeLine )
 function GetBusiness_Department_data(fieldValues, business_department, key) {
-
-  // 100197	//Business Unit_For_User ?
-  // 100229	//Business Unit ?
-  // 100295	//Country & Business Unit Merge for Subsidiary Code ?
 
   var result_data = "";
   switch (business_department) {
@@ -355,22 +356,19 @@ function GetBusiness_Department_data(fieldValues, business_department, key) {
     case "Solar":
       switch (key) {
         case "Job Function":
-          // 100324	Solar_Authority2(Job Function)  
+          //100324	Solar_Authority2(Job Function)  
           result_data = GetCustomFiledValue(fieldValues, 100324);
           break;
         case "Business Unit":
-          // 100333	//Business Unit_Solar
+          //100333	Business Unit_Solar
           result_data = GetCustomFiledValue(fieldValues, 100333);
-
           break;
         case "Seniority":
           // 100290	Solar_Authority1(Seniority)
           result_data = GetCustomFiledValue(fieldValues, 100290);
           break;
         case "Needs":
-          // 100270	Solar_Needs(Home Owner)
-          result_data = GetCustomFiledValue(fieldValues, 100270);
-          // 100291	Solar_Needs(Business Customer)    
+          // 100291	Solar_Needs
           result_data = GetCustomFiledValue(fieldValues, 100291);
           break;
         case "TimeLine":
@@ -400,71 +398,31 @@ function GetBusiness_Department_data(fieldValues, business_department, key) {
     case "Solution":
       switch (key) {
         case "Job Function":
-          // 필드확인 필요 
-          result_data = "";
-          break;
-        case "Business Unit":
-          // 100335	//Business Unit_Solution  
-          result_data = GetCustomFiledValue(fieldValues, 100335);
-          break;
-        case "Seniority":
-          // 필드확인 필요 
-          result_data = "";
-          break;
-        case "Needs":
-          // 필드확인 필요 
-          result_data = "";
-          break;
-        case "TimeLine":
-          // 필드확인 필요 
-          result_data = "";
-          break;
-        case "Budget":
-          // 필드확인 필요 
-          result_data = "";
-          break;
-        case "Product_Category":
-          // 필드확인 필요 
-          result_data = "";
-          break;
-        case "Product_SubCategory":
-          // 필드확인 필요 
-          result_data = "";
-          break;
-        case "Product_Model":
-          // 필드확인 필요 
-          result_data = "";
-          break;
-      }
-      break;
-    case "Vertical":
-      switch (key) {
-        case "Job Function":
-          // 100321	Vertical_Authority2(Job Function)      
+          // 100321 Solution_Authority2(Job Function)  
           result_data = GetCustomFiledValue(fieldValues, 100321);
           break;
         case "Business Unit":
-          // 필드확인 필요 
-          result_data = "";
+          //100335	Business Unit_Solution
+          result_data = GetCustomFiledValue(fieldValues, 100335);
           break;
         case "Seniority":
-          // 100228	Vertical_Authority1(Seniority)
+          //100228	Solution_Authority1(Seniority)
           result_data = GetCustomFiledValue(fieldValues, 100228);
           break;
         case "Needs":
-          // 100222	Vertical_Needs 
+          //100222	Solution_Needs
           result_data = GetCustomFiledValue(fieldValues, 100222);
           break;
         case "TimeLine":
-          // 필드확인 필요 
-          result_data = "";
+          //100223	Solution_Timeline
+          result_data = GetCustomFiledValue(fieldValues, 100223);
           break;
         case "Budget":
-          // 100224	Vertical_Budget
+          //100224	Solution_Budget
           result_data = GetCustomFiledValue(fieldValues, 100224);
           break;
         case "Product_Category":
-          // 100225	Vertical_Product Category
+          //100225	Solution_Product Category
           result_data = GetCustomFiledValue(fieldValues, 100225);
           break;
         case "Product_SubCategory":
@@ -530,15 +488,18 @@ function Convert_B2BGERP_KR_DATA(contacts_data, business_department) {
   return result_data;
 }
 
-router.get('/', async function (req, res, next) {
+router.get('/:businessName', async function (req, res, next) {
   //BANT기준 B2B GERP GLOBAL CONTACTS 조회
-  var contacts_data = await get_b2bgerp_kr_bant_data();
+  var business_name = req.params.businessName;
+  //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr)
+
+  var contacts_data = await get_b2bgerp_kr_bant_data(business_name);
 
   if (contacts_data != null) {
     //Eloqua Contacts 조회
 
     //business_department ( AS , CLS , CM , ID , IT , Solar , Solution , Vertical )
-    var request_data = Convert_B2BGERP_KR_DATA(contacts_data, "AS");
+    var request_data = Convert_B2BGERP_KR_DATA(contacts_data, business_name);
 
     res.json({ ContentList: request_data });
   }
