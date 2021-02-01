@@ -8,27 +8,22 @@ var utils = require('../../common/utils');
 
 //BANT 조건 Eloqua 조회 함수
 async function get_b2bgerp_global_bant_data() {
-  //BANT 조건
-  var BantList = ["C_AS_Needs1", "C_AS_Authority1", "C_AS_Budget1", "C_AS_TimeLine1",
-    "C_Vertical_Needs1", "C_Vertical_Timeline1", "C_Vertical_Budget1", "C_Vertical_Authority1",
-    "C_ID_Needs1", "C_ID_TimeLine1", "C_ID_Budget1", "C_ID_Authority1",
-    "C_IT_Needs1", "C_IT_TimeLine1", "C_IT_Budget1", "C_IT_Authority1",
-    "C_Solar_Authority1", "C_Solar_Needs1", "C_Solar_TimeLine1", "C_Solar_Budget1", "C_Solar_Needs_Business_Customer_1",
-    "C_CLS_Needs1", "C_CLS_TimeLine1", "C_CLS_Budget1", "C_CLS_Authority1",
-    "C_CM_Needs1", "C_CM_TimeLine1", "C_CM_Budget1", "C_CM_Authority1"];
+  //BANT 조건 : Status - Contact / Pre-lead / MQL
 
-  var BantList = ["C_AS_Needs1", "C_AS_Authority1", "C_AS_Budget1", "C_AS_TimeLine1"];
-  var BantList1 = ["C_Vertical_Needs1", "C_Vertical_Timeline1", "C_Vertical_Budget1", "C_Vertical_Authority1"];
-
-  var BantList2 = ["C_AS_Needs1", "C_AS_Authority1", "C_AS_Budget1", "C_AS_TimeLine1"];
-  var BantList3 = ["C_AS_Needs1", "C_AS_Authority1", "C_AS_Budget1", "C_AS_TimeLine1"];
+  var AS_BantList = ["C_AS_Status1"];
+  var ID_BantList = ["C_IT_Status1"];
+  var IT_BantList = ["C_ID_Status1"];
+  var Solar_BantList = ["C_Solar_Status1"];
+  var CM_BantList = ["C_CM_Status1"];
+  var CLS_BantList = ["C_CLS_Status1"];
+  var Solution_BantList = ["C_Solution_Status1"];
 
   var contacts_data;
   var queryString = {}
   var queryText = "";
 
   for (var i = 0; BantList.length > i; i++) {
-    queryText += BantList[i] + "!=''"
+    queryText += BantList[i] + "='MQL'"
   }
 
   // Test Code 한줄
