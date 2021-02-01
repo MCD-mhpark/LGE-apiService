@@ -23,6 +23,8 @@ async function get_b2bgerp_global_bant_data() {
   var queryString = {}
   var queryText = "";
 
+
+  var queryText = "?search=";
   for (var i = 0; BantList.length > i; i++) {
     queryText += BantList[i] + "='MQL'"
   }
@@ -34,9 +36,8 @@ async function get_b2bgerp_global_bant_data() {
   // 필요할 경우 사용, 오늘 날짜와 start , end time unix 값을 key로 반환
   //var today_Object =  utils.today_getUnixTime();
   var yesterday_Object = utils.yesterday_getUnixTime();
-  queryText += "?search=createdAt>'" + yesterday_Object.start +"'createdAt<'"+ yesterday_Object.end + "'";
- 
-  queryText += "?search=updatedAt>'" + yesterday_Object.start +"'updatedAt<'"+ yesterday_Object.end + "'";
+  queryText += "createdAt>'" + yesterday_Object.start +"'createdAt<'"+ yesterday_Object.end + "'";
+  queryText += "updatedAt>'" + yesterday_Object.start +"'updatedAt<'"+ yesterday_Object.end + "'";
   
 
   // Test Code 한줄
