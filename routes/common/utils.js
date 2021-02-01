@@ -52,3 +52,51 @@ exports.today_getUnixTime = function (){
 
 
 }
+
+
+exports.yesterday_getDateTime = function (){
+    //ex date = 2019-12-29 19:48:08
+    //ex unix =  1577616544 
+
+    // var today = moment().format("YYYY-MM-DD");
+    let start = moment().add("-1","d").format("YYYY-MM-DD"); 
+    start = moment(start).format("YYYY-MM-DD HH:mm:ss");
+    let end = moment().format("YYYY-MM-DD"); 
+    end = moment(end).format("YYYY-MM-DD HH:mm:ss");
+
+
+    console.log(start);
+    console.log(end);
+
+    return {
+        start : start , 
+        end : end
+    }
+
+
+}
+
+
+
+exports.today_getDateTime = function (){
+    //ex date = 2019-12-29 19:48:08
+    //ex unix =  1577616544 
+
+    // var today = moment().format("YYYY-MM-DD");
+    let start = moment().format("YYYY-MM-DD"); 
+    start = moment(start).format("YYYY-MM-DD HH:mm:ss");
+    let end = moment().add("1","d").format("YYYY-MM-DD"); 
+    end = moment(end).format("YYYY-MM-DD HH:mm:ss");
+   
+
+    console.log(start);
+    console.log(end);
+
+    return {
+        start : start , 
+        end : end
+    }
+}
+
+
+

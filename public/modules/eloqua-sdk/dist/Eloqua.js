@@ -11,7 +11,6 @@ var _debug = _interopRequireDefault(require("debug"));
 
 var _deepmerge = _interopRequireDefault(require("deepmerge"));
 
-console.log(process.cwd());
 var _appcloud = _interopRequireDefault(require("./appcloud"));
 
 var _assets = _interopRequireDefault(require("./assets"));
@@ -278,8 +277,6 @@ class Eloqua {
     requestOptions.method = method;
     this.apiCalls += 1;
     log(`${requestOptions.method} request to ${requestOptions.baseURL}${requestOptions.url}`);
-	console.log(uri);
-	console.log(headers);
 	if(headers) requestOptions.headers = headers;
     const requestPromise = _classPrivateFieldLooseBase(this, _request)[_request](requestOptions).catch(callbackErrorOrThrow(cb, requestOptions.url));
 
