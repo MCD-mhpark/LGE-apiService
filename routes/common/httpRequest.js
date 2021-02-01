@@ -36,6 +36,8 @@ exports.sender = function(url , method  , data){
   console.log(options);
   
   request(options, function (error, response, body) {
+
+    console.log(123);
     if(error){
       console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
       console.log(error);
