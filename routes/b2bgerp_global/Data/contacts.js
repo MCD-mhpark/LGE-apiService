@@ -8,53 +8,68 @@ const { param } = require('../../common/history');
 /* Contacts */
 
 //BANT 조건 Eloqua 조회 함수
-async function get_b2bgerp_global_bant_data() {
+async function get_b2bgerp_global_bant_data(_business_name) {
   //BANT 조건 : Status - Contact / Pre-lead / MQL
 
-  var AS_BantList = ["C_AS_Status1"];
-  var IT_BantList = ["C_IT_Status1"];
-  var ID_BantList = ["C_ID_Status1"];
-  var Solar_BantList = ["C_Solar_Status1"];
-  var CM_BantList = ["C_CM_Status1"];
-  var CLS_BantList = ["C_CLS_Status1"];
-  var Solution_BantList = ["C_Solution_Status1"];
-
+  var business_name = _business_name;
+  var status_bant = "";
+  
   var contacts_data;
   var queryString = {}
   var queryText = "";
 
-
-  var queryText = "?search=";
-  for (var i = 0; BantList.length > i; i++) {
-    queryText += BantList[i] + "='MQL'"
+  switch(business_name)
+  {
+      case "AS":
+        status_bant = "C_AS_Status1";
+      break;
+      case "IT":
+        status_bant = "C_IT_Status1";
+      break;
+      case "ID":
+        status_bant = "C_ID_Status1";
+      break;
+      case "Solar":
+        status_bant = "C_Solar_Status1";
+      break;
+      case "CM":
+        status_bant = "C_CM_Status1";
+      break;
+      case "CLS":
+        status_bant = "C_CLS_Status1";
+      break;
+      case "Solution":
+        status_bant = "C_Solution_Status1";
+      break;
   }
 
-  //금일 날짜 00시 00분 01초 , 23시 59분 59초 값 얻어오기
+  
 
+  var queryText = "?search=" + status_bant + "='MQL'";
+  //금일 날짜 00시 00분 01초 , 23시 59분 59초 값 얻어오기
 
   //조회날짜 Create , Update
   // 필요할 경우 사용, 오늘 날짜와 start , end time unix 값을 key로 반환
   //var today_Object =  utils.today_getUnixTime();
-  var yesterday_Object = utils.yesterday_getUnixTime();
+  // var yesterday_Object = utils.yesterday_getUnixTime();
+  // queryText += "createdAt>'" + yesterday_Object.start +"'createdAt<'"+ yesterday_Object.end + "'";
+  // queryText += "updatedAt>'" + yesterday_Object.start +"'updatedAt<'"+ yesterday_Object.end + "'";
+  
+  var yesterday_Object = utils.today_getUnixTime();
   queryText += "createdAt>'" + yesterday_Object.start +"'createdAt<'"+ yesterday_Object.end + "'";
   queryText += "updatedAt>'" + yesterday_Object.start +"'updatedAt<'"+ yesterday_Object.end + "'";
-  
 
   // Test Code 한줄
   // queryText = "emailAddress='hso_Test@goldenplanet.co.kr'"
-
   queryString['search'] = queryText;
   queryString['depth'] = "complete";
-  
   queryString['count'] = 10;
-  //console.log(queryString);
 
   await b2bgerp_eloqua.data.contacts.get(queryString).then((result) => {
 
     if (result.data.total && result.data.total > 0) {
       contacts_data = result.data;
       console.log(result.data);
-      // res.json( result.data);
     }
   }).catch((err) => {
     console.error(err.message);
@@ -565,19 +580,19 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
   return result_data;
 }
 
-router.get('/', async function (req, res, next) {
-    var business_name = params.businessName;
+router.get('/:businessName', async function (req, res, next) {
+  var business_name = req.params.businessName;
   //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr)
 
   //BANT기준 B2B GERP GLOBAL CONTACTS 조회
-  var contacts_data = await get_b2bgerp_global_bant_data("AS");
+  var contacts_data = await get_b2bgerp_global_bant_data(business_name);
 
   // res.json(contacts_data);
   // return;
   if (contacts_data != null) {
     //Eloqua Contacts
     //business_department ( AS , CLS , CM , ID , IT , Solar , Solution , Vertical )
-    var request_data = Convert_B2BGERP_GLOBAL_DATA(contacts_data, "AS");
+    var request_data = Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_name);
 
     res.json({ ContentList: request_data });
 
