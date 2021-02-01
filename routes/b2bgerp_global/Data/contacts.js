@@ -13,7 +13,7 @@ async function get_b2bgerp_global_bant_data(_business_name) {
 
   var business_name = _business_name;
   var status_bant = "";
-  
+
   var contacts_data;
   var queryString = {}
   var queryText = "";
@@ -43,24 +43,9 @@ async function get_b2bgerp_global_bant_data(_business_name) {
       break;
   }
 
-  
-
-  var queryText = "?search=" + status_bant + "='MQL'";
-  //금일 날짜 00시 00분 01초 , 23시 59분 59초 값 얻어오기
-
-  //조회날짜 Create , Update
-  // 필요할 경우 사용, 오늘 날짜와 start , end time unix 값을 key로 반환
-  //var today_Object =  utils.today_getUnixTime();
-  // var yesterday_Object = utils.yesterday_getUnixTime();
-  // queryText += "createdAt>'" + yesterday_Object.start +"'createdAt<'"+ yesterday_Object.end + "'";
-  // queryText += "updatedAt>'" + yesterday_Object.start +"'updatedAt<'"+ yesterday_Object.end + "'";
-  
   var yesterday_Object = utils.today_getUnixTime();
-  queryText += "createdAt>'" + yesterday_Object.start +"'createdAt<'"+ yesterday_Object.end + "'";
-  queryText += "updatedAt>'" + yesterday_Object.start +"'updatedAt<'"+ yesterday_Object.end + "'";
+  var queryText = "C_DateModified>"+"'2021-02-01 00:00:01'"+ "C_DateModified<" + "'2021-02-01 23:59:59'"+ status_bant + "='MQL'";
 
-  // Test Code 한줄
-  // queryText = "emailAddress='hso_Test@goldenplanet.co.kr'"
   queryString['search'] = queryText;
   queryString['depth'] = "complete";
   queryString['count'] = 10;
