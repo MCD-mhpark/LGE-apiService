@@ -1,22 +1,41 @@
 var express = require('express');
 var router = express.Router();
 
-
-
 /* Contacts */
 //BANT 조건 Eloqua 조회 함수
 async function get_b2bgerp_kr_bant_data() {
   //BANT 조건
-  var queryString = {
-    //search : 'emailAddress=' + emailAddress,
-    depth: "complete",
-    count: 1000,
-    //page: 2,
-    //MAX LIMIT 1000
-    //limit: 1000
-    count: 10
-    //limit: 10
+  //BANT 조건 : Status - Contact / Pre-lead / MQL
+
+  var AS_BantList = ["C_AS_Status1"];
+  var IT_BantList = ["C_IT_Status1"];
+  var ID_BantList = ["C_ID_Status1"];
+  var Solar_BantList = ["C_Solar_Status1"];
+  var CM_BantList = ["C_CM_Status1"];
+  var CLS_BantList = ["C_CLS_Status1"];
+  var Solution_BantList = ["C_Solution_Status1"];
+  var Kr_BantList = ["C_Solution_Status1"];
+
+  var contacts_data;
+  var queryString = {}
+  var queryText = "";
+
+  for (var i = 0; BantList.length > i; i++) {
+    queryText += BantList[i] + "='MQL'"
   }
+
+  //조회날짜 Create , Update
+  //?search=updatedAt<'1417726743'updatedAt>'1417725656'
+
+  // Test Code 한줄
+  queryText = "emailAddress='hso_Test@goldenplanet.co.kr'"
+
+  queryString['search'] = queryText;
+  queryString['depth'] = "complete";
+  
+  queryString['count'] = 10;
+  //console.log(queryString);
+  
   var contacts_data;
   queryString = { search: "emailAddress='hso_Test@goldenplanet.co.kr'", depth: "complete" };
   await b2bgerp_eloqua.data.contacts.get(queryString).then((result) => {

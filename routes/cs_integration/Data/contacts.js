@@ -592,7 +592,7 @@ function Convert_INTEGRATION_DB_DATA(contacts_data, business_department) {
       result_item.HQ_B2BMKT_SCORING_CATEGORY = ""; //x
       result_item.APPLIED_FLAG = "";               //x 큐리온 적용 여부
       result_item.APPLIED_DATE = "";               //x 큐리온
-      result_item.TRANSFER_FLAG = "N";              //Default N
+      result_item.TRANSFER_FLAG = "N";             //Default N
       result_item.TRANSFERRED_DATE = ""; moment().format('YYYY-MM-DD hh:mm:ss');    //어떤 날짜 정보인지 확인 필요
       result_item.BACK_TRANSFER_FLAG = "";         //Null
       result_item.BACK_TRANSFERRED_DATE = "";		  //Null
@@ -603,7 +603,7 @@ function Convert_INTEGRATION_DB_DATA(contacts_data, business_department) {
       console.log(e);
     }
   }
-  
+
   return result_data;
 }
 
