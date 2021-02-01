@@ -27,11 +27,20 @@ async function get_b2bgerp_global_bant_data() {
     queryText += BantList[i] + "='MQL'"
   }
 
+  //금일 날짜 00시 00분 01초 , 23시 59분 59초 값 얻어오기
+
+
   //조회날짜 Create , Update
-  //?search=updatedAt<'1417726743'updatedAt>'1417725656'
+  // 필요할 경우 사용, 오늘 날짜와 start , end time unix 값을 key로 반환
+  //var today_Object =  utils.today_getUnixTime();
+  var yesterday_Object = utils.yesterday_getUnixTime();
+  queryText += "?search=createdAt>'" + yesterday_Object.start +"'createdAt<'"+ yesterday_Object.end + "'";
+ 
+  queryText += "?search=updatedAt>'" + yesterday_Object.start +"'updatedAt<'"+ yesterday_Object.end + "'";
+  
 
   // Test Code 한줄
-  queryText = "emailAddress='hso_Test@goldenplanet.co.kr'"
+  // queryText = "emailAddress='hso_Test@goldenplanet.co.kr'"
 
   queryString['search'] = queryText;
   queryString['depth'] = "complete";

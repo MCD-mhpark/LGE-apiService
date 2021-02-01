@@ -8,3 +8,47 @@ exports.timeConverter = function (status , time){
     else if(status == "GET_UNIX") return moment(time).unix();
     else if(status == "GET_DATE") return moment.unix(time).format("YYYY-MM-DD HH:mm:ss");
 }
+
+exports.yesterday_getUnixTime = function (){
+    //ex date = 2019-12-29 19:48:08
+    //ex unix =  1577616544 
+
+    // var today = moment().format("YYYY-MM-DD");
+    var yesterday_start = moment().add("-1","d").format("YYYY-MM-DD"); 
+    var yesterday_end = moment().add("-1","s").format("YYYY-MM-DD");
+
+    var startUnix = moment(yesterday_start).unix();
+    var endUnix = moment(yesterday_end).unix();
+    console.log(startUnix);
+    console.log(endUnix);
+
+    return {
+        start : startUnix , 
+        end : endUnix
+    }
+
+
+}
+
+
+exports.today_getUnixTime = function (){
+    //ex date = 2019-12-29 19:48:08
+    //ex unix =  1577616544 
+
+    // var today = moment().format("YYYY-MM-DD");
+    var today_start = moment().format("YYYY-MM-DD"); 
+    var today_end = moment().add("1","d").format("YYYY-MM-DD");
+
+    var startUnix = moment(today_start).unix();
+    var endUnix = moment(today_end).unix();
+
+    console.log(startUnix);
+    console.log(endUnix);
+
+    return {
+        start : startUnix , 
+        end : endUnix
+    }
+
+
+}

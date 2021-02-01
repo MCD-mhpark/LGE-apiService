@@ -425,16 +425,8 @@ router.get('/test2', async function (req, res, next) {
 
 // eloqua api를 통한 create 나 update 시 유효한 이름을 찾기위함
 router.post('/test3', async function (req, res, next) {
-    console.log("test3 call");
-    console.log(req.body);
-    bscard_eloqua.data.contacts.create(req.body).then((result) => {
-        console.log(result.data);
-        res.json(result.data);
-        // res.json(true);
-    }).catch((err) => {
-        console.error(err);
-        res.json(false);
-    });
+    var yesterday_Object = utils.yesterday_getUnixTime();
+    console.log(yesterday_Object);
 });
 
 module.exports = router;
