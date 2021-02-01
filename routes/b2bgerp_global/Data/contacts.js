@@ -3,6 +3,7 @@ var express = require('express');
 var router = express.Router();
 var httpRequest = require('../../common/httpRequest');
 var utils = require('../../common/utils');
+const { param } = require('../../common/history');
 
 /* Contacts */
 
@@ -11,8 +12,8 @@ async function get_b2bgerp_global_bant_data() {
   //BANT 조건 : Status - Contact / Pre-lead / MQL
 
   var AS_BantList = ["C_AS_Status1"];
-  var ID_BantList = ["C_IT_Status1"];
-  var IT_BantList = ["C_ID_Status1"];
+  var IT_BantList = ["C_IT_Status1"];
+  var ID_BantList = ["C_ID_Status1"];
   var Solar_BantList = ["C_Solar_Status1"];
   var CM_BantList = ["C_CM_Status1"];
   var CLS_BantList = ["C_CLS_Status1"];
@@ -26,11 +27,15 @@ async function get_b2bgerp_global_bant_data() {
     queryText += BantList[i] + "='MQL'"
   }
 
+  //조회날짜 Create , Update
+  //?search=updatedAt<'1417726743'updatedAt>'1417725656'
+
   // Test Code 한줄
   queryText = "emailAddress='hso_Test@goldenplanet.co.kr'"
 
   queryString['search'] = queryText;
   queryString['depth'] = "complete";
+  
   queryString['count'] = 10;
   //console.log(queryString);
 
@@ -551,9 +556,11 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 }
 
 router.get('/', async function (req, res, next) {
+    var business_name = params.businessName;
+  //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr)
 
   //BANT기준 B2B GERP GLOBAL CONTACTS 조회
-  var contacts_data = await get_b2bgerp_global_bant_data();
+  var contacts_data = await get_b2bgerp_global_bant_data("AS");
 
   // res.json(contacts_data);
   // return;
