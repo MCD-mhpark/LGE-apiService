@@ -107,9 +107,20 @@ router.delete('/delete/:id', function (req, res, next) {
       });
 });
 
-router.get('/security_groups', function (req, res, next) {
+router.get('/security_groups/:dp/:cp/:ru', function (req, res, next) {
+  //부서 DP
+  var dp_name = req.params.dp;
+  //법인 CP
+  var cp_name = req.params.cp;
+  //룰 RU
+  var ru_name = req.params.ru;
+
+  var search_value = dp_name + "_" + cp_name + "_" + ru_name;
+  console.log(search_value);
   var queryString = {
-    depth : "complete"
+    search : search_value
+    //depth : "complete"
+    //depth : "complete"
   }
     iam_eloqua.system.users.security_groups(queryString).then((result) => {
       console.log(result.data);

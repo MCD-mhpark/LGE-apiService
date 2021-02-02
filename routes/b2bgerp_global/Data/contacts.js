@@ -44,7 +44,7 @@ async function get_b2bgerp_global_bant_data(_business_name) {
   }
 
   var yesterday_Object = utils.yesterday_getDateTime();
-  var yesterday_Object = utils.today_getDateTime();
+  //var yesterday_Object = utils.today_getDateTime();
   var queryText = "C_DateModified>"+"'" + yesterday_Object.start + " 00:00:01'"+ "C_DateModified<" + "'"+ yesterday_Object.end + " 23:59:59'"+ status_bant + "='MQL'";
   //yesterday_getUnixTime
   queryString['search'] = queryText;
@@ -66,11 +66,11 @@ async function get_b2bgerp_global_bant_data(_business_name) {
 
 function B2B_GERP_GLOBAL_ENTITY() {
   this.INTERFACE_ID = "ELOQUA_0003",
-    this.LEAD_NAME = "";        //리드네임 [MQL]Subsidiary_BU_Platform&Activity_Register Date+Hour 값을 조합
+  this.LEAD_NAME = "";        //리드네임 [MQL]Subsidiary_BU_Platform&Activity_Register Date+Hour 값을 조합
   this.SITE_NAME = "";				//사이트네임
   this.LEAD_SOURCE_NAME = "";	//리드소스 네임 Platform&Activity 필드 매핑
   this.LEAD_SOURCE_TYPE = "11";//default 11 ? Eloqua에서 넘어오는 값이면 By Marketing, 영업인원이 수기입할 경우 By Sales로 지정
-  this.ENTRY_TYPE = "L"      //default L
+  this.ENTRY_TYPE = "L"       //default L
   this.ACCOUNT = "";          //회사
   this.CONTACT_POINT = "";    //Contact Point는 Eloqua 필드 중 -> Customer Name/Email/Phone No. 를 연결 시켜 매핑 필요
   this.CORPORATION = "";      //법인정보
@@ -79,7 +79,7 @@ function B2B_GERP_GLOBAL_ENTITY() {
   this.DESCRIPTION = "";      //설명 Comments, message, inquiry-to-buy-message 필드 중 하나
   this.ATTRIBUTE_1 = "";      //엘로코아 CONTACT ID
   this.ATTRIBUTE_2 = "";      //PRODUCT LV1의 BU 별 Budget
-  this.ATTRIBUTE_3 = "";      //픽리스트 eloqua 확인 
+  this.ATTRIBUTE_3 = "";      //픽리스트 eloqua 확인
   this.ATTRIBUTE_4 = "";      //이메일
   this.ATTRIBUTE_5 = "";      //전화번호
   this.ATTRIBUTE_6 = "";      //확인필요
@@ -102,10 +102,10 @@ function B2B_GERP_GLOBAL_ENTITY() {
   this.ATTRIBUTE_23 = "";     //Vertical Type B2B GERP Global Code mapping
   this.REGISTER_DATE = "";    //어떤 날짜 정보인지 확인 필요
   this.TRANSFER_DATE = "";    //어떤 날짜 정보인지 확인 필요
-  this.TRANSFER_FLAG = "";		//TRANSFER_FLAG N , Y 값의 용도 확인 필요
+  this.TRANSFER_FLAG = "";		//TRANSFER_FLAG N , Y 값의 용도 확인 필요 
   this.LAST_UPDATE_DATE = ""; //데이터 없음
   this.API_G_CODE = "";       //API 구분코드 추가요건 사항
-  //Building Type을 Vertical Type으로 변경하고 전사 Vertical 기준에 맞추어 매핑 필요 - LG.com내에도 항목 수정 필요하니 요청 필요함
+  //Building Type을 Vertical Type으로 변경하고 전사 Vertical 기준에 맞추어 매핑 필요 - LG.com내에도 항목 수정 필요하니 요청 필요함 호텔정보 
 }
 
 function GetCustomFiledValue(contacts_customfields, customfieldID) {
@@ -458,10 +458,11 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
       //리드네임 {{Business Unit}}_{{Subsidiary}}_{{Platform}}_{{Activity}}_{{Date}}
       //리드네임 {{Business Unit}}_{{Subsidiary}}_{{Platform&Activity}}_{{Date}}
       //리드네임 {{100229}}_{{100196}}_{{100202}}_{{100026}}
+      //리드네임 [MQL]Subsidiary_BU_Platform&Activity_Register Date+Hour 값을 조합
       result_item.LEAD_NAME =
         //GetCustomFiledValue(FieldValues_data, 100229) + "_" +
+        "[MQL]" + GetCustomFiledValue(FieldValues_data, 100196) + "_" +
         business_department + "_" +
-        GetCustomFiledValue(FieldValues_data, 100196) + "_" +
         GetCustomFiledValue(FieldValues_data, 100202) + "_" +
         GetCustomFiledValue(FieldValues_data, 100026);
       result_item.SITE_NAME = GetCustomFiledValue(FieldValues_data, 100187);        //100187	Territory //SITE_NAME ( 현장명 매핑필드 확인 )
@@ -480,7 +481,9 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
         GetDataValue(contacts_data.elements[i].address1) + " " +
         GetDataValue(contacts_data.elements[i].address2) + " " +
         GetDataValue(contacts_data.elements[i].address3);                           //주소정보 Address1 + Address2 + Address3
-      result_item.DESCRIPTION = GetDataValue(contacts_data.elements[i].description);//설명 Comments, message, inquiry-to-buy-message 필드 중 하나 (확인필요) //DESCRIPTION
+      //result_item.DESCRIPTION = GetDataValue(contacts_data.elements[i].description);//설명 Comments, message, inquiry-to-buy-message 필드 중 하나 (확인필요) //DESCRIPTION
+      result_item.DESCRIPTION = GetCustomFiledValue(FieldValues_data, 100209);      //설명 inquiry-to-buy-message 필드 중 하나 (확인필요)
+      
       result_item.ATTRIBUTE_1 = GetDataValue(contacts_data.elements[i].id);         //Eloqua Contact ID
       result_item.ATTRIBUTE_2 = GetBusiness_Department_data(FieldValues_data, business_department, "Budget"); //PRODUCT LV1의 BU 별 
       result_item.ATTRIBUTE_3 = "";                                                     //픽리스트 eloqua 확인
@@ -490,12 +493,14 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
       result_item.ATTRIBUTE_7 = GetCustomFiledValue(FieldValues_data, 100069);          //지역 - 국가 eloqua filed 정보
       result_item.ATTRIBUTE_8 = "";
       result_item.ATTRIBUTE_9 = GetBusiness_Department_data(FieldValues_data, business_department, "Job Function"); //(Job Function 사업부별 컬럼 확인 필요)
-      result_item.ATTRIBUTE_10 = GetBusiness_Department_data(FieldValues_data, business_department, "Business Unit"); //(Business Unit 사업부별 컬럼 확인 필요)
+      result_item.ATTRIBUTE_10 = GetCustomFiledValue(FieldValues_data, 100229) //(Business Unit 가장 최근 기준 BU값)
+      //result_item.ATTRIBUTE_10 = GetBusiness_Department_data(FieldValues_data, business_department, "Business Unit"); //(Business Unit 사업부별 컬럼 확인 필요)
+     
       result_item.ATTRIBUTE_11 = "";                                                    //division (확인필요) 사업부코드( 코드마스터 필요 ) 예) HE    LGE 앞자리 빼는지 확인 필요
       result_item.ATTRIBUTE_12 = GetBusiness_Department_data(FieldValues_data, business_department, "Seniority"); //Seniority
       result_item.ATTRIBUTE_13 = GetBusiness_Department_data(FieldValues_data, business_department, "Needs");     //PRODUCT LV1의 BU 별 Needs //(Nees 사업부별 컬럼 확인 필요)
       result_item.ATTRIBUTE_14 = GetBusiness_Department_data(FieldValues_data, business_department, "TimeLine");  //PRODUCT LV1의 BU 별 Timeline //(Nees 사업부별 컬럼 확인 필요)
-      result_item.ATTRIBUTE_15 = GetCustomFiledValue(FieldValues_data, 100203);                                   //Marketing Eventdf //100203	Marketing Event
+      result_item.ATTRIBUTE_15 = GetCustomFiledValue(FieldValues_data, 100203);                                   //Marketing Event //100203	Marketing Event
       result_item.ATTRIBUTE_16 = GetCustomFiledValue(FieldValues_data, 100213) == "Yes" ? "Y" : "N";              //Privacy Policy YN //100213	Privacy Policy_Agreed
       result_item.ATTRIBUTE_17 = utils.timeConverter("GET_DATE", GetCustomFiledValue(FieldValues_data, 100199));  //Privacy Policy Date : 100199	Privacy Policy_AgreedDate
       result_item.ATTRIBUTE_18 = GetCustomFiledValue(FieldValues_data, 100210) == "Yes" ? "Y" : "N";     //TransferOutside EEA YN : 100210	TransferOutsideCountry
