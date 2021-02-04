@@ -1,3 +1,5 @@
+var utils = require('../../common/utils');
+var moment = require('moment');
 var express = require('express');
 var router = express.Router();
 
@@ -548,7 +550,7 @@ function Convert_INTEGRATION_DB_DATA(contacts_data, business_department) {
       result_item.TRANSFER_FLAG = "N";             //Default N
       result_item.TRANSFERRED_DATE = ""; moment().format('YYYY-MM-DD hh:mm:ss');    //어떤 날짜 정보인지 확인 필요
       result_item.BACK_TRANSFER_FLAG = "";         //Null
-      result_item.BACK_TRANSFERRED_DATE = "";		  //Null
+      result_item.BACK_TRANSFERRED_DATE = "";		   //Null
       result_item.SALESFORCE_ID = "";              //?	 ex) 00Q0I00012QbogUAC
       result_data.push(result_item);
     }

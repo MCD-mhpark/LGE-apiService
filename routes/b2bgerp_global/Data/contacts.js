@@ -4,7 +4,7 @@ var router = express.Router();
 var httpRequest = require('../../common/httpRequest');
 var utils = require('../../common/utils');
 const { param } = require('../../common/history');
-
+var seq_cnt = 0;
 /* Contacts */
 
 //BANT 조건 Eloqua 조회 함수
@@ -102,8 +102,7 @@ function B2B_GERP_GLOBAL_ENTITY() {
   this.REGISTER_DATE = "";    //어떤 날짜 정보인지 확인 필요
   this.TRANSFER_DATE = "";    //어떤 날짜 정보인지 확인 필요
   this.TRANSFER_FLAG = "";		//TRANSFER_FLAG N , Y 값의 용도 확인 필요 
-  this.LAST_UPDATE_DATE = ""; //데이터 없음
-  this.API_G_CODE = "";       //API 구분코드 추가요건 사항
+  this.LAST_UPDATE_DATE = "";
   //Building Type을 Vertical Type으로 변경하고 전사 Vertical 기준에 맞추어 매핑 필요 - LG.com내에도 항목 수정 필요하니 요청 필요함 호텔정보 
 }
 
@@ -144,7 +143,8 @@ function GetDataValue(contacts_fieldvalue) {
   }
 }
 
-function GetConvertVerticalTypeCode(_Business_Sector_Name) {
+
+function GetConvertVerticalType1Code(_Business_Sector_Name) {
   // 코드	값
   // 01	4. Corporate (Office/Work Spaces)
   // 02	6. Education
@@ -166,13 +166,13 @@ function GetConvertVerticalTypeCode(_Business_Sector_Name) {
     case "Education":
       result = "02";
       break;
-    case "Factory": //Eloqua value값 추가 필요
+    case "Factory":
       result = "03";
       break;
-    case "Government":
+    case "Government Department":
       result = "04";
       break;
-    case "Hospitality & health care":
+    case "Hospitality":
       result = "05";
       break;
     case "Public Facility": //Eloqua value값 추가 필요
@@ -181,21 +181,218 @@ function GetConvertVerticalTypeCode(_Business_Sector_Name) {
     case "Retail":
       result = "09";
       break;
-    case "Special Purpose": //Eloqua value값 추가 필요
+    case "Special purpose": //Eloqua value값 추가 필요
       result = "10";
       break;
     case "Transportation":
       result = "11";
       break;
-    case "Residential (Home)":  //Eloqua valuer값 추가 필요
+    case "Residential":  //Eloqua valuer값 추가 필요
       result = "15";
       break;
-    case "Power plant/Renewable energy":  //Eloqua valuer값 추가 필요
+    case "Power plant / Renewable energy":  //Eloqua valuer값 추가 필요
       result = "16";
+      break;
+    case "Others":
+      result = "Others Code 필요";
       break;
   }
   return result;
 }
+
+function GetConvertVerticalType2Code(_Business_Sector_Name, _Business_Sector_Vertival2_Name) {
+  // 코드	값
+  // 0910	1-1. Restaurant / F&B / QSR
+  // 0914	1-2. Specialty store
+  // 0907	1-3. Hyper market & grocery
+  // 0911	1-4. Shopping mall
+  // 0913	1-5. Other Stores
+  // 0503	2-1. Hotel / Resort / Casino
+  // 0501	2-2. Cruise
+  // 0502	2-3. Hospital
+  // 0504	2-4. LTC (Long-Term Care)
+  // 0508	2-5. Dormitory
+  // 0509	2-6. Fitness
+  // 0507	2-7. Others
+  // 1501	3-1. Apartment
+  // 1502	3-2. Officetel
+  // 1503	3-3. Townhouse
+  // 1504	3-4. Villa / Single-Family Home
+  // 1505	3-5. Others
+  // 0113	4-1. Office
+  // 0114	4-2. Conference/Meeting Room/Collaboration spaces
+  // 0115	4-3. Auditorium
+  // 0116	4-4. Control/Command room
+  // 0106	4-5. Broadcasting/Studio
+  // 0117	4-6. Traning/Experience center
+  // 0118	4-7. Show room/Briefing center
+  // 0119	4-8. Common spaces 
+  // 0120	4-9. Client interaction venue/space﻿
+  // 0121	4-10. Others
+  // 1101	5-1. Air Transport
+  // 1104	5-2. Road
+  // 1103	5-3. Railway & Metro
+  // 1102	5-4. Sea
+  // 1105	5-5. Others
+  // 0201	6-1. K12 (Kindergarten & Schools)
+  // 0202	6-2. HigherEd (College & University)
+  // 0205	6-3. Institute & Academy
+  // 0204	6-4. Others
+  // 0816	7-1. Culture
+  // 0813	7-2. Sports
+  // 0817	7-3. Religious facility
+  // 0818	7-4. Outdoor Advertisement
+  // 0815	7-5. Others
+  // 0403	8-1. General Government Office
+  // 0404	8-2. Military
+  // 0406	8-3. Police/Fire station
+  // 0402	8-4. Welfare facilities 
+  // 0410	8-5. Others
+  // 0309	9-1. Manufacturing factory
+  // 0310	9-2. Chemical factory
+  // 0311	9-3. Pharmaceutical factory
+  // 0301	9-4. Others
+  // 1601	10-1. Power plant
+  // 1602	10-2. Renewable energy
+  // 1603	10-3. Energy Storage & Saving
+  // 1604	10-4. Others
+  // 1011	11-1. Mixed-use (Multi Complex)
+  // 1009	11-2. Botanical Garden / Green House
+  // 1005	11-3.Telecom base station / Data, Call center
+  // 1010	11-4. Others
+
+  var result = "";
+  switch (_Business_Sector_Name) {
+    case "Retail":
+      switch (_Business_Sector_Vertival2_Name) {
+        case "Restaurant / F&B / QSR": result = "0910"; break;
+        case "Specialty store": result = "0914"; break;
+        case "Hyper market & grocery": result = "0907"; break;
+        case "Shopping mall": result = "0911"; break;
+        case "Other Stores": result = "0913"; break;
+      }
+      break;
+
+    case "Hospitality":
+      switch (_Business_Sector_Vertival2_Name) {
+        case "Hotel / Resort / Casino": result = "0503"; break;
+        case "Cruise": result = "0501"; break;
+        case "Hospital": result = "0502"; break;
+        case "LTC (Long-Term Care)": result = "0504"; break;
+        case "Dormitory": result = "0508"; break;
+        case "Fitness": result = "0509"; break;
+        case "Others": result = "0507"; break;
+      }
+      break;
+
+    case "Residential":
+      switch (_Business_Sector_Vertival2_Name) {
+        case "Apartment": result = "1501"; break;
+        case "Officetel": result = "1502"; break;
+        case "Townhouse": result = "1503"; break;
+        case "Villa / Single-Family Home": result = "1504"; break;
+        case "Others": result = "1505"; break;
+      }
+      break;
+
+    case "Corporate":
+      switch (_Business_Sector_Vertival2_Name) {
+        case "Office": result = "0113"; break;
+        case "Conference/Meeting Room/Collaboration spaces": result = "0114"; break;
+        case "Auditorium": result = "0115"; break;
+        case "Control/Command room": result = "0116"; break;
+        case "Broadcasting/Studio": result = "0106"; break;
+        case "Traning/Experience center": result = "0117"; break;
+        case "Show room/Briefing center": result = "0118"; break;
+        case "Common spaces ": result = "0119"; break;
+        case "Client interaction venue/space": result = "0120"; break;
+        case "Others": result = "0121"; break;
+      }
+      break;
+
+    case "Transportation":
+      switch (_Business_Sector_Vertival2_Name) {
+        case "Air Transport": result = "1101"; break;
+        case "Road": result = "1104"; break;
+        case "Railway & Metro": result = "1103"; break;
+        case "Sea": result = "1102"; break;
+        case "Others": result = "1105"; break;
+      }
+      break;
+
+    case "Education":
+      switch (_Business_Sector_Vertival2_Name) {
+        case "K12 (Kindergarten & Schools)": result = "0201"; break;
+        case "HigherEd (College & University)": result = "0202"; break;
+        case "Institute & Academy": result = "0205"; break;
+        case "Others": result = "0204"; break;
+      }
+      break;
+
+    case "Public Facility":
+      switch (_Business_Sector_Vertival2_Name) {
+        case "Culture": result = "0816"; break;
+        case "Sports": result = "0813"; break;
+        case "Religious facility": result = "0817"; break;
+        case "Outdoor Advertisement": result = "0818"; break;
+        case "Others": result = "0815"; break;
+      }
+      break;
+
+    case "Government Department":
+      switch (_Business_Sector_Vertival2_Name) {
+        case "General Government Office": result = "0403"; break;
+        case "Military": result = "0404"; break;
+        case "Police/Fire station": result = "0406"; break;
+        case "Welfare facilities ": result = "0402"; break;
+        case "Others": result = "0410"; break;
+      }
+      break;
+
+    case "Factory":
+      switch (_Business_Sector_Vertival2_Name) {
+        case "Manufacturing factory": result = "0309"; break;
+        case "Chemical factory": result = "0310"; break;
+        case "Pharmaceutical factory": result = "0311"; break;
+        case "Others": result = "0301"; break;
+      }
+      break;
+
+    case "Power plant / Renewable energy":
+      switch (_Business_Sector_Vertival2_Name) {
+        case "Power plant": result = "1601"; break;
+        case "Renewable energy": result = "1602"; break;
+        case "Energy Storage & Saving": result = "1603"; break;
+        case "Others": result = "1604"; break;
+      }
+      break;
+
+    case "Special purpose":
+      switch (_Business_Sector_Vertival2_Name) {
+        case "Mixed-use (Multi Complex)": result = "1011"; break;
+        case "Botanical Garden / Green House": result = "1009"; break;
+        case "Telecom base station / Data, Call center": result = "1005"; break;
+        case "Others": result = "1010"; break;
+      }
+      break;
+
+    case "Others":
+      switch (_Business_Sector_Vertival2_Name) {
+        case "Finance": result = ""; break;
+        case "Healthcare": result = ""; break;
+        case "Complex Mall": result = ""; break;
+        case "Commercial": result = ""; break;
+        case "Utility": result = ""; break;
+        case "Laundromat": result = ""; break;
+        case "Multi-housing": result = ""; break;
+        case "OPL(On-premise Laundry)": result = ""; break;
+        case "Others": result = ""; break;
+      }
+      break;
+  }
+  return result;
+}
+
 
 //business_department ( AS , CLS , CM , ID , IT , Solar , Solution )
 //key ( Job Function , Business Unit , Seniority , Needs , TimeLine )
@@ -241,9 +438,13 @@ function GetBusiness_Department_data(fieldValues, business_department, key) {
           // 필드확인 필요 
           result_data = "";
           break;
-        case "Business_Sector":
-          //100206	AS_Business Sector
-          result_data = GetConvertVerticalTypeCode(GetCustomFiledValue(fieldValues, 100206));
+        case "Vertical_Level_1":
+          //100206	AS_Business Sector(Lv1) // Vertical_Level_1
+          result_data = GetConvertVerticalType1Code(GetCustomFiledValue(fieldValues, 100206));
+          break;
+        case "Vertical_Level_2":
+          //100345	AS_Business Sector(Lv2) // Vertical_Level_2
+          result_data = GetConvertVerticalType2Code(GetCustomFiledValue(fieldValues, 100206), GetCustomFiledValue(fieldValues, 100345));
           break;
       }
       break;
@@ -287,9 +488,14 @@ function GetBusiness_Department_data(fieldValues, business_department, key) {
           result_data = "";
           break;
 
-        case "Business_Sector":
-          //100281	CLS_Business Sector
-          result_data = etConvertVerticalTypeCode(GetCustomFiledValue(fieldValues, 100281));
+        case "Vertical_Level_1":
+          //100281	CLS_Business Sector(Lv1) // Vertical_Level_1
+          result_data = GetConvertVerticalType1Code(GetCustomFiledValue(fieldValues, 100281));
+          break;
+
+        case "Vertical_Level_2":
+          //100349	CLS_Business Sector(Lv2) // Vertical_Level_2
+          result_data = GetConvertVerticalType2Code(GetCustomFiledValue(fieldValues, 100281), GetCustomFiledValue(fieldValues, 100349));
           break;
       }
       break;
@@ -336,9 +542,13 @@ function GetBusiness_Department_data(fieldValues, business_department, key) {
           // 필드확인 필요 
           result_data = "";
           break;
-        case "Business_Sector":
-          //100287	CM_Business Sector
-          result_data = etConvertVerticalTypeCode(GetCustomFiledValue(fieldValues, 100287));
+        case "Vertical_Level_1":
+          //100287	CM_Business Sector(Lv1) // Vertical_Level_1
+          result_data = GetConvertVerticalType1Code(GetCustomFiledValue(fieldValues, 100287));
+          break;
+        case "Vertical_Level_2":
+          //100350	CM_Business Sector(Lv2) // Vertical_Level_2
+          result_data = GetConvertVerticalType2Code(GetCustomFiledValue(fieldValues, 100287), GetCustomFiledValue(fieldValues, 100350));
           break;
       }
       break;
@@ -380,9 +590,13 @@ function GetBusiness_Department_data(fieldValues, business_department, key) {
           // 100259	ID_Product_ModelName
           result_data = GetCustomFiledValue(fieldValues, 100259);
           break;
-        case "Business_Sector":
-          //100261	ID_Business Sector
-          result_data = etConvertVerticalTypeCode(GetCustomFiledValue(fieldValues, 100261));
+        case "Vertical_Level_1":
+          //100261	ID_Business Sector(Lv1) // Vertical_Level_1
+          result_data = GetConvertVerticalType1Code(GetCustomFiledValue(fieldValues, 100261));
+          break;
+        case "Vertical_Level_2":
+          //100346	ID_Business Sector(Lv2) // Vertical_Level_2
+          result_data = GetConvertVerticalType2Code(GetCustomFiledValue(fieldValues, 100261), GetCustomFiledValue(fieldValues, 100346));
           break;
       }
       break;
@@ -424,9 +638,13 @@ function GetBusiness_Department_data(fieldValues, business_department, key) {
           // 100306	IT_Product_ModelName
           result_data = GetCustomFiledValue(fieldValues, 100306);
           break;
-        case "Business_Sector":
-          //100268	IT_Business Sector
-          result_data = etConvertVerticalTypeCode(GetCustomFiledValue(fieldValues, 100268));
+        case "Vertical_Level_1":
+          //100268	IT_Business Sector(Lv1) // Vertical_Level_1
+          result_data = GetConvertVerticalType1Code(GetCustomFiledValue(fieldValues, 100268));
+          break;
+        case "Vertical_Level_2":
+          //100347	IT_Business Sector(Lv2) // Vertical_Level_2
+          result_data = GetConvertVerticalType2Code(GetCustomFiledValue(fieldValues, 100268), GetCustomFiledValue(fieldValues, 100347));
           break;
       }
       break;
@@ -469,9 +687,13 @@ function GetBusiness_Department_data(fieldValues, business_department, key) {
           // 필드확인 필요 
           result_data = "";
           break;
-        case "Business_Sector":
-          //100275	Solar_Business Sector
-          result_data = etConvertVerticalTypeCode(GetCustomFiledValue(fieldValues, 100275));
+        case "Vertical_Level_1":
+          //100275	Solar_Business Sector(Lv1) // Vertical_Level_1
+          result_data = GetConvertVerticalType1Code(GetCustomFiledValue(fieldValues, 100275));
+          break;
+        case "Vertical_Level_2":
+          //100348	Solar_Business Sector(Lv2) // Vertical_Level_2
+          result_data = GetConvertVerticalType2Code(GetCustomFiledValue(fieldValues, 100275), GetCustomFiledValue(fieldValues, 100348));
           break;
       }
       break;
@@ -513,14 +735,31 @@ function GetBusiness_Department_data(fieldValues, business_department, key) {
           // 필드확인 필요 
           result_data = "";
           break;
-        case "Business_Sector":
-          //100227	Solution_Business Sector
-          result_data = etConvertVerticalTypeCode(GetCustomFiledValue(fieldValues, 100227));
+        case "Vertical_Level_1":
+          //100227	Solution_Business Sector(Lv1) // Vertical_Level_1
+          result_data = GetConvertVerticalType1Code(GetCustomFiledValue(fieldValues, 100227));
+          break;
+        case "Vertical_Level_2":
+          //100351	IT_Business Sector(Lv2) // Vertical_Level_2
+          result_data = GetConvertVerticalType2Code(GetCustomFiledValue(fieldValues, 100227), GetCustomFiledValue(fieldValues, 100351));
           break;
       }
       break;
   }
   return result_data;
+}
+
+function lpad(str, padLen, padStr) {
+  if (padStr.length > padLen) {
+      console.log("오류 : 채우고자 하는 문자열이 요청 길이보다 큽니다");
+      return str;
+  }
+  str += ""; // 문자로
+  padStr += ""; // 문자로
+  while (str.length < padLen)
+      str = padStr + str;
+  str = str.length >= padLen ? str.substring(0, padLen) : str;
+  return str;
 }
 
 //Eloqua Data B2B GERP Global Mapping 데이터 생성
@@ -533,12 +772,15 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
       var FieldValues_data = contacts_data.elements[i].fieldValues;
 
       //result_item.INTERFACE_ID = "ELOQUA_0003" // this.INTERFACE_ID = "ELOQUA_0003"
-      result_item.INTERFACE_ID = moment().format('YYYYMMDD') + "0001" // this.INTERFACE_ID = "ELOQUA_0003"
+      result_item.INTERFACE_ID = moment().format('YYYYMMDD') + lpad(seq_cnt , 4 , "0");
       //리드네임 [MQL]Subsidiary_BU_Platform&Activity_Register Date+Hour 값을 조합
       //리드네임 {{Business Unit}}_{{Subsidiary}}_{{Platform}}_{{Activity}}_{{Date}}
       //리드네임 {{Business Unit}}_{{Subsidiary}}_{{Platform&Activity}}_{{Date}}
       //리드네임 {{100229}}_{{100196}}_{{100202}}_{{100026}}
       //리드네임 [MQL]Subsidiary_BU_Platform&Activity_Register Date+Hour 값을 조합
+      
+      seq_cnt = seq_cnt+1;
+
       result_item.LEAD_NAME =
         //GetCustomFiledValue(FieldValues_data, 100229) + "_" +
         "[MQL]" + GetCustomFiledValue(FieldValues_data, 100196) + "_" +
@@ -568,7 +810,7 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 
       result_item.ATTRIBUTE_1 = GetDataValue(contacts_data.elements[i].id);         //Eloqua Contact ID
       result_item.ATTRIBUTE_2 = GetBusiness_Department_data(FieldValues_data, business_department, "Budget"); //PRODUCT LV1의 BU 별 
-      result_item.ATTRIBUTE_3 = "";                                                     //픽리스트 eloqua 확인
+      result_item.ATTRIBUTE_3 = GetBusiness_Department_data(FieldValues_data, business_department, "Vertical_Level_2"); //Vertical Level 2
       result_item.ATTRIBUTE_4 = GetDataValue(contacts_data.elements[i].emailAddress);   //이메일
       result_item.ATTRIBUTE_5 = GetDataValue(contacts_data.elements[i].mobilePhone);    //전화번호 (businessPhone 확인필요)
       result_item.ATTRIBUTE_6 = "";                                                     //(확인필요)
@@ -591,7 +833,7 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
       result_item.ATTRIBUTE_21 = GetBusiness_Department_data(FieldValues_data, business_department, "Product_SubCategory");  //ELOQUA 내 Product 2 없을경우 NULL // (사업부별 컬럼 확인 필요)
       result_item.ATTRIBUTE_22 = GetBusiness_Department_data(FieldValues_data, business_department, "Product_Model");        //ELOQUA 내 Product 3 없을경우 NULL // (사업부별 컬럼 확인 필요)
 
-      result_item.ATTRIBUTE_23 = GetBusiness_Department_data(FieldValues_data, business_department, "Business_Sector");     //Vertical Type B2B GERP Global Code mapping
+      result_item.ATTRIBUTE_23 = GetBusiness_Department_data(FieldValues_data, business_department, "Vertical_Level_1");    //Vertical Level_1
 
       result_item.REGISTER_DATE = moment().format('YYYY-MM-DD hh:mm:ss');    //어떤 날짜 정보인지 확인 필요 //utils.timeConverter("GET_DATE", contacts_data.elements[i].createdAt);
       result_item.TRANSFER_DATE = moment().format('YYYY-MM-DD hh:mm:ss');    //어떤 날짜 정보인지 확인 필요

@@ -107,6 +107,45 @@ router.delete('/delete/:id', function (req, res, next) {
       });
 });
 
+function GetSecurityGroupSearchText(_dp, _cp, _ru) {
+  var result = "";
+
+  // switch( _dp)
+  // {
+  //   case "ALL":       result = "*";         break;
+  //   case "AS":        result = "AS";        break;
+  //   case "CLS":       result = "CLS";       break;
+  //   case "CM":        result = "CM";        break;
+  //   case "ID":        result = "ID";        break;
+  //   case "IT":        result = "IT";        break;
+  //   case "Solar":     result = "Solar";     break;
+  //   case "Solution":  result = "Solution";  break;
+  // }
+  //사업부 [ AS , CLS , CM , ID , IT , Solar , Solution ]
+  if (_dp == "ALL") {
+    result = "*";
+  }
+  else {
+    result = _dp;
+  }
+
+  if (_cp == "ALL") {
+    result += "_*";
+  }
+  else {
+    result += "_" + _cp;
+  }
+
+  if (_ru == "ALL") {
+    result += "_*";
+  }
+  else {
+    result += "_" + _ru;
+  }
+
+  return result;
+}
+
 router.get('/security_groups/:dp/:cp/:ru', function (req, res, next) {
   //부서 DP
   var dp_name = req.params.dp;
@@ -115,7 +154,8 @@ router.get('/security_groups/:dp/:cp/:ru', function (req, res, next) {
   //룰 RU
   var ru_name = req.params.ru;
 
-  var search_value = dp_name + "_" + cp_name + "_" + ru_name;
+  var search_value = GetSecurityGroupSearchText(dp_name, cp_name, ru_name);
+
   console.log(search_value);
   var queryString = {
     search : search_value
