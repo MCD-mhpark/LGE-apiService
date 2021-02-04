@@ -31,17 +31,21 @@ async function getIDs(email_list, depth , api_type){
 
 /* Users */
 router.get('/', function (req, res, next) {
-  var queryString = {
-    depth : "complete"
-  }
+  var queryString = {}
+  var queryText = "";
+
+  queryString['search'] = "loginName='Stephanie.An'";
+  queryString['depth'] = "partial"; //["minimal", "partial " ,"complete"]
+  queryString['count'] = 10;
+
     iam_eloqua.system.users.get(queryString).then((result) => {
       console.log(result.data);
+      
       res.json(result.data);
     }).catch((err) => {
       console.error(err);
     });
 });
-
 
 // test folder id = 5452 , id = 248
 router.get('/one/:id', function (req, res, next) {
@@ -86,7 +90,6 @@ router.post('/create', function (req, res, next) {
       });
 });
 
-
 router.put('/update/:id', function (req, res, next) {
 
     iam_eloqua.system.users.update(req.params.id, req.body ).then((result) => {
@@ -96,7 +99,6 @@ router.put('/update/:id', function (req, res, next) {
         console.error(err);
       });
 });
-
 
 router.delete('/delete/:id', function (req, res, next) {
     iam_eloqua.system.users.delete(req.params.id).then((result) => {

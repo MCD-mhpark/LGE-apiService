@@ -139,77 +139,180 @@ router.post('/search_ids', function (req, res, next) {
     });
 });
 
+function BS_CARD_ENTITY() {
+    // accessedAt(optional): string
+    // accountId(optional): string
+    // accountName(optional): string
+    // address1(optional): string
+    // address2(optional): string
+    // address3(optional): string
+    // bouncebackDate(optional): string
+    // businessPhone(optional): string
+    // city(optional): string
+    // country(optional): string
+    // createdAt(optional): string
+    // createdBy(optional): string
+    // currentStatus(optional): string
+    // depth(optional): string
+    // description(optional): string
+    // emailAddress(optional): string
+    // emailFormatPreference(optional): string
+    // fax(optional): string
+    // fieldValues(optional): array 
+    // firstName(optional): string
+    // id(optional): string
+    // isBounceback(optional): string
+    // isSubscribed(optional): string
+    // lastName(optional): string
+    // mobilePhone(optional): string
+    // name(optional): string
+    // permissions(optional): string
+    // postalCode(optional): string
+    // province(optional): string
+    // salesPerson(optional): string
+    // subscriptionDate(optional): string
+    // title(optional): string
+    // type(optional): string
+    // unsubscriptionDate(optional): string
+    // updatedAt(optional): string
+    // updatedBy(optional): string
+
+    this.id = "";
+    this.firstName = "";    
+    this.lastName = "";		
+    this.accountName = "";	
+    this.rank = "11";//default 11 ? Eloqua에서 넘어오는 값이면 By Marketing, 영업인원이 수기입할 경우 By Sales로 지정
+    this.hp = "L"       //default L
+    this.tel = "";          //회사
+    this.fax = "";    //Contact Point는 Eloqua 필드 중 -> Customer Name/Email/Phone No. 를 연결 시켜 매핑 필요
+    this.add1 = "";      //법인정보
+    this.addr2 = "";            //데이터 없음
+    this.email = "";          //현업확인 Address1 + Address2 + Address3
+    this.homepage = "";      //설명 Comments, message, inquiry-to-buy-message 필드 중 하나
+
+    this.salesPerson = "";      //엘로코아 CONTACT ID
+    this.fieldValues = [];      //PRODUCT LV1의 BU 별 Budget
+    this.ATTRIBUTE_3 = "";      //픽리스트 eloqua 확인
+    this.ATTRIBUTE_4 = "";      //이메일
+    this.ATTRIBUTE_5 = "";      //전화번호
+    this.ATTRIBUTE_6 = "";      //확인필요
+    this.ATTRIBUTE_7 = "";      //지역 - 국가 eloqua filed 정보
+    this.ATTRIBUTE_8 = "";      //넷중 하나 또는 4개의 필드 정보 합 ( 확인 필요 )
+    this.ATTRIBUTE_9 = "";      //Job Function
+    this.ATTRIBUTE_10 = "";     //데이터 없음
+    this.ATTRIBUTE_11 = "";     //사업부코드( 코드마스터 필요 ) 예) HE    LGE 앞자리 빼는지 확인 필요
+    this.ATTRIBUTE_12 = "";     //Seniority
+    this.ATTRIBUTE_13 = "";     //PRODUCT LV1의 BU 별 Needs
+    this.ATTRIBUTE_14 = "";     //PRODUCT LV1의 BU 별 Timeline
+    this.ATTRIBUTE_15 = "";     //Marketing Event
+    this.ATTRIBUTE_16 = "";     //Privacy Policy YN
+    this.ATTRIBUTE_17 = "";     //Privacy Policy Date
+    this.ATTRIBUTE_18 = "";     //TransferOutside EEA YN
+    this.ATTRIBUTE_19 = "";     //TransferOutside EEA Date
+    this.ATTRIBUTE_20 = "";     //ELOQUA 내 Product 1
+    this.ATTRIBUTE_21 = "";     //ELOQUA 내 Product 2 없을경우 NULL
+    this.ATTRIBUTE_22 = "";     //ELOQUA 내 Product 3 없을경우 NULL
+    this.ATTRIBUTE_23 = "";     //Vertical Type B2B GERP Global Code mapping
+    this.REGISTER_DATE = "";    //어떤 날짜 정보인지 확인 필요
+    this.TRANSFER_DATE = "";    //어떤 날짜 정보인지 확인 필요
+    this.TRANSFER_FLAG = "";		//TRANSFER_FLAG N , Y 값의 용도 확인 필요 
+    this.LAST_UPDATE_DATE = "";
+    //Building Type을 Vertical Type으로 변경하고 전사 Vertical 기준에 맞추어 매핑 필요 - LG.com내에도 항목 수정 필요하니 요청 필요함 호텔정보 
+  }
+
+function Convert_BS_CARD_DATA(body_data) {
+
+    var items = body_data;
+    var result_data = [];
+
+    for(var i = 0 ; items.length > i ; i++){
+
+        var bs_card_data = new BS_CARD_ENTITY();
+        var item = items[i];
+
+        try
+        {
+            bs_card_data.salesPerson = item.userId; //"userId": "jbpark",
+        
+            var userCode = { "id": "100196", "value": item.userCode }; //100196 Subsidiary custom field//"userCode": "LGEVU",
+            bs_card_data.fieldValues.push(userCode);
+        
+            var product_data = { "id": "100229", "value": item.product }; //"product": "IT_B2B_Cloud", | Eloqua 필드 없음 | 사업부별 인지 확인 필요
+            bs_card_data.fieldValues.push(product_data);
+        
+            bs_card_data.firstName = item.firstName; //"firstName": "진범",
+            bs_card_data.lastName = item.lastName; //"lastName": "박",
+            bs_card_data.accountName = item.company; //"company": "인텔리코드",
+        
+            //ba_card_data.? = item.rank; //"rank": "이사/MBA", | Eloqua 필드 정보 없음 _ job title 예상
+        
+            bs_card_data.mobilePhone = item.hp; //"hp": "010.9241.9080",
+            bs_card_data.businessPhone = item.tel; //"tel": "03q.252.9127",
+            bs_card_data.fax = item.fax; //"fax": "fax11",
+            bs_card_data.address1 = item.addr1; //"addr1": "수원시 영통구",
+            bs_card_data.address2 = item.addr2; //"addr2": "서초구 양재",
+            bs_card_data.emailAddress = item.email; //"email": "jbpark@intellicode.co.kr",
+        
+            var website_data = { "id": "100252", "value": item.homepage };
+            bs_card_data.fieldValues.push(product_data);
+        
+            bs_card_data.discription = item.etc1; //"etc1": "메모 남김",
+        
+            //"mailingDate": "2021-01-30 19:10:15", | Eloqua 필드 없음
+            bs_card_data.subscriptionDate = utils.timeConverter("GET_UNIX",  item.subscriptionDate); //"subscriptionDate": "2021-01-30 19:11:22",
+            //"campaignName": "",  | Eloqua 필드 없음
+            //"campaignDate": "2031-01-01 00:00:00", | Eloqua 필드 없음
+            //"customerProduct": "as", | 박진범 이사님 Product 값이 AS , ID , IT , CLS , CM , Solor , Solution 값이 전부 인지 확인 필요 
+            //"krMkt": "N", | Eloqua 필드값 확인 필요 | Eloqua 필드 없음
+            bs_card_data.country = item.country; // "country": "Netherlands Antilles",
+        
+            //"updatedDate": "2021-02-01 10:26:01" 
+            result_data.push(bs_card_data);
+        }
+        catch(e)
+        {
+            console.log(e);
+        }
+    }
+    
+
+    return bs_card_data;
+}
+
 router.post('/create', async function (req, res, next) {
 
     console.log("create call");
-        //body 예시
-        // req.body = {
-        //   "address1": "P.O.Box 72202 - 00200",
-        //   "address2": "6th Floor, Lonrho House ",
-        //   "address3": "Standard Street, City Centre",
-        //   "businessPhone": "2540312885",
-        //   "city": "Copenhagen1",
-        //   "country": "Denmark1",
-        //   "emailAddress": "fortinbras1@norway.com",
-        //   "fax": "2540312886",
-        //   "firstName": "Fort",
-        //   "lastName": "Fortinbras",
-        //   "mobilePhone": "2540312887",
-        //   "postalCode": "2620",
-        //   "province": "Malmo",
-        //   "salesPerson": "Hamlet",
-        //   "title": "Actor",
-        // }
-
-
-        // req.body =  [
-        //     {
-        //       "userId":"dslim", 
-        //       "userCode":"LGEKR", 
-        //       "product":"all", 
-        //       "first_name":"대선17", 
-        //       "last_name":"임17", 
-        //       "company":"intellicode", 
-        //       "rank":"데이터 서비스 사업부 /부장", 
-        //       "hp":"010.7402.0722", 
-        //       "tel":"031 252.9127", 
-        //       "fax":"031.629.7826",                    
-        //       "addr1":"(16229) 경기도 수원시 영통구광교로 105 경기R&DB센터 705호", 
-        //       "addr2":"", 
-        //       "email":"dslim17@intellicode.co.kr", 
-        //       "homepage":"http://goldenplanet.co.kr",
-        //       "etc1":"test용", 
-        //       "etc2":"", 
-        //       "mailingDate":"2019-12-29 19:48:08", 
-        //       "subscriptionDate":"1577616544" ,
-            
-        //     },
-        //     {
-        //       "userId":"dslim", 
-        //       "userCode":"LGEKR", 
-        //       "product":"all", 
-        //       "first_name":"대선18", 
-        //       "last_name":"임18", 
-        //       "company":"intellicode", 
-        //       "rank":"데이터 서비스 사업부 /부장", 
-        //       "hp":"010.7402.0722", 
-        //       "tel":"031 252.9127", 
-        //       "fax":"031.629.7826",                    
-        //       "addr1":"(16229) 경기도 수원시 영통구광교로 105 경기R&DB센터 705호", 
-        //       "addr2":"", 
-        //       "email":"dslim18@intellicode.co.kr", 
-        //       "homepage":"http://goldenplanet.co.kr",
-        //       "etc1":"test용", 
-        //       "etc2":"", 
-        //       "mailingDate":"2019-12-29 19:48:08", 
-        //       "subscriptionDate":"1577616544" ,
-            
-        //     }
-        //   ]
-     
+    //body 예시
+    // req.body =   {
+    //"userId": "jbpark",
+    //"userCode": "LGEVU",
+    //"product": "IT_B2B_Cloud",
+    //"firstName": "진범",
+    //"lastName": "박",
+    //"company": "인텔리코드",
+    //"rank": "이사/MBA",
+    //"hp": "010.9241.9080",
+    //"tel": "03q.252.9127",
+    //"fax": "fax11",
+    //"addr1": "수원시 영통구",
+    //"addr2": "서초구 양재",
+    //"email": "jbpark@intellicode.co.kr",
+    //"homepage": "",
+    //"etc1": "메모 남김",
+    //"mailingDate": "2021-01-30 19:10:15",
+    //"subscriptionDate": "2021-01-30 19:11:22",
+    //"campaignName": "",
+    //"campaignDate": "2031-01-01 00:00:00",
+    //"customerProduct": "as",
+    //"krMkt": "N",
+    //"country": "Netherlands Antilles",
+    //"updatedDate": "2021-02-01 10:26:01"
+    //}
+    var data = Convert_BS_CARD_DATA(req.body);
 
     var data =  converters.bscard(req.body);
     console.log(data);
+
     var form = {};
     var success_count = 0;
     var failed_count = 0;
