@@ -43,6 +43,8 @@ async function get_b2bgerp_global_bant_data(_business_name) {
   }
 
   var yesterday_Object = utils.yesterday_getDateTime();
+  yesterday_Object.start = '2021-02-02';
+  yesterday_Object.end = '2021-02-02';
   //var yesterday_Object = utils.today_getDateTime();
   var queryText = "C_DateModified>" + "'" + yesterday_Object.start + " 00:00:01'" + "C_DateModified<" + "'" + yesterday_Object.end + " 23:59:59'" + status_bant + "='MQL'";
   //yesterday_getUnixTime
@@ -826,9 +828,15 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
       result_item.ATTRIBUTE_14 = GetBusiness_Department_data(FieldValues_data, business_department, "TimeLine");  //PRODUCT LV1의 BU 별 Timeline //(Nees 사업부별 컬럼 확인 필요)
       result_item.ATTRIBUTE_15 = GetCustomFiledValue(FieldValues_data, 100203);                                   //Marketing Event //100203	Marketing Event // 폼 히든값
       result_item.ATTRIBUTE_16 = GetCustomFiledValue(FieldValues_data, 100213) == "Yes" ? "Y" : "N";              //Privacy Policy YN //100213	Privacy Policy_Agreed // privcy Policy*
-      result_item.ATTRIBUTE_17 = utils.timeConverter("GET_DATE", GetCustomFiledValue(FieldValues_data, 100199));  //Privacy Policy Date : 100199	Privacy Policy_AgreedDate
+
+      var Privacy_Policy_Date = utils.timeConverter("GET_DATE", GetCustomFiledValue(FieldValues_data, 100199));
+      result_item.ATTRIBUTE_17 = Privacy_Policy_Date == null ? "" :  Privacy_Policy_Date; //Privacy Policy Date : 100199	Privacy Policy_AgreedDate
+
       result_item.ATTRIBUTE_18 = GetCustomFiledValue(FieldValues_data, 100210) == "Yes" ? "Y" : "N";     //TransferOutside EEA YN : 100210	TransferOutsideCountry*
-      result_item.ATTRIBUTE_19 = utils.timeConverter("GET_DATE", GetCustomFiledValue(FieldValues_data, 100208));  //TransferOutside EEA Date : 100208	TransferOutsideCountry_AgreedDate
+
+      var TransferOutside_EEA_Date = utils.timeConverter("GET_DATE", GetCustomFiledValue(FieldValues_data, 100208));
+      result_item.ATTRIBUTE_19 = TransferOutside_EEA_Date == null ? "" :  TransferOutside_EEA_Date; //TransferOutside EEA Date : 100208	TransferOutsideCountry_AgreedDate
+
       result_item.ATTRIBUTE_20 = GetBusiness_Department_data(FieldValues_data, business_department, "Product_Category");     //ELOQUA 내 Product 1 //(사업부별 컬럼 확인 필요)
       result_item.ATTRIBUTE_21 = GetBusiness_Department_data(FieldValues_data, business_department, "Product_SubCategory");  //ELOQUA 내 Product 2 없을경우 NULL // (사업부별 컬럼 확인 필요)
       result_item.ATTRIBUTE_22 = GetBusiness_Department_data(FieldValues_data, business_department, "Product_Model");        //ELOQUA 내 Product 3 없을경우 NULL // (사업부별 컬럼 확인 필요)
