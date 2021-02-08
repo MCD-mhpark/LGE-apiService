@@ -378,19 +378,19 @@ function GetConvertVerticalType2Code(_Business_Sector_Name, _Business_Sector_Ver
       }
       break;
 
-    case "Others":
-      switch (_Business_Sector_Vertival2_Name) {
-        case "Finance": result = ""; break;
-        case "Healthcare": result = ""; break;
-        case "Complex Mall": result = ""; break;
-        case "Commercial": result = ""; break;
-        case "Utility": result = ""; break;
-        case "Laundromat": result = ""; break;
-        case "Multi-housing": result = ""; break;
-        case "OPL(On-premise Laundry)": result = ""; break;
-        case "Others": result = ""; break;
-      }
-      break;
+    // case "Others":
+    //   switch (_Business_Sector_Vertival2_Name) {
+    //     case "Finance": result = ""; break;
+    //     case "Healthcare": result = ""; break;
+    //     case "Complex Mall": result = ""; break;
+    //     case "Commercial": result = ""; break;
+    //     case "Utility": result = ""; break;
+    //     case "Laundromat": result = ""; break;
+    //     case "Multi-housing": result = ""; break;
+    //     case "OPL(On-premise Laundry)": result = ""; break;
+    //     case "Others": result = ""; break;
+    //   }
+    //   break;
   }
   return result;
 }

@@ -36,8 +36,9 @@ router.get('/', function (req, res, next) {
 
   queryString['search'] = "loginName='Stephanie.An'";
   queryString['depth'] = "partial"; //["minimal", "partial " ,"complete"]
-  queryString['count'] = 10;
-
+  //queryString['count'] = 10;
+  //queryString['page'] = 1;
+  
     iam_eloqua.system.users.get(queryString).then((result) => {
       console.log(result.data);
       
