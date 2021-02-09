@@ -338,7 +338,7 @@ router.get('/responsibility', function (req, res, next) {
     });
 
 
-  var security_groups_data = await get_b2bgerp_global_bant_data();
+  // var security_groups_data = await get_b2bgerp_global_bant_data();
 
   // res.json(contacts_data);
   // return;
