@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var utils = require('../../common/utils');
 
 /* Contacts */
 //BANT 조건 Eloqua 조회 함수
