@@ -148,7 +148,7 @@ app.use('/bscard_app/contacts', bscard_app_data_contacts);
 
 app.use('/etc_function/', etc_function);
 
-app.use('/iam/users', iam_system_users);
+app.use('/iam/', iam_system_users);
 
 
 // catch 404 and forward to error handler

@@ -1,186 +1,17 @@
+var moment = require('moment');
+var utils = require('../../common/utils');
 var express = require('express');
 var router = express.Router();
 
-async function getIDs(email_list, depth , api_type){
-  
-  var queryString = {};
-  var emailString = "?";
-  for(var i = 0 ; email_list.length > i ; i++ ){
-    emailString += "emailAddress='" + email_list[i] + "'";
-  }
-  queryString['search'] = emailString;
-  queryString['depth'] = depth ? depth : "";
-
-  console.log(queryString);
-  var data ;
-  await bscard_eloqua.data.contacts.get(queryString).then((result) => { 
-    // console.log(result.data);
-    console.log(result.data.total);
-    if(result.data.total > 0 ){
-
-      if(api_type == 'data') data =  result.data.elements.map(function(k){   return k.id;   });
-      else if(api_type == 'id') data = result.data;
-      // console.log(data);
-    }
-  }).catch((err) => {
-    console.error(err);
-    
-  });
-  return data;
-}
-
-/* Users */
-router.get('/', function (req, res, next) {
-  var queryString = {}
-  var queryText = "";
-
-  queryString['search'] = "loginName='Stephanie.An'";
-  queryString['depth'] = "partial"; //["minimal", "partial " ,"complete"]
-  //federationId LG전자 사번 ( 페더레이션 ID )
-  //queryString['count'] = 10;
-  //queryString['page'] = 1;
-  
-    iam_eloqua.system.users.get(queryString).then((result) => {
-      console.log(result.data);
-      
-      res.json(result.data);
-    }).catch((err) => {
-      console.error(err);
-    });
-});
-
-// test folder id = 5452 , id = 248
-router.get('/one/:id', function (req, res, next) {
-  var queryString = {
-    depth : "complete"
-  }
-    iam_eloqua.system.users.getOne(req.params.id , queryString).then((result) => {
-      console.log(result.data);
-      res.json(result.data);
-    }).catch((err) => {
-      console.error(err);
-    });
-});
-
-router.post('/create', function (req, res, next) {
-  console.log(123);
-    // var instance = {
-    //   loginName: "jtt.Lim",
-    //   emailAddress: "limsoftz1@naver.com",
-    //   name : "jtt Lim"
-
-    // }
-
-    // var instance = {
-    //   companyDisplayName: "TechnologyPartnerGoldenPlanet",
-    //   companyUrl: "http://www.goldenplanet.co.kr/",
-    //   passwordExpires: "False",
-    //   type: "User",
-    //   name: "Jtt Lim",
-    //   emailAddress: "jtlim@goldenplanet.co.kr",
-    //   loginName: "Jtt.Lim",
-    //   firstName: "jtt",
-    //   lastName: "lim",
-      
-    // }
-    iam_eloqua.system.users.create( req.body).then((result) => {
-        console.log(result.data);
-        res.json(result.data);
-      }).catch((err) => {
-        console.error(err);
-        res.json(false);
-      });
-});
-
-router.put('/update/:id', function (req, res, next) {
-
-    iam_eloqua.system.users.update(req.params.id, req.body ).then((result) => {
-        console.log(result.data);
-        res.json(result.data);
-      }).catch((err) => {
-        console.error(err);
-      });
-});
-
-router.delete('/delete/:id', function (req, res, next) {
-    iam_eloqua.system.users.delete(req.params.id).then((result) => {
-        console.log(result.data);
-        res.json(result.data);
-      }).catch((err) => {
-        console.error(err);
-      });
-});
-
-function GetSecurityGroupSearchText(_dp, _cp, _ru) {
-  var result = "";
-
-  // switch( _dp)
-  // {
-  //   case "ALL":       result = "*";         break;
-  //   case "AS":        result = "AS";        break;
-  //   case "CLS":       result = "CLS";       break;
-  //   case "CM":        result = "CM";        break;
-  //   case "ID":        result = "ID";        break;
-  //   case "IT":        result = "IT";        break;
-  //   case "Solar":     result = "Solar";     break;
-  //   case "Solution":  result = "Solution";  break;
-  // }
-  //사업부 [ AS , CLS , CM , ID , IT , Solar , Solution ]
-  if (_dp == "ALL") {
-    result = "*";
-  }
-  else {
-    result = _dp;
-  }
-
-  if (_cp == "ALL") {
-    result += "_*";
-  }
-  else {
-    result += "_" + _cp;
-  }
-
-  if (_ru == "ALL") {
-    result += "_*";
-  }
-  else {
-    result += "_" + _ru;
-  }
-
-  return result;
-}
-
-router.get('/security_groups/:dp/:cp/:ru', function (req, res, next) {
-  //부서 DP
-  var dp_name = req.params.dp;
-  //법인 CP
-  var cp_name = req.params.cp;
-  //룰 RU
-  var ru_name = req.params.ru;
-
-  var search_value = GetSecurityGroupSearchText(dp_name, cp_name, ru_name);
-
-  console.log(search_value);
-  var queryString = {
-    search : search_value,
-    depth : "partial" //["minimal", "partial " ,"complete"]
-    //depth : "complete"
-  }
-    iam_eloqua.system.users.security_groups(queryString).then((result) => {
-      console.log(result.data);
-      res.json(result.data);
-    }).catch((err) => {
-      console.error(err);
-    });
-});
-
 //=====================================================================================================================================================================================================
-// 2021-02-09
+// Last Update Date : 2021-02-10
 // IAM 테이블 연동 관련 API Endpoint 정의
 // IAM USER TABLE
 // IAM USER REPONSIBILITY
 // IAM RESPONSIBILITY
 //=====================================================================================================================================================================================================
+
+//#region IAM ENTITY 정의 함수 영역
 
 function IAM_IF_USER_ENTITY() {
   this.IF_USER_ID = 0;            // number pk Interface 사용자 테이블 ID (1000 + Elouqa UserID {0000 4자리})
@@ -192,7 +23,7 @@ function IAM_IF_USER_ENTITY() {
   this.DEPARTMENT_NAME = "";      // department
   this.POSITION_NAME = "";        // jobTitle
   this.USE_FLAG = "Y";            // isDisabled  Y/N  사용하는 값만 전달 하기로 함
-  this.ATTRIBUTE1 = ""; 
+  this.ATTRIBUTE1 = "";
   this.ATTRIBUTE2 = "";
   this.ATTRIBUTE3 = "";
   this.ATTRIBUTE4 = "";
@@ -264,7 +95,7 @@ function IAM_IF_RESPONSIBILITY_ENTITY() {
   this.DOMAIN_CODE = "";                    // "AG" (법인정보)
   this.MODULE_CODE = "";                    // "Agency" (룰정보)
   this.USE_FLAG = "Y";                       // Y , N ( 사용하는 정보만 보냄 Y ) 
-  this.ATTRIBUTE1 = ""; 
+  this.ATTRIBUTE1 = "";
   this.ATTRIBUTE2 = "";
   this.ATTRIBUTE3 = "";
   this.ATTRIBUTE4 = "";
@@ -290,132 +121,556 @@ function IAM_IF_RESPONSIBILITY_ENTITY() {
   this.TRANSFER_DATE = "";                //전송일자
 }
 
+function ELOQUA_CREATE_ENTITY() {
+  //로그인 정보
+  this.name = "";                 //필수값 (한글 가능)
+  this.emailAddress = "";         //필수값 (이메일)
+  this.loginName = "";            //필수값 "dongjin.shin", ( 영문 LastName + '.' + FirstName)
+  this.firstName = "";            //필수값 firstName (한글 가능)
+  this.lastName = "";             //필수값 lastName (한글 가능)
+  this.federationId = "";         //LG전자 사번 필드
+  this.preferences = { "type": "UserPreferences", "timezoneId": "40" };  //시간 한국 시간 설정
+
+  //일반정보 (서명 필드)
+  this.companyDisplayName = "1";     //회사 표시 이름:	LGElectronics
+  this.companyUrl = "2";             //웹사이트 URL
+  this.jobTitle = "3";               //직책
+  this.phone = "4";                  //회사 전화	82-02-3777-5546
+  this.senderDisplayName = "5";      //전자메일 발신자 표시 이름:	Stephanie An
+  this.replyToAddress = "";         //전자메일 회신 대상 주소:	ansy@lgcns.com
+  this.department = "7";             //부서
+  this.cellPhone = "8";              //휴대폰:	82-10-3931-3352
+  this.fax = "9";                    //팩스
+  this.address1 = "10";               //주소 1
+  this.address2 = "11";               //주소 2
+  this.city = "12";                   //구/군/시
+  this.state = "13";                  //시/도
+  this.country = "14";                //국가
+  this.zipCode = "15";                //우편 번호
+  this.senderEmailAddress = "";     //전자메일 발신자 주소:	ansy@lgcns.com
+  this.personalUrl = "17";            //개인 URL
+  this.personalMessage = "18";        //개인 메시지
+
+  // //보안그룹
+  // this.securityGroups = [
+  //   {
+  //     "id" : "80"
+  //   }
+  // ];         //보안그룹 리스트
+
+  //라이센스 (기본적으로 모두 선택)
+  this.productPermissions = [
+    {
+      "type": "ProductPermission",
+      "productCode": "SecureHypersites"
+    },
+    {
+      "type": "ProductPermission",
+      "productCode": "EngageiPad"
+    },
+    {
+      "type": "ProductPermission",
+      "productCode": "EngageWeb"
+    },
+    {
+      "type": "ProductPermission",
+      "productCode": "ProspectProfiler"
+    }
+  ];
+
+}
+
+//#endregion
+
+
+//====================================================
+//IF_USER_ID 시퀀스 수정필요
+//====================================================
+//#region IAM User Endpoint Endpoint 호출 영역
+
+
+function CONVERT_IAM_USER_DATA(_eloqua_items) {
+  var result = [];
+  var items = _eloqua_items;
+
+  if (items != null && items.total > 0) {
+    for (var i = 0; i < items.elements.length; i++) {
+      var item = items.elements[i];
+      var data = new IAM_IF_USER_ENTITY();
+
+      data.IF_USER_ID = GetIFNumber("1000", item.id);          // number pk Interface 사용자 테이블 ID  1000 + Eloqua UserID {4자리 0000}
+      data.SYSTEM_CODE = "ELOQUA";                            // 고정값 "ELOQUA"
+      data.USER_CODE = GetDataValue(item.federationId);       // 사번 
+      data.USER_NAME = GetDataValue(item.name);               // 이름
+      data.MAIL_ADDR = GetDataValue(item.emailAddress);       // 이메일
+      data.EMPLOYEE_ENG_NAME = GetDataValue(item.loginName);  // 영문 이름 (Eloqua Login)
+      data.DEPARTMENT_NAME = GetDataValue(item.department);   // 사업부명
+      data.POSITION_NAME = GetDataValue(item.jobTitle);       // 직책명
+      data.USE_FLAG = "Y"                                     // 유요한 사용자 만 전달함  고정값 "Y"
+      data.ATTRIBUTE1 = "";
+      data.ATTRIBUTE2 = "";
+      data.ATTRIBUTE3 = "";
+      data.ATTRIBUTE4 = "";
+      data.ATTRIBUTE5 = "";
+      data.ATTRIBUTE6 = "";
+      data.ATTRIBUTE7 = "";
+      data.ATTRIBUTE8 = "";
+      data.ATTRIBUTE9 = "";
+      data.ATTRIBUTE10 = "";
+      data.ATTRIBUTE11 = "";
+      data.ATTRIBUTE12 = "";
+      data.ATTRIBUTE13 = "";
+      data.ATTRIBUTE14 = "";
+      data.ATTRIBUTE15 = "";
+      data.CREATION_DATE = utils.timeConverter("GET_DATE", item.createdAt);     //createdAt  생성일자
+      data.CREATED_BY_CODE = GetDataValue(item.createdBy);                      //createdBy  생성자코드
+      data.LAST_UPDATE_DATE = utils.timeConverter("GET_DATE", item.updatedAt);  //updatedAt  최종수정일자
+      data.LAST_UPDATED_BY_CODE = GetDataValue(item.updatedBy);                 //updatedBy  최종수정자코드
+      data.TRANSMISSION_ID = Number(item.id);                                   //id 송신ID "Eloqua ID"
+      data.TRANSMISSION_COUNT = items.total;                                    //total; 전체 송신 건수
+      data.INTERFACE_TYPE_CODE = "ELOQUA";                                      //고정값 "ELOQUA" 
+      data.TRANSFER_FLAG = "N";                                                 //고정값 "N"
+      data.TRANSFER_DATE = moment().format('YYYY-MM-DD hh:mm:ss');              //전송일자
+
+      result.push(data);
+    }
+  }
+  return result;
+}
+
 router.get('/user', function (req, res, next) {
   var queryString = {}
-  var queryText = "";
 
-  queryString['search'] = "loginName='Stephanie.An'";
+  //queryString['search'] = "loginName='Stephanie.An'";
   queryString['depth'] = "partial"; //["minimal", "partial " ,"complete"]
   //federationId LG전자 사번 ( 페더레이션 ID )
   //queryString['count'] = 10;
   //queryString['page'] = 1;
-  
-    iam_eloqua.system.users.get(queryString).then((result) => {
-      console.log(result.data);
-      res.json(result.data);
-    }).catch((err) => {
-      console.error(err);
-    });
+
+  iam_eloqua.system.users.get(queryString).then((result) => {
+
+    console.log(result.data);
+
+    var return_data = {};
+
+    var responsibility_data = CONVERT_IAM_USER_DATA(result.data);
+
+    if (responsibility_data.length > 0) {
+      return_data.ContentList = responsibility_data;
+      return_data.page = result.data.page;
+      return_data.pageSize = result.data.pageSize;
+      return_data.total = result.data.total;
+      res.json(return_data);
+
+      //console.log(request_data);
+      //res.json({ ContentList: request_data });
+    }
+    else {
+      return_data.page = result.data.page;
+      return_data.pageSize = result.data.pageSize;
+      return_data.total = result.data.total;
+
+      res.json(return_data);
+    }
+  }).catch((err) => {
+    console.error(err);
+    res.json(false);
+  });
 });
 
-function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items)
-{
-  var result = {};
-  var eloqua_items = _eloqua_items;
+//#endregion
 
-  
+
+
+//====================================================
+//IF_USER_RESPONSIBILITY_ID 시퀀스 수정필요
+//====================================================
+//#region IAM User Responsibility Endpoint 호출 영역
+
+function CONVERT_IAM_USER_RESPONSIBILITY_DATA(_eloqua_items) {
+  var result = [];
+  var items = _eloqua_items;
+
+  if (items != null && items.total > 0) {
+    for (var i = 0; i < items.elements.length; i++) {
+
+      var item = items.elements[i];
+
+      for (var j = 0; j < item.security_groups.length; j++) {
+        var security_data = item.security_groups[j];
+
+        var data = new IAM_IF_USER_ENTITY();
+        data.IF_USER_RESPONSIBILITY_ID = GetIFNumber("1000", item.id);                // number pk Interface 사용자 테이블 ID  1000 + Eloqua UserID {4자리 0000}
+        data.SYSTEM_CODE = "ELOQUA";                                                 // 고정값 "ELOQUA"
+        data.USER_CODE = GetDataValue(item.federationId);                            // 사번 
+        data.USER_AFFILIATE_CODE = GetRullExtraction(security_data.name);            // 룰정보
+        data.USER_CORPORATION_CODE = GetCorporationExtraction(security_data.name);   // 법인정보
+        data.RESPONSIBILITY_CODE = security_data.id;                                 // Eloqua Security ID
+        data.RESPONSIBILITY_OPTION_CODE = GetBusinessExtraction(security_data.name); // 사업부정보
+        data.USE_FLAG = "Y"                                                          // 고정값 Y
+        data.ATTRIBUTE1 = "";
+        data.ATTRIBUTE2 = "";
+        data.ATTRIBUTE3 = "";
+        data.ATTRIBUTE4 = "";
+        data.ATTRIBUTE5 = "";
+        data.ATTRIBUTE6 = "";
+        data.ATTRIBUTE7 = "";
+        data.ATTRIBUTE8 = "";
+        data.ATTRIBUTE9 = "";
+        data.ATTRIBUTE10 = "";
+        data.ATTRIBUTE11 = "";
+        data.ATTRIBUTE12 = "";
+        data.ATTRIBUTE13 = "";
+        data.ATTRIBUTE14 = "";
+        data.ATTRIBUTE15 = "";
+        data.CREATION_DATE = utils.timeConverter("GET_DATE", item.createdAt);     //createdAt  생성일자
+        data.CREATED_BY_CODE = GetDataValue(item.createdBy);                      //createdBy  생성자코드
+        data.LAST_UPDATE_DATE = utils.timeConverter("GET_DATE", item.updatedAt);  //updatedAt  최종수정일자
+        data.LAST_UPDATED_BY_CODE = GetDataValue(item.updatedBy);                 //updatedBy  최종수정자코드
+        data.TRANSMISSION_ID = Number(item.id);                                   //id 송신ID "Eloqua ID"
+        data.TRANSMISSION_COUNT = items.total;                                    //total; 전체 송신 건수
+        data.INTERFACE_TYPE_CODE = "ELOQUA";                                      //고정값 "ELOQUA" 
+        data.TRANSFER_FLAG = "N";                                                 //고정값 "N"
+        data.TRANSFER_DATE = moment().format('YYYY-MM-DD hh:mm:ss');              //전송일자
+        result.push(data);
+      }
+    }
+  }
+  return result;
+}
+
+
+router.get('/user_responsibility', function (req, res, next) {
+  var queryString = {}
+
+  //queryString['search'] = "loginName='Stephanie.An'";
+  queryString['depth'] = "partial"; //["minimal", "partial " ,"complete"]
+  //federationId LG전자 사번 ( 페더레이션 ID )
+  //queryString['count'] = 10;
+  //queryString['page'] = 1;
+
+  iam_eloqua.system.users.get(queryString).then((result) => {
+
+    console.log(result.data);
+
+    var return_data = {};
+
+    var user_responsibility_data = CONVERT_IAM_USER_RESPONSIBILITY_DATA(result.data);
+
+    if (responsibility_data.length > 0) {
+      return_data.ContentList = user_responsibility_data;
+      return_data.total = user_responsibility_data.length;
+      res.json(return_data);
+
+      //console.log(request_data);
+      //res.json({ ContentList: request_data });
+    }
+    else {
+      return_data.ContentList = [];
+      return_data.total = user_responsibility_data.length;
+      res.json(return_data);
+    }
+  }).catch((err) => {
+    console.error(err);
+    res.json(false);
+  });
+});
+
+//#endregion
+
+
+
+//====================================================
+//IAM_IF_RESPONSIBILITY_ENTITY 시퀀스 수정필요
+//====================================================
+//#region IAM Responsibility Endpoint 호출 영역
+
+function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items) {
+  var result = [];
+  var items = _eloqua_items;
+
+  if (items != null && items.total > 0) {
+    for (var i = 0; i < items.elements.length; i++) {
+      var item = items.elements[i];
+      var data = new IAM_IF_RESPONSIBILITY_ENTITY();
+
+      data.IF_RESPONSIBILITY_ID = GetIFNumber("3000", item.id)                 // number pk Interface 사용자 테이블 ID  3000 + Eloqua SecurityID {4자리 0000}
+      data.SYSTEM_CODE = "ELOQUA";                                          // "ELOQUA"
+      data.RESPONSIBILITY_CODE = item.id;                                   // "48" (ELOQUA 권한 Key 값)
+      data.RESPONSIBILITY_OPTION_CODE = GetBusinessExtraction(item.name);   // "AS" (사업부정보)
+      data.RESPONSIBILITY_NAME = item.name;                                 // "AS_AG_Agency" (권한이름)
+      data.RESPONSIBILITY_ENG_NAME = item.name;                             // "AS_AG_Agency" (권한이름)
+      data.RESP_AFFILIATE_MNG_FLAG = "N";                                   // "N" 고정값
+      data.DOMAIN_CODE = GetCorporationExtraction(item.name);               // "AG" (법인정보)
+      data.MODULE_CODE = GetRullExtraction(item.name);                      // "Agency" (룰정보)
+      data.USE_FLAG = "Y";                                                  // Y , N ( 사용하는 정보만 보냄 Y ) 
+      data.ATTRIBUTE1 = "";
+      data.ATTRIBUTE2 = "";
+      data.ATTRIBUTE3 = "";
+      data.ATTRIBUTE4 = "";
+      data.ATTRIBUTE5 = "";
+      data.ATTRIBUTE6 = "";
+      data.ATTRIBUTE7 = "";
+      data.ATTRIBUTE8 = "";
+      data.ATTRIBUTE9 = "";
+      data.ATTRIBUTE10 = "";
+      data.ATTRIBUTE11 = "";
+      data.ATTRIBUTE12 = "";
+      data.ATTRIBUTE13 = "";
+      data.ATTRIBUTE14 = "";
+      data.ATTRIBUTE15 = "";
+      data.CREATION_DATE = utils.timeConverter("GET_DATE", item.createdAt);      //createdAt  생성일자
+      data.CREATED_BY_CODE = GetDataValue(item.createdBy);                                     //createdBy  생성자코드
+      data.LAST_UPDATE_DATE = utils.timeConverter("GET_DATE", item.updatedAt);  //updatedAt  최종수정일자
+      data.LAST_UPDATED_BY_CODE = GetDataValue(item.updatedBy);         //updatedBy  최종수정자코드
+      data.TRANSMISSION_ID = Number(item.id);         //id 송신ID "Eloqua ID"
+      data.TRANSMISSION_COUNT = items.total;  //total; 전체 송신 건수
+      data.INTERFACE_TYPE_CODE = "ELOQUA";    //고정값 "ELOQUA" 
+      data.TRANSFER_FLAG = "N";               //고정값 "N"
+      data.TRANSFER_DATE = moment().format('YYYY-MM-DD hh:mm:ss');                //전송일자
+
+      result.push(data);
+    }
+  }
   return result;
 }
 
 router.get('/responsibility', function (req, res, next) {
-
-  //Eloqua 전체 security_groups 조회
   var queryString = {
-    search : search_value,
-    depth : "partial" //["minimal", "partial " ,"complete"]
-    //depth : "complete"
+    //search : search_value,
+    depth: "partial" //["minimal", "partial " ,"complete"]
   }
-    iam_eloqua.system.users.security_groups(queryString).then((result) => {
+  iam_eloqua.system.users.security_groups(queryString).then((result) => {
 
-      console.log(result.data);
+    console.log(result.data);
 
-      var request_data = CONVERT_IAM_RESPONSIBILITY_DATA(result.data);
+    var return_data = {};
 
-      res.json({ ContentList: request_data });
+    var responsibility_data = CONVERT_IAM_RESPONSIBILITY_DATA(result.data);
 
-    }).catch((err) => {
-      console.error(err);
-    });
+    if (responsibility_data.length > 0) {
+      return_data.ContentList = responsibility_data;
+      return_data.page = result.data.page;
+      return_data.pageSize = result.data.pageSize;
+      return_data.total = result.data.total;
+      res.json(return_data);
 
+      //console.log(request_data);
+      //res.json({ ContentList: request_data });
+    }
+    else {
+      return_data.page = result.data.page;
+      return_data.pageSize = result.data.pageSize;
+      return_data.total = result.data.total;
 
-  // var security_groups_data = await get_b2bgerp_global_bant_data();
-
-  // res.json(contacts_data);
-  // return;
-  if (security_groups_data != null) {
-    //Eloqua Contacts
-    //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr )
-    var request_data = Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_name);
-
-    res.json({ ContentList: request_data });
-
-    return;
-  }
-  else {
+      res.json(return_data);
+    }
+  }).catch((err) => {
+    console.error(err);
     res.json(false);
-  }
-  //API Gateway 데이터 전송
-
-  //Log
-  //res.json(true);
-  return;
+  });
+});
+//#endregion
 
 
-  //부서 DP
-  var dp_name = req.params.dp;
-  //법인 CP
-  var cp_name = req.params.cp;
-  //룰 RU
-  var ru_name = req.params.ru;
+//====================================================
+//Create는 되나 보안그룹은 별도 API 
+//Product 메뉴 비활성화 되어있음 체크 방법 찾아야함
+//====================================================
+//#region (진행중) IAM USER Create Endpoint 호출 영역
 
-  var search_value = GetSecurityGroupSearchText(dp_name, cp_name, ru_name);
+function Convert_IAM_TO_ELOQUA_DATA(_body) {
+  var eloqua_data = new ELOQUA_CREATE_ENTITY();
+  eloqua_data.name = _body.name;
+  eloqua_data.emailAddress = _body.emailAddress;
+  eloqua_data.loginName = _body.loginName;
+  eloqua_data.firstName = _body.firstName;
+  eloqua_data.lastName = _body.lastName;
+  eloqua_data.federationId = _body.federationId;
 
-  console.log(search_value);
-  var queryString = {
-    search : search_value,
-    depth : "complete"
-    //depth : "complete"
-  }
-    iam_eloqua.system.users.security_groups(queryString).then((result) => {
-      console.log(result.data);
-      res.json(result.data);
-    }).catch((err) => {
-      console.error(err);
-    });
+  return eloqua_data;
+}
+
+router.post('/user/create', function (req, res, next) {
+
+  //예시 Request body 참고 URL : https://docs.oracle.com/en/cloud/saas/marketing/eloqua-rest-api/op-api-rest-2.0-system-user-post.html
+  // {
+  //   "name": "API User",
+  //   "emailAddress": "api.user@oracle.com", 
+  //   "loginName": "api.user",
+  //   "firstName": "API",
+  //   "lastName": "User"
+  // }
+
+  var body_data = Convert_IAM_TO_ELOQUA_DATA(req.body);
+
+  console.log(body_data);
+
+  iam_eloqua.system.users.create(body_data).then((result) => {
+    console.log(result.data);
+    res.json(result.data);
+  }).catch((err) => {
+    console.error(err);
+    res.json(err);
+  });
 });
 
-router.get('/user_responsibility', function (req, res, next) {
-  var queryString = {}
-  var queryText = "";
+router.post('/user/securityGroup', function (req, res, next) {
 
-  queryString['search'] = "loginName='Stephanie.An'";
+  //예시 Request body 참고 URL : https://docs.oracle.com/en/cloud/saas/marketing/eloqua-rest-api/op-api-rest-2.0-system-security-group-id-users-patch.html
+  // {
+  //   "id": "80",
+  //   "user": {
+  //       "patchMethod": "add",
+  //       "user": {
+  //           "id": "292"
+  //       }
+  //   }
+  // }
+  console.log(req.body);
+
+  var body_id = req.body.id;
+  var body_user_data = req.body.user;
+
+  iam_eloqua.system.users.security_groups_add_remove(body_id, body_user_data).then((result) => {
+    console.log(result.data);
+    res.json(result.data);
+  }).catch((err) => {
+    console.error(err);
+    res.json(err);
+  });
+});
+
+
+
+//#endregion
+
+//#region (진행중) IAM USER Update Endpoint 호출 영역
+// router.put('/update/:id', function (req, res, next) {
+
+//     iam_eloqua.system.users.update(req.params.id, req.body ).then((result) => {
+//         console.log(result.data);
+//         res.json(result.data);
+//       }).catch((err) => {
+//         console.error(err);
+//       });
+// });
+//#endregion
+
+//#region 위험!! (완료) IAM USER Delete Endpoint 호출 영역
+
+// router.delete('/user/delete/:id', function (req, res, next) {
+//     iam_eloqua.system.users.delete(req.params.id).then((result) => {
+//         console.log(result);
+//         res.json(result);
+//       }).catch((err) => {
+//         console.error(err);
+//       });
+// });
+
+//#endregion
+
+//#regon (완료) IAM USER Search Endpoint 호출 영역
+router.get('/user/:id', function (req, res, next) {
+  var queryString = {}
+
+  queryString['search'] = "id=" + req.params.id;
+  //queryString['search'] = "loginName='Stephanie.An'";
   queryString['depth'] = "partial"; //["minimal", "partial " ,"complete"]
   //federationId LG전자 사번 ( 페더레이션 ID )
   //queryString['count'] = 10;
   //queryString['page'] = 1;
-  
-    iam_eloqua.system.users.get(queryString).then((result) => {
-      console.log(result.data);
-      
-      res.json(result.data);
-    }).catch((err) => {
-      console.error(err);
-    });
+
+  iam_eloqua.system.users.get(queryString).then((result) => {
+    console.log(result.data);
+    res.json(result.data);
+  }).catch((err) => {
+    console.error(err);
+    res.json(false);
+  });
 });
+//#endregion
 
+//#region Functions 
 
+function GetBusinessExtraction(_name) {
+  //예시값 "IT_LV_Marketer"
+  //_ 기준 Split 첫번째값 리턴 "IT";
+  //예외 _기준으로 Split 하였을 경우 3개의 값이 나오지 않은 값의 경우 처리 HQ처리
+  var name = _name;
+  var words = name.split('_');
+  var return_value = "";
+  if (words.length == 3) {
+    return words[0];
+  }
+  else {
+    return "HQ";
+  }
+}
 
+function GetCorporationExtraction(_name) {
+  //예시값 "IT_LV_Marketer"
+  //_ 기준 Split 두번째값 리턴 "LV";
+  //예외 _기준으로 Split 하였을 경우 3개의 값이 나오지 않은 값의 경우 처리 HQ처리
+  var name = _name;
+  var words = name.split('_');
+  var return_value = "";
+  if (words.length == 3) {
+    return words[1];
+  }
+  else {
+    return "HQ";
+  }
+}
 
+function GetRullExtraction(_name) {
+  //예시값 "IT_LV_Marketer"
+  //_ 기준 Split 두번째값 리턴 "LV";
+  //예외 _기준으로 Split 하였을 경우 3개의 값이 나오지 않은 값의 경우 처리 HQ처리
+  var name = _name;
+  var words = name.split('_');
+  var return_value = "";
+  if (words.length == 3) {
+    return words[2];
+  }
+  else {
+    return name;
+  }
+}
 
+function GetDataValue(_fieldvalue) {
+  try {
+    if (_fieldvalue != undefined) {
+      return _fieldvalue;
+    }
+    else {
+      return "";
+    }
+  }
+  catch (e) {
+    console.log(e);
+    return "";
+  }
+}
 
+function GetIFNumber(_first_default_number, _last_number) {
+  var result = _first_default_number + lpad(_last_number, 4, "0");
+  return Number(result);
+}
 
+function lpad(str, padLen, padStr) {
+  if (padStr.length > padLen) {
+    console.log("오류 : 채우고자 하는 문자열이 요청 길이보다 큽니다");
+    return str;
+  }
+  str += ""; // 문자로
+  padStr += ""; // 문자로
+  while (str.length < padLen)
+    str = padStr + str;
+  str = str.length >= padLen ? str.substring(0, padLen) : str;
+  return str;
+}
 
-
-
-
-
-
-
-
+//#endregion
 
 module.exports = router;

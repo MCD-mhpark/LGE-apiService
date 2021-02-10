@@ -187,6 +187,18 @@ class Users {
     }, cb);
   }
 
+  security_groups_add_remove(id, user, cb) {
+    const data = _classPrivateFieldLooseBase(this, _parent)[_parent]._validate(['patchMethod',
+    'user',
+    ] , user);
+
+    return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
+      api: 'REST',
+      method: 'PATCH',
+      uri: `/system/security/${id}/users`,
+      data: data
+    }, cb);
+  }
 }
 
 exports.default = Users;
