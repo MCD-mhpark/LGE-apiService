@@ -38,7 +38,7 @@ class Users {
     let qs = {};
 
     if (querystring) {
-      qs = _classPrivateFieldLooseBase(this, _parent)[_parent]._validate(['depth'], querystring);
+      qs = _classPrivateFieldLooseBase(this, _parent)[_parent]._validate(['count', 'depth', 'lastUpdatedAt', 'orderBy', 'page', 'search'], querystring);
     }
 
     return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
@@ -96,7 +96,8 @@ class Users {
     "betaAccess",
     "federationId",
     "capabilities",
-    "productPermissions" 
+    "productPermissions" ,
+    "securityGroups" 
     ] , user);
 
     return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
@@ -154,7 +155,7 @@ class Users {
     "federationId",
     "capabilities",
     "productPermissions",
-    "license1"
+    "securityGroups"
     ], user);
 
     return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
@@ -195,7 +196,7 @@ class Users {
     return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
       api: 'REST',
       method: 'PATCH',
-      uri: `/system/security/${id}/users`,
+      uri: `/system/security/group/${id}/users`,
       data: data
     }, cb);
   }
