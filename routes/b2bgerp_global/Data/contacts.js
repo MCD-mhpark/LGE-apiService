@@ -112,180 +112,37 @@ function GetConvertVerticalType1Code(_Business_Sector_Name) {
   var result = "";
   switch (_Business_Sector_Name) {
     case "Corporate":
-    case "Kurumsal":
-    case "корпоративний":
-    case "企业":
-    case "d'entreprise":
-    case "Társasági":
-    case "Zbiorowy":
-    case "korporační":
-    case "Corporativo":
-    case "corporativo":
-    case "الشركات":
-    case "perusahaan":
-    case "đoàn thể":
-    case "ขององค์กร":
       result = "01";
       break;
     case "Education":
-    case "Eğitim":
-    case "освіту":
-    case "教育":
-    case "Éducation":
-    case "Oktatás":
-    case "Edukacja":
-    case "Vzdělání":
-    case "Educación":
-    case "Educação":
-    case "التعليم":
-    case "pendidikan":
-    case "Giáo dục":
-    case "การศึกษา":
       result = "02";
       break;
     case "Factory":
-    case "Fabrika":
-    case "завод":
-    case "厂":
-    case "Usine	Gyár":
-    case "Gyár":
-    case "Fabryka":
-    case "Továrna":
-    case "Fábrica":
-    case "Fábrica":
-    case "مصنع":
-    case "Pabrik":
-    case "Nhà máy":
-    case "โรงงาน":
       result = "03";
       break;
     case "Government Department":
-    case "Hükümet":
-    case "departmanı":
-    case "Департамент уряду":
-    case "政府部门":
-    case "Ministère":
-    case "Kormányhivatal":
-    case "Departament rządu":
-    case "Ministerstvo":
-    case "Departamento de Gobierno":
-    case "Departamento do governo":
-    case "دائرة حكومية":
-    case "Departemen pemerintahan":
-    case "Cơ quan chính phủ":
-    case "กรม":
       result = "04";
       break;
     case "Hospitality":
-    case "misafirperverlik":
-    case "привітність":
-    case "招待费":
-    case "Hospitalité":
-    case "Vendégszeretet":
-    case "Gościnność":
-    case "Pohostinství":
-    case "Hospitalidad":
-    case "حسن الضيافة":
-    case "Keramahan":
-    case "Lòng hiếu khách":
-    case "การต้อนรับขับสู้":
       result = "05";
       break;
     case "Public Facility": //Eloqua value값 추가 필요
-    case "Kamu tesisi":
-    case "громадський фонд":
-    case "公共设施":
-    case "Installation publique":
-    case "Nyilvános Facility":
-    case "Obiekt publiczny":
-    case "Public Facility":
-    case "Facilidad publica":
-    case "Facilidade pública":
-    case "حيث كان أقل وظيفة المفضلة لديك":
-    case "Fasilitas Umum":
-    case "Cơ sở công cộng":
-    case "สิ่งอำนวยความสะดวกของประชาชน":
       result = "08";
       break;
     case "Retail":
-    case "Perakende":
-    case "Роздрібна торгівля":
-    case "零售":
-    case "Vente au détail":
-    case "Kiskereskedelem":
-    case "Sprzedaż":
-    case "Maloobchodní":
-    case "Al por menor":
-    case "Varejo":
-    case "بيع بالتجزئة":
-    case "Eceran":
-    case "Bán lẻ":
-    case "ขายปลีก":
       result = "09";
       break;
     case "Special purpose": //Eloqua value값 추가 필요
-    case "Özel amaç":
-    case "спеціальне призначення":
-    case "特殊目的":
-    case "But spécial":
-    case "Különleges célú":
-    case "Specjalny cel":
-    case "Speciální účel":
-    case "Proposito especial":
-    case "Propósito especial":
-    case "لأغراض خاصة":
-    case "Tujuan khusus":
-    case "Mục đích đặc biệt":
-    case "วัตถุประสงค์พิเศษ":
       result = "10";
       break;
     case "Transportation":
-    case "taşımacılık":
-    case "транспорт":
-    case "运输":
-    case "Transport":
-    case "Szállítás":
-    case "Transport":
-    case "Přeprava":
-    case "Transporte":
-    case "Transporte":
-    case "وسائل النقل":
-    case "Angkutan":
-    case "Vận chuyển":
-    case "การขนส่ง":
       result = "11";
       break;
     case "Residential":  //Eloqua valuer값 추가 필요
-    case "yerleşim":
-    case "житлової":
-    case "住宅":
-    case "Résidentiel":
-    case "Lakó":
-    case "Osiedle mieszkaniowe":
-    case "Obytný":
-    case "residencial":
-    case "سكني":
-    case "Khu dân cư":
-    case "ที่อยู่อาศัย":
-    case "Khu dân cư":
-    case "ที่อยู่อาศัย":
       result = "15";
       break;
     //case "Power plant / Renewable energy":  //Eloqua valuer값 추가 필요
     case "Power plant":  //Eloqua valuer값 추가 필요
-    case "Enerji santrali":
-    case "Електростанція":
-    case "发电厂":
-    case "Centrale électrique":
-    case "Erőmű":
-    case "Elektrownia":
-    case "Elektrárna":
-    case "Planta de energía":
-    case "Usina elétrica":
-    case "محطة توليد الكهرباء":
-    case "Pembangkit listrik":
-    case "Nhà máy điện":
-    case "โรงไฟฟ้า":
       result = "16";
       break;
   }
@@ -358,80 +215,18 @@ function GetConvertVerticalType2Code(_Business_Sector_Name, _Business_Sector_Ver
     case "09":
       switch (_Business_Sector_Vertival2_Name) {
         case "Restaurant / F&B / QSR":
-        case "Ресторан / F & B / ДКС":
-        case "餐厅/ F＆B / QSR":
-        case "Restaurant / F & B / QSR":
-        case "Étterem / F & B / QSR":
-        case "Restauracja / F & B / QSR":
-        case "Restaurant / F & B / QSR":
-        case "Restaurante / F & B / QSR":
-        case "Restaurante / F & B / QSR":
-        case "مطعم / F & B / QSR":
-        case "Nhà hàng / F & B / QSR":
-        case "ร้านอาหาร / F & B / ธุรกิจอาหารบริการด่วน":
           result = "0910"; break;
 
         case "Specialty store":
-        case "Özel mağaza":
-        case "спеціальність магазин":
-        case "专业店":
-        case "Boutique sécialisée":
-        case "Sklep specjalistyczny":
-        case "specializované prodejně":
-        case "Tienda de especialidades":
-        case "loja da especialidade":
-        case "مخزن التخصص":
-        case "toko khusus":
-        case "cửa hàng đặc sản":
-        case "ร้านค้าพิเศษ":
           result = "0914"; break;
 
         case "Hyper market & grocery":
-        case "Hiper market ve bakkal":
-        case "Hyper ринок і продуктовий":
-        case "超市场和杂货店":
-        case "Hyper marché et épicerie":
-        case "Hyper-piaci és zöldséges":
-        case "Hiper market i sklep spożywczy":
-        case "Hyper trh a obchod s potravinami":
-        case "hipermercado y supermercado":
-        case "mercado hiper e supermercado":
-        case "سوق فرط والبقالة":
-        case "pasar hiper & kelontong":
-        case "thị trường Hyper & tạp hóa":
-        case "ตลาดไฮเปอร์และร้านขายของชำ":
           result = "0907"; break;
 
         case "Shopping mall":
-        case "Alışveriş Merkezi":
-        case "Торговий центр":
-        case "购物中心":
-        case "Centre commercial":
-        case "Bevásárló központ":
-        case "Centrum handlowe":
-        case "Obchodní dům":
-        case "Centro comercial":
-        case "Centro de compras":
-        case "مركز تسوق":
-        case "Pusat perbelanjaan":
-        case "Trung tâm mua sắm":
-        case "ห้างสรรพสินค้า":
           result = "0911"; break;
 
         case "Other Stores":
-        case "Diğer Mağazaları":
-        case "інші магазини":
-        case "其他商店":
-        case "D'autres magasins":
-        case "egyéb üzletek":
-        case "Inne sklepy":
-        case "Ostatní Stores":
-        case "otras tiendas":
-        case "outros Stores":
-        case "متاجر أخرى":
-        case "Toko lain":
-        case "Gian hàng khác":
-        case "ร้านค้าอื่น ๆ":
           result = "0913"; break;
       }
       break;
@@ -439,115 +234,24 @@ function GetConvertVerticalType2Code(_Business_Sector_Name, _Business_Sector_Ver
     case "05":
       switch (_Business_Sector_Vertival2_Name) {
         case "Hotel / Resort / Casino":
-        case "Otel / Resort / Casino":
-        case "Готель / Курорт / Казино":
-        case "酒店/度假村/赌场":
-        case "Hôtel / Resort / Casino":
-        case "Hotel / Resort / kaszinó":
-        case "Hotel / resort / Casino":
-        case "Hotel / Resort / Casino":
-        case "Hotel / Resort / Casino":
-        case "Hotel / Resort / Casino":
-        case "فندق / منتجع / كازينو":
-        case "Hotel / Resort / Casino":
-        case "Khách sạn / Resort / Casino":
-        case "โรงแรม / รีสอร์ท / คาสิโน":
           result = "0503"; break;
 
         case "Cruise":
-        case "Seyir":
-        case "круїз":
-        case "巡航":
-        case "Croisière":
-        case "Hajókázás":
-        case "Rejs":
-        case "Plavba":
-        case "Crucero":
-        case "Cruzeiro":
-        case "رحلة بحرية":
-        case "Pelayaran":
-        case "Du thuyền":
-        case "ล่องเรือ":
           result = "0501"; break;
 
         case "Hospital":
-        case "Hastane":
-        case "лікарня":
-        case "医院":
-        case "Hôpital":
-        case "Kórház":
-        case "Szpital":
-        case "Nemocnice":
-        case "Hospital":
-        case "Hospital":
-        case "مستشفى":
-        case "Rumah Sakit":
-        case "bệnh viện":
-        case "โรงพยาบาล":
           result = "0502"; break;
 
         case "LTC (Long-Term Care)":
-        case "LTC (Uzun Süreli Bakım)":
-        case "LTC (Long-Term Care)":
-        case "LTC（长期护理）":
-        case "LTC (Soins de longue durée)":
-        case "LTC (Long-Term Care)":
-        case "LTC (Long-Term Care)":
-        case "LTC (Long-Term Care)":
-        case "LTC (Long-Term Care)":
-        case "LTC (Long-Term Care)":
-        case "LTC (طويل الأجل العناية)":
-        case "LTC (Long-Term Care)":
-        case "LTC (Long-Term Care)":
-        case "LTC (การดูแลระยะยาว)":
           result = "0504"; break;
 
         case "Dormitory":
-        case "Yurt":
-        case "гуртожиток":
-        case "宿舍":
-        case "Dortoir":
-        case "Hálóterem":
-        case "Akademik":
-        case "Ubytovna":
-        case "Dormitorio":
-        case "Dormitório":
-        case "مسكن":
-        case "asrama mahasiswa":
-        case "ký túc xá":
-        case "หอพัก":
           result = "0508"; break;
 
         case "Fitness":
-        case "Fitness":
-        case "фітнес":
-        case "身体素质":
-        case "Aptitude":
-        case "alkalmasság":
-        case "Zdatność":
-        case "Zdatnost":
-        case "Aptitud":
-        case "Ginástica":
-        case "اللياقه البدنيه":
-        case "Kebugaran":
-        case "Sự khỏe khoắn":
-        case "การออกกำลังกาย":
           result = "0509"; break;
 
         case "Others":
-        case "Diğerleri":
-        case "інші":
-        case "其他":
-        case "Autres":
-        case "Egyéb":
-        case "Pozostałe":
-        case "jiní":
-        case "Otros":
-        case "Outras":
-        case "الآخرين":
-        case "Lainnya":
-        case "Khác":
-        case "คนอื่น ๆ":
           result = "0507"; break;
       }
       break;
@@ -555,83 +259,18 @@ function GetConvertVerticalType2Code(_Business_Sector_Name, _Business_Sector_Ver
     case "15":
       switch (_Business_Sector_Vertival2_Name) {
         case "Apartment": 
-        case "Apartman" :
-        case "квартира" :
-        case "公寓" :
-        case "Appartement" :
-        case "Lakás" :
-        case "Apartament" :
-        case "Byt" :
-        case "Departamento" :
-        case "Apartamento" :
-        case "شقة" :
-        case "Apartemen" :
-        case "Căn hộ, chung cư" :
-        case "อพาร์ทเม้น" :
         result = "1501"; break;
 
         case "Officetel": 
-        case "Officetel" :
-        case "Officetel" :
-        case "Officetel" :
-        case "officetel" :
-        case "Officetel" :
-        case "Officetel" :
-        case "Officetel" :
-        case "officetel" :
-        case "officetel" :
-        case "Officetel" :
-        case "officetel" :
-        case "Officetel" :
-        case "Officetel" :
         result = "1502"; break;
 
         case "Townhouse":
-        case "Townhouse":
-        case "міська в'язниця":
-        case "联排别墅":
-        case "maison de ville":
-        case "Townhouse":
-        case "Kamienica":
-        case "městský dům":
-        case "Townhouse":
-        case "condomínio":
-        case "تاون هاوس":
-        case "Townhouse":
-        case "Townhouse":
-        case "ทาวน์เฮ้าส์":
         result = "1503"; break;
 
         case "Villa / Single-Family Home":
-        case "Villa / Müstakil Ev" :
-        case "Вілла / будинок для однієї сім'ї" :
-        case "别墅/单户住宅" :
-        case "Villa / Maison unifamiliale" :
-        case "Villa / Egy családi ház" :
-        case "Villa / domu jednorodzinnego" :
-        case "Villa / Single-Family Home" :
-        case "Villa / vivienda unifamiliar" :
-        case "Villa / Single-família" :
-        case "فيلا / أعزب للعائلات الرئيسية" :
-        case "Villa / Single-Family Home" :
-        case "Villa / Single-Family Home" :
-        case "วิลล่า / บ้านครอบครัวเดี่ยว" :
         result = "1504"; break;
 
         case "Others":
-        case "Diğerleri" :
-        case "інші" :
-        case "其他" :
-        case "Autres" :
-        case "Egyéb" :
-        case "Pozostałe" :
-        case "jiní" :
-        case "Otros" :
-        case "Outras" :
-        case "الآخرين" :
-        case "Lainnya" :
-        case "Khác" :
-        case "คนอื่น ๆ" :
         result = "1505"; break;
       }
       break;
@@ -639,163 +278,33 @@ function GetConvertVerticalType2Code(_Business_Sector_Name, _Business_Sector_Ver
     case "01":
       switch (_Business_Sector_Vertival2_Name) {
         case "Office": 
-        case "Ofis" :
-        case "офіс" :
-        case "办公室" :
-        case "Bureau" :
-        case "Hivatal" :
-        case "Gabinet" :
-        case "Kancelář" :
-        case "Oficina" :
-        case "Escritório" :
-        case "مكتب. مقر. مركز" :
-        case "Kantor" :
-        case "văn phòng" :
-        case "สำนักงาน" :
           result = "0113"; break;
 
         case "Conference/Meeting Room/Collaboration spaces":
-        case "Konferans / Toplantı Odası / İşbirliği alanlarda":
-        case "Конференція / Meeting Room / Collaboration простору":
-        case "会议/会议室/协作空间":
-        case "Conférence / Salle de réunion / espaces de collaboration":
-        case "Konferencia / Tárgyaló / Collaboration terek":
-        case "Conference / Meeting Room / przestrzenie Collaboration":
-        case "Konferenční / zasedací místnost / Spolupráce prostory":
-        case "Sala de reuniones / salas de conferencias / Colaboración":
-        case "/ Sala de Reunião espaços de conferências / Colaboração":
-        case "مؤتمر / غرفة الاجتماعات / المساحات التعاون":
-        case "Konferensi / Ruang Rapat / ruang Kolaborasi":
-        case "Hội nghị / Phòng Họp / không gian hợp tác":
-        case "การประชุม / ห้องประชุม / ช่องว่างการทำงานร่วมกัน":
           result = "0114"; break;
 
         case "Auditorium":
-        case "Konferans salonu":
-        case "зал для глядачів":
-        case "礼堂":
-        case "Salle":
-        case "Előadóterem":
-        case "Audytorium":
-        case "Hlediště":
-        case "Sala":
-        case "Auditório":
-        case "قاعة محاضرات":
-        case "Auditorium":
-        case "Thính phòng":
-        case "หอประชุม":
           result = "0115"; break;
 
         case "Control/Command room":
-        case "Kontrol / Komut oda":
-        case "Контроль / Command номер":
-        case "控制/指挥室":
-        case "Salle de contrôle / commande":
-        case "Ellenőrző / Command szoba":
-        case "Control Room / poleceń":
-        case "Ovládání / Command pokoj":
-        case "sala de control / comando":
-        case "sala de controlo / comando":
-        case "غرفة التحكم / القيادة":
-        case "Control / Command ruang":
-        case "phòng điều khiển / Command":
-        case "ห้องควบคุม / คำสั่ง":
           result = "0116"; break;
 
         case "Broadcasting/Studio":
-        case "Yayın / Stüdyo":
-        case "Мовлення / Studio":
-        case "广播/录音室":
-        case "Radiodiffusion / studio":
-        case "Broadcasting / Studio":
-        case "Nadawanie / Studio":
-        case "Vysílání / Studio":
-        case "Difusión / Estudio":
-        case "Broadcasting / Studio":
-        case "البث / ستوديو":
-        case "Broadcasting / Studio":
-        case "Broadcasting / Studio":
-        case "บรอดคาสติ้ง / สตูดิโอ":
           result = "0106"; break;
 
         case "Traning/Experience center":
-        case "Traning / Deneyim merkezi":
-        case "Traning / Досвід центр":
-        case "教育训练/体验中心":
-        case "Traning / Centre d'expérience":
-        case "Gépekkel / Experience Center":
-        case "Szkolenia / Centrum Doświadczenie":
-        case "Tréninkový / Zkušenosti centrum":
-        case "Traning / centro Experience":
-        case "Traning centro / Experiência":
-        case "تمارين / مركز الخبرة":
-        case "Traning / Pengalaman pusat":
-        case "Đào tạo / Trung tâm Kinh nghiệm":
-        case "Traning / ศูนย์ประสบการณ์":
           result = "0117"; break;
 
         case "Show room/Briefing center":
-        case "Göster odası / Brifing merkezi":
-        case "Показати номер / Брифінг-центр":
-        case "展示厅/简报中心":
-        case "Show room / Centre d'information":
-        case "Megjelenítése szoba / Tájékoztató központ":
-        case "Show room / Centrum Briefing":
-        case "Show room / Briefing centrum":
-        case "Show room / Centro de orientación":
-        case "Show room centro / Briefing":
-        case "صالة عرض / مركز إحاطة":
-        case "Show room / Briefing pusat":
-        case "Hiện phòng / trung tâm tại cuộc họp báo":
-        case "แสดงห้อง / ศูนย์การบรรยายสรุป":
           result = "0118"; break;
 
         case "Common spaces ":
-        case "Ortak alanlarda":
-        case "загальні простору":
-        case "公共空间":
-        case "Les espaces communs":
-        case "közös terek":
-        case "wspólne przestrzenie":
-        case "společné prostory":
-        case "espacios comunes":
-        case "espaços comuns":
-        case "المساحات المشتركة":
-        case "ruang umum":
-        case "không gian chung":
-        case "พื้นที่ที่พบบ่อย":
           result = "0119"; break;
 
         case "Client interaction venue/space":
-        case "Müşteri etkileşim mekan / boşluk" :
-        case "Місце клієнта взаємодії / простір" :
-        case "客户端交互地点/空间" :
-        case "lieu / espace d'interaction client" :
-        case "Ügyfél kölcsönhatás helyszín / tér" :
-        case "Klient interakcja miejsce / miejsca" :
-        case "Klient interakce místo / prostor" :
-        case "lugar interacción cliente / espacio" :
-        case "local de interação cliente / espaço" :
-        case "مكان التفاعل العميل / الفضاء" :
-        case "Klien interaksi tempat / ruang" :
-        case "Khách hàng tương tác địa điểm / không gian" :
-        case "สถานปฏิสัมพันธ์ Client / พื้นที่" :
            result = "0120"; break;
 
         case "Others":
-        case "Diğerleri":
-        case "інші":
-        case "其他":
-        case "Autres":
-        case "Egyéb":
-        case "Pozostałe":
-        case "jiní":
-        case "Otros":
-        case "Outras":
-        case "الآخرين":
-        case "Lainnya":
-        case "Khác":
-        case "คนอื่น ๆ":
           result = "0121"; break;
       }
       break;
@@ -803,83 +312,18 @@ function GetConvertVerticalType2Code(_Business_Sector_Name, _Business_Sector_Ver
     case "11":
       switch (_Business_Sector_Vertival2_Name) {
         case "Air Transport":
-        case "Hava Taşımacılığı":
-        case "повітряне перевезення":
-        case "航空运输":
-        case "Transport aérien":
-        case "Légi közlekedés":
-        case "Transport lotniczy":
-        case "Letecká doprava":
-        case "Transporte aéreo":
-        case "Transporte aéreo":
-        case "النقل الجوي":
-        case "Transportasi udara":
-        case "Vận tải Hàng không":
-        case "การขนส่งทางอากาศ":
           result = "1101"; break;
 
         case "Road":
-        case "Yol":
-        case "дорога":
-        case "路":
-        case "Route":
-        case "Út":
-        case "Droga":
-        case "Silnice":
-        case "La carretera":
-        case "Estrada":
-        case "الطريق":
-        case "Jalan":
-        case "Đường":
-        case "ถนน":
           result = "1104"; break;
 
         case "Railway & Metro":
-        case "Demiryolu & Metro":
-        case "Залізничний і метро":
-        case "铁路，地铁":
-        case "Chemin de fer et métro":
-        case "Vasúti, Metro":
-        case "Kolejowy Metro":
-        case "Železniční Metro":
-        case "Ferroviario, metro":
-        case "Ferroviário, Metro":
-        case "السكك الحديدية و المترو":
-        case "Railway & Metro":
-        case "Railway & Metro":
-        case "รถไฟและรถไฟใต้ดิน":
           result = "1103"; break;
 
         case "Sea":
-        case "Deniz":
-        case "море":
-        case "海":
-        case "Mer":
-        case "Tenger":
-        case "Morze":
-        case "Moře":
-        case "Mar":
-        case "Mar":
-        case "بحر":
-        case "Laut":
-        case "Biển":
-        case "ทะเล":
           result = "1102"; break;
 
         case "Others":
-        case "Diğerleri":
-        case "інші":
-        case "其他":
-        case "Autres":
-        case "Egyéb":
-        case "Pozostałe":
-        case "jiní":
-        case "Otros":
-        case "Outras":
-        case "الآخرين":
-        case "Lainnya":
-        case "Khác":
-        case "คนอื่น ๆ":
           result = "1105"; break;
       }
       break;
@@ -887,67 +331,15 @@ function GetConvertVerticalType2Code(_Business_Sector_Name, _Business_Sector_Ver
     case "02":
       switch (_Business_Sector_Vertival2_Name) {
         case "K12 (Kindergarten & Schools)":
-        case "K12 (Yuva ve Okullar)":
-        case "К12 (дитячий садок і школа)":
-        case "K12（幼儿园及学校）":
-        case "K12 (jardin d'enfants et écoles)":
-        case "K12 (Óvoda és iskolák)":
-        case "K12 (przedszkola i szkoły)":
-        case "K12 (mateřské školky a školy)":
-        case "K12 (jardín de infancia y escuelas)":
-        case "K12 (do jardim de infância e escolas)":
-        case "K12 (رياض اطفال ومدارس)":
-        case "K12 (TK & Sekolah)":
-        case "K12 (Mẫu giáo & Trường)":
-        case "K12 (โรงเรียนอนุบาลและโรงเรียน)":
           result = "0201"; break;
 
         case "HigherEd (College & University)":
-        case "HigherEd (Üniversite ve Üniversite)":
-        case "HigherEd (коледж і університет)":
-        case "HigherEd（学院和大学）":
-        case "HigherEd (College & University)":
-        case "HigherEd (College & University)":
-        case "HigherEd (College & University)":
-        case "HigherEd (College a University)":
-        case "Highered (Colegio y Universidad)":
-        case "HigherEd (Colégio e Universidade)":
-        case "HigherEd (كلية وجامعة)":
-        case "Highered (College & University)":
-        case "HigherEd (Cao đẳng & Đại học)":
-        case "HigherEd (วิทยาลัยและมหาวิทยาลัย)":
           result = "0202"; break;
 
         case "Institute & Academy":
-        case "Enstitü & Akademi":
-        case "Інститут і Академія":
-        case "学院院士":
-        case "Institut et Académie":
-        case "Institute & Academy":
-        case "Instytut & Academy":
-        case "Institute & Academy":
-        case "Instituto y Academia":
-        case "Institute & Academy":
-        case "معهد وأكاديمية":
-        case "Institute & Academy":
-        case "Viện & Academy":
-        case "สถาบันและสถาบันการศึกษา":
           result = "0205"; break;
 
         case "Others":
-        case "Diğerleri":
-        case "інші":
-        case "其他":
-        case "Autres":
-        case "Egyéb":
-        case "Pozostałe":
-        case "jiní":
-        case "Otros":
-        case "Outras":
-        case "الآخرين":
-        case "Lainnya":
-        case "Khác":
-        case "คนอื่น ๆ":
           result = "0204"; break;
       }
       break;
@@ -955,83 +347,18 @@ function GetConvertVerticalType2Code(_Business_Sector_Name, _Business_Sector_Ver
     case "08":
       switch (_Business_Sector_Vertival2_Name) {
         case "Culture":
-        case "Kültür":
-        case "культура":
-        case "文化":
-        case "Culture":
-        case "Kultúra":
-        case "Kultura":
-        case "Kultura":
-        case "Cultura":
-        case "Cultura":
-        case "حضاره":
-        case "Budaya":
-        case "Văn hóa":
-        case "วัฒนธรรม":
           result = "0816"; break;
 
         case "Sports":
-        case "Spor Dalları":
-        case "спортивний":
-        case "体育":
-        case "Des sports":
-        case "Sport":
-        case "Sporty":
-        case "Sportovní":
-        case "Deportes":
-        case "Esportes":
-        case "رياضات":
-        case "Olahraga":
-        case "Các môn thể thao":
-        case "กีฬา":
           result = "0813"; break;
 
         case "Religious facility":
-        case "Dini tesis":
-        case "релігійний об'єкт":
-        case "宗教设施":
-        case "centre religieux":
-        case "vallási lehetőség":
-        case "obiekt religijny":
-        case "náboženská zařízení":
-        case "instalación religiosa":
-        case "instalação religiosa":
-        case "منشأة الديني":
-        case "fasilitas keagamaan":
-        case "cơ sở tôn giáo":
-        case "สถานที่ทางศาสนา":
           result = "0817"; break;
 
         case "Outdoor Advertisement":
-        case "Açık Tanıtım":
-        case "зовнішня реклама":
-        case "户外广告":
-        case "Publicité extérieure":
-        case "Kültéri reklám":
-        case "reklama zewnętrzna":
-        case "venkovní reklama":
-        case "Publicidad exterior":
-        case "Anúncio Ao ar livre":
-        case "الإعلان في الهواء الطلق":
-        case "luar ruangan Iklan":
-        case "ngoài trời Quảng cáo":
-        case "โฆษณากลางแจ้ง":
           result = "0818"; break;
 
         case "Others":
-        case "Diğerleri":
-        case "інші":
-        case "其他":
-        case "Autres":
-        case "Egyéb":
-        case "Pozostałe":
-        case "jiní":
-        case "Otros":
-        case "Outras":
-        case "الآخرين":
-        case "Lainnya":
-        case "Khác":
-        case "คนอื่น ๆ":
           result = "0815"; break;
       }
       break;
@@ -1039,83 +366,18 @@ function GetConvertVerticalType2Code(_Business_Sector_Name, _Business_Sector_Ver
     case "04":
       switch (_Business_Sector_Vertival2_Name) {
         case "General Government Office":
-        case "Genel Hükümet Ofisi":
-        case "Управління Спільного уряду":
-        case "一般政府办公室":
-        case "Bureau du général":
-        case "Általános Kormányhivatal":
-        case "Główny Urząd rząd":
-        case "Vládní úřad":
-        case "Oficina General de Gobierno":
-        case "Escritório Geral de Governo":
-        case "مكتب الحكومة العامة":
-        case "Kantor Pemerintah Umum":
-        case "Văn phòng Chính phủ nói chung":
-        case "สำนักงานทั่วไปรัฐบาล":
           result = "0403"; break;
 
         case "Military":
-        case "Askeri":
-        case "військовий":
-        case "军事":
-        case "Militaire":
-        case "Katonai":
-        case "Wojskowy":
-        case "Válečný":
-        case "Militar":
-        case "Militares":
-        case "الجيش":
-        case "Militer":
-        case "Quân đội":
-        case "ทหาร":
           result = "0404"; break;
 
         case "Police/Fire station":
-        case "Polis / Yangın istasyonu":
-        case "Поліція / станція пожежної":
-        case "警察/消防局":
-        case "Police / Pompiers":
-        case "Rendőrség / Tűzoltó állomás":
-        case "Policja / Straż pożarna":
-        case "Policie / Hasiči":
-        case "Policía / estación de Fuego":
-        case "Polícia / Bombeiros":
-        case "الشرطة / محطة النار":
-        case "Polisi / Stasiun Api":
-        case "Cảnh sát / Trạm cứu hỏa":
-        case "ตำรวจ / สถานีดับเพลิง":
           result = "0406"; break;
 
         case "Welfare facilities ":
-        case "Refah tesisleri":
-        case "об'єкти соціального забезпечення":
-        case "福利设施":
-        case "Installations de bien-être":
-        case "Szociális létesítmények":
-        case "Wyposażenie socjalne":
-        case "sociální zařízení":
-        case "Servicios de bienestar":
-        case "Instalações de bem-estar":
-        case "مرافق الرعاية":
-        case "fasilitas kesejahteraan":
-        case "Các cơ sở phúc lợi xã hội":
-        case "สิ่งอำนวยความสะดวกสวัสดิการ":
           result = "0402"; break;
 
         case "Others":
-        case "Diğerleri":
-        case "інші":
-        case "其他":
-        case "Autres":
-        case "Egyéb":
-        case "Pozostałe":
-        case "jiní":
-        case "Otros":
-        case "Outras":
-        case "الآخرين":
-        case "Lainnya":
-        case "Khác":
-        case "คนอื่น ๆ":
           result = "0410"; break;
       }
       break;
@@ -1123,67 +385,15 @@ function GetConvertVerticalType2Code(_Business_Sector_Name, _Business_Sector_Ver
     case "03":
       switch (_Business_Sector_Vertival2_Name) {
         case "Manufacturing factory":
-        case "İmalat fabrikası":
-        case "виробництво заводу":
-        case "制造工厂":
-        case "usine de fabrication":
-        case "Gyártás gyár":
-        case "fabryka":
-        case "výrobní závod":
-        case "fábrica de fabricación":
-        case "fábrica de produção":
-        case "مصنع تصنيع":
-        case "pabrik manufaktur":
-        case "Nhà máy chế tạo":
-        case "โรงงานผลิต":
           result = "0309"; break;
 
         case "Chemical factory":
-        case "Kimya fabrikası":
-        case "хімічний завод":
-        case "化工厂":
-        case "Usine de produits chimiques":
-        case "vegyi gyárban":
-        case "Fabryka chemiczna":
-        case "chemická továrna":
-        case "Fábrica de químicos":
-        case "fábrica química":
-        case "مصنع كيميائي":
-        case "pabrik kimia":
-        case "Nhà máy hoá chất":
-        case "โรงงานเคมี":
           result = "0310"; break;
 
         case "Pharmaceutical factory":
-        case "İlaç fabrikası":
-        case "Фармацевтична фабрика":
-        case "药厂":
-        case "usine pharmaceutique":
-        case "Gyógyszeripari gyár":
-        case "fabryka farmaceutyczna":
-        case "Farmaceutická továrna":
-        case "fábrica de productos farmacéuticos":
-        case "fábrica de produtos farmacêuticos":
-        case "مصنع للأدوية":
-        case "pabrik farmasi":
-        case "nhà máy dược phẩm":
-        case "โรงงานเภสัชกรรม":
           result = "0311"; break;
 
         case "Others":
-        case "Diğerleri":
-        case "інші":
-        case "其他":
-        case "Autres":
-        case "Egyéb":
-        case "Pozostałe":
-        case "jiní":
-        case "Otros":
-        case "Outras":
-        case "الآخرين":
-        case "Lainnya":
-        case "Khác":
-        case "คนอื่น ๆ":
           result = "0301"; break;
       }
       break;
@@ -1191,67 +401,15 @@ function GetConvertVerticalType2Code(_Business_Sector_Name, _Business_Sector_Ver
     case "16":
       switch (_Business_Sector_Vertival2_Name) {
         case "Power plant":
-        case "Enerji santrali":
-        case "Електростанція":
-        case "发电厂":
-        case "Centrale électrique":
-        case "Erőmű":
-        case "Elektrownia":
-        case "Elektrárna":
-        case "Planta de energía":
-        case "Usina elétrica":
-        case "محطة توليد الكهرباء":
-        case "Pembangkit listrik":
-        case "Nhà máy điện":
-        case "โรงไฟฟ้า":
           result = "1601"; break;
 
         case "Renewable energy":
-        case "Yenilenebilir enerji":
-        case "Відновлювальна енергія":
-        case "可再生能源":
-        case "Énergie renouvelable":
-        case "Megújuló energia":
-        case "Energia odnawialna":
-        case "Obnovitelná energie":
-        case "Energía renovable":
-        case "Energia renovável":
-        case "طاقة متجددة":
-        case "Energi terbarukan":
-        case "Năng lượng tái tạo":
-        case "พลังงานทดแทน":
           result = "1602"; break;
 
         case "Energy Storage & Saving":
-        case "Enerji Depolama ve Tasarruf":
-        case "Акумулювання енергії і економії":
-        case "储能及节能":
-        case "Stockage de l'énergie et économie":
-        case "Energy Storage & Saving":
-        case "Energy Saving & Storage":
-        case "Energy Storage & Saving":
-        case "Almacenamiento de energía y ahorro":
-        case "Armazenamento de Energia & Economia":
-        case "تخزين الطاقة وتوفير":
-        case "Energi Storage & Saving":
-        case "Năng lượng lưu trữ & tiết kiệm":
-        case "การจัดเก็บพลังงานและประหยัด":
           result = "1603"; break;
 
         case "Others":
-        case "Diğerleri":
-        case "інші":
-        case "其他":
-        case "Autres":
-        case "Egyéb":
-        case "Pozostałe":
-        case "jiní":
-        case "Otros":
-        case "Outras":
-        case "الآخرين":
-        case "Lainnya":
-        case "Khác":
-        case "คนอื่น ๆ":
           result = "1604"; break;
       }
       break;
@@ -1259,67 +417,15 @@ function GetConvertVerticalType2Code(_Business_Sector_Name, _Business_Sector_Ver
     case "10":
       switch (_Business_Sector_Vertival2_Name) {
         case "Mixed-use (Multi Complex)":
-        case "Karma kullanımlı (Multi Complex)":
-        case "Багатофункціональний (Multi комплексів)":
-        case "混合使用（多复杂）":
-        case "À usage mixte (Multi complexe)":
-        case "Vegyes-felhasználás (Multi Complex)":
-        case "Mixed-use (Multi Complex)":
-        case "Víceúčelový (multi Complex)":
-        case "Uso mixto (Multi Complejo)":
-        case "De uso misto (multi Complex)":
-        case "متعدد الاستخدامات (موضوع مجمع)":
-        case "Mixed-use (Multi Complex)":
-        case "Đa chức năng (Multi Complex)":
-        case "ใช้ผสม (หลายคอมเพล็กซ์)":
           result = "1011"; break;
 
         case "Botanical Garden / Green House":
-        case "Botanik Bahçe / Green House":
-        case "Ботанічний сад / Green House":
-        case "植物园/绿屋":
-        case "Jardin botanique / Green House":
-        case "Növénykert / Green House":
-        case "Ogród Botaniczny / Green House":
-        case "Botanická zahrada / Green House":
-        case "Jardín Botánico de la casa verde /":
-        case "Jardim Botânico Green House /":
-        case "الحديقة النباتية / البيت الأخضر":
-        case "Botanical Garden / Green House":
-        case "Botanical Garden / Green House":
-        case "สวนพฤกษศาสตร์ / กรีนเฮ้าส์":
           result = "1009"; break;
 
         case "Telecom base station / Data, Call center":
-        case "Telekom baz istasyonu / Veri, Çağrı merkezi":
-        case "базова станція Telecom / Data, Call-центр":
-        case "电信基站/数据，呼叫中心":
-        case "station de base Télécom / données, centre d'appels":
-        case "Telecom bázisállomás / Data, Call center":
-        case "Stacja bazowa Telecom / danych, Call center":
-        case "Telecom základnové stanice / Data, Call centrum":
-        case "estación base de telecomunicaciones / datos, centro de atención telefónica":
-        case "estação base Telecom / Dados, centro de chamadas":
-        case "المحطة الأساسية للاتصالات / البيانات، مركز الاتصال":
-        case "Telekomunikasi base station / Data, Call center":
-        case "Telecom trạm gốc / Dữ liệu, Call center":
-        case "โทรคมนาคมสถานีฐาน / ข้อมูล, call center":
           result = "1005"; break;
 
         case "Others":
-        case "Diğerleri":
-        case "інші":
-        case "其他":
-        case "Autres":
-        case "Egyéb":
-        case "Pozostałe":
-        case "jiní":
-        case "Otros":
-        case "Outras":
-        case "الآخرين":
-        case "Lainnya":
-        case "Khác":
-        case "คนอื่น ๆ":
           result = "1010"; break;
       }
       break;
