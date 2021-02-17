@@ -418,9 +418,9 @@ function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items) {
       data.ATTRIBUTE2 = "";
       data.ATTRIBUTE3 = "";
       data.ATTRIBUTE4 = "";
-      data.ATTRIBUTE5 = "";
-      data.ATTRIBUTE6 = "";
-      data.ATTRIBUTE7 = "";
+      data.ATTRIBUTE5 = GetBusinessExtraction(item.name);
+      data.ATTRIBUTE6 = GetCorporationExtraction(item.name); 
+      data.ATTRIBUTE7 = GetRullExtraction(item.name);
       data.ATTRIBUTE8 = "";
       data.ATTRIBUTE9 = "";
       data.ATTRIBUTE10 = "";

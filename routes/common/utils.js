@@ -64,10 +64,6 @@ exports.yesterday_getDateTime = function (){
     let end = moment().format("YYYY-MM-DD"); 
     end = moment(end).format("YYYY-MM-DD");
 
-
-    console.log(start);
-    console.log(end);
-
     return {
         start : start , 
         end : end
