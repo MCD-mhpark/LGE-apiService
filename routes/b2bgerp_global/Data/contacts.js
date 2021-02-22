@@ -1080,7 +1080,7 @@ router.get('/sender', async function (req, res, next) {
     
     console.log(request_data);
     // httpRequest.sender("http://localhost:8001/b2bgerp_global/contacts/req_data_yn", "POST", { ContentList: request_data });
-    var result = await httpRequest.sender( send_url , "POST", { ContentList: request_data });
+    var result = await httpRequest.sender( send_url , "LGE_GERP_GLOBAL_POST", { ContentList: request_data });
     // res.json({ ContentList: request_data });
 
     setBant_Update(contact_list); 

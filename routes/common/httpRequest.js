@@ -30,7 +30,7 @@ exports.sender = async function(url , method  , data){
       json : true
     };
   }
-  else if(method == "LG_POST" ){
+  else if(method == "LGE_GERP_GLOBAL_POST" ){
     headers.Value = "da7d5553-5722-4358-91cd-9d89859bc4a0";
 
     options = {
