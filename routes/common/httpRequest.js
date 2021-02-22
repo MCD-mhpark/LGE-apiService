@@ -1,5 +1,5 @@
 var request = require('request');
-exports.sender = function(url , method  , data){
+exports.sender = async function(url , method  , data){
   
   // var headers = {
   //   'User-Agent': 'Super Agent/0.0.1',
@@ -30,12 +30,24 @@ exports.sender = function(url , method  , data){
       json : true
     };
   }
+  else if(method == "LG_POST" ){
+    headers.Value = "da7d5553-5722-4358-91cd-9d89859bc4a0";
+
+    options = {
+      url : url,
+      method: method,
+      headers:headers,
+      encoding:'binary',
+      body : data ,
+      json : true
+    };
+  }
   
 
   console.log(new Date());
   console.log(options);
-  
-  request(options, function (error, response, body) {
+  var result ;
+  await request(options, function (error, response, body) {
 
     console.log(123);
     if(error){
@@ -43,8 +55,11 @@ exports.sender = function(url , method  , data){
       console.log(error);
     } 
     if (!error && response.statusCode == 200) {
-      console.log(body);
+      result = body;
+      // console.log(body);
       
     }
   });
+
+  return result;
 }

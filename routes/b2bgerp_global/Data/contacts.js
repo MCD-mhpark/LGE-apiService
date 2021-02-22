@@ -906,7 +906,7 @@ async function get_b2bgerp_global_bant_data(_business_name , start_date, end_dat
 
     if (result.data.total && result.data.total > 0) {
       contacts_data = result.data;
-      console.log(result.data);
+      
     }
   }).catch((err) => {
     console.error(err);
@@ -1078,14 +1078,15 @@ router.get('/sender', async function (req, res, next) {
       }; 
     });
     
-    
+    console.log(request_data);
     // httpRequest.sender("http://localhost:8001/b2bgerp_global/contacts/req_data_yn", "POST", { ContentList: request_data });
-    httpRequest.sender( send_url , "POST", { ContentList: request_data });
+    var result = await httpRequest.sender( send_url , "POST", { ContentList: request_data });
     // res.json({ ContentList: request_data });
 
-    setBant_Update(contact_list) 
+    setBant_Update(contact_list); 
     // console.log(contact_list);
-
+    console.log("LGE B2BGERP SERVER RESPONSE");
+    console.log(result);
 
     return;
   }
@@ -1106,7 +1107,7 @@ router.get('/sender', async function (req, res, next) {
 router.post('/req_data_yn', function (req, res, next) {
   console.log("call req_data_yn");
   console.log(req.body.ContentList.length);
-  console.log(req.body);
+  // console.log(req.body);
   res.json(req.body);
 });
 
