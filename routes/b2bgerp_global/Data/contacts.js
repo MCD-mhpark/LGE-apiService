@@ -825,7 +825,7 @@ function setBant_Update (contact_info){
     });
 
     await b2bgerp_eloqua.data.contacts.update(item.id , update_data ).then((result) => {
-      console.log(result.data);
+      // console.log(result.data);
     }).catch((err) => {
       console.error(err.message);
     });
