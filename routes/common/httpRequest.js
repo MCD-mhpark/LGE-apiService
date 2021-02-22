@@ -25,12 +25,16 @@ exports.sender = async function(url , method  , data){
       method: method,
       headers:headers,
       encoding:'binary',
-      body : data ,
+      body : JSON.stringify(data) ,
       json : true
     };
   }
   else if(method == "LGE_GERP_GLOBAL_POST" ){
-    headers['Value'] = "da7d5553-5722-4358-91cd-9d89859bc4a0";
+    var headers = {
+      'Content-Type': "application/json",
+      'Value' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
+    }
+    
 
     options = {
       url : url,
