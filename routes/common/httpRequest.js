@@ -49,12 +49,14 @@ exports.sender = async function(url , method  , data){
   var result ;
   await request(options, function (error, response, body) {
 
-    console.log(123);
+   
     if(error){
+      console.log(123);
       console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
       console.log(error);
     } 
     if (!error && response.statusCode == 200) {
+      console.log(1234);
       result = body;
       // console.log(body);
       console.log(response);
