@@ -909,7 +909,7 @@ async function get_b2bgerp_global_bant_data(_business_name , start_date, end_dat
       console.log(result.data);
     }
   }).catch((err) => {
-    console.error(err.message);
+    console.error(err);
     return null;
   });
   return contacts_data;
@@ -1052,21 +1052,62 @@ router.get('/:businessName/:start_date/:end_date', async function (req, res, nex
 });
 //#endregion
 
-router.get('/req_data', function (req, res, next) {
-  var id = 941;
-  b2bgerp_eloqua.data.contacts.getOne(id).then((result) => {
-    console.log(result.data);
-    httpRequest.sender("http://localhost:8001/b2bgerp_global/contacts/req_data_yn", "POST", result.data);
-  }).catch((err) => {
-    console.error(err.message);
-  });
+router.get('/sender', async function (req, res, next) {
+  var business_name = req.query.businessName;
+  var start_date = req.query.start_date;
+  var end_date = req.query.end_date;
+  var send_url = req.query.send_url;
+  // console.log(start_date);
+  // console.log(end_date); 
+  // console.log(business_name);
+  // console.log(send_url); 
+  //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr)
+  //BANT기준 B2B GERP GLOBAL CONTACTS 조회
+  var contacts_data = await get_b2bgerp_global_bant_data(business_name , start_date , end_date);
+
+  // return;
+  if (contacts_data != null) {
+    //Eloqua Contacts
+    //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr )
+    var request_data = Convert_B2BGERP_GLOBAL_DATA( contacts_data, business_name);
+    // console.log(contacts_data)
+    var contact_list = contacts_data.elements.map(row => { 
+      return {
+        id : row.id ,
+        emailAddress : row.emailAddress
+      }; 
+    });
+    
+    
+    // httpRequest.sender("http://localhost:8001/b2bgerp_global/contacts/req_data_yn", "POST", { ContentList: request_data });
+    httpRequest.sender( send_url , "POST", { ContentList: request_data });
+    // res.json({ ContentList: request_data });
+
+    setBant_Update(contact_list) 
+    // console.log(contact_list);
+
+
+    return;
+  }
+  else {
+    res.json(false);
+  }
+  //API Gateway 데이터 전송
+
+  //Log
+  //res.json(true);
+  return;
+
+   
+ 
 });
 
 // 가상의 LG API GATEWAY의 
 router.post('/req_data_yn', function (req, res, next) {
   console.log("call req_data_yn");
-
+  console.log(req.body.ContentList.length);
   console.log(req.body);
+  res.json(req.body);
 });
 
 // 가상의 LG API GATEWAY의 
