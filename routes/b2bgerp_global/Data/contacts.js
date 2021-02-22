@@ -823,9 +823,7 @@ function setBant_Update (contact_info){
     await status_list.forEach(field_id =>{
       update_data.fieldValues.push(setCustomFieldValue(field_id , "Contact"));
     });
-    console.log(update_data);
 
-    
     await b2bgerp_eloqua.data.contacts.update(item.id , update_data ).then((result) => {
       console.log(result.data);
     }).catch((err) => {
@@ -1069,7 +1067,7 @@ router.get('/sender', async function (req, res, next) {
   if (contacts_data != null) {
     //Eloqua Contacts
     //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr )
-    var request_data = Convert_B2BGERP_GLOBAL_DATA( contacts_data, business_name);
+    var request_data = await Convert_B2BGERP_GLOBAL_DATA( contacts_data, business_name);
     // console.log(contacts_data)
     var contact_list = contacts_data.elements.map(row => { 
       return {

@@ -56,7 +56,7 @@ exports.sender = async function(url , method  , data){
     } 
     if (!error && response.statusCode == 200) {
       result = body;
-      console.log(body);
+      // console.log(body);
       console.log(response);
       
     }
