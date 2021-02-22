@@ -6,7 +6,6 @@ exports.sender = async function(url , method  , data){
   //   'Content-Type': "application/xml"
   // }
   var headers = {
-    'User-Agent': 'Super Agent/0.0.1',
     'Content-Type': "application/json"
   }
  
@@ -31,7 +30,7 @@ exports.sender = async function(url , method  , data){
     };
   }
   else if(method == "LGE_GERP_GLOBAL_POST" ){
-    headers["'Value'"] = "da7d5553-5722-4358-91cd-9d89859bc4a0";
+    headers['Value'] = "da7d5553-5722-4358-91cd-9d89859bc4a0";
 
     options = {
       url : url,
