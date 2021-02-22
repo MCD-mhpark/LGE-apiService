@@ -32,7 +32,7 @@ exports.sender = async function(url , method  , data){
   else if(method == "LGE_GERP_GLOBAL_POST" ){
     var headers = {
       'Content-Type': "application/json",
-      'Value' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
+      'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
     }
     
 
