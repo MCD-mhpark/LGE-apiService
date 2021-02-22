@@ -1023,8 +1023,8 @@ router.get('/:businessName/:start_date/:end_date', async function (req, res, nex
   if (contacts_data != null) {
     //Eloqua Contacts
     //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr )
-    var request_data = Convert_B2BGERP_GLOBAL_DATA( contacts_data, business_name);
-    console.log(contacts_data)
+    var request_data = await Convert_B2BGERP_GLOBAL_DATA( contacts_data, business_name);
+    console.log(contacts_data);
     var contact_list = contacts_data.elements.map(row => { 
       return {
         id : row.id ,
