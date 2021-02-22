@@ -567,7 +567,7 @@ router.post('/user/securityGroup', async function (req, res, next) {
 async function get_user_securityGroup(user_id , res){
 
 	var queryString = {};
-	queryString['depth'] = "partial";
+	queryString['depth'] = "complete";
 	var return_list = [];
 	await iam_eloqua.system.users.getOne(user_id, queryString).then(async (result) => {
 		if(!result.data.securityGroups) console.log(process , " not data list");
@@ -587,6 +587,7 @@ async function get_user_securityGroup(user_id , res){
 
 	return return_list;
 }
+
 
 
 async function securityGroup_Process( user_id , remove_sc_group , add_sc_group){
@@ -820,5 +821,23 @@ function lpad(str, padLen, padStr) {
 }
 
 //#endregion
+
+
+
+router.get('/all_securityGroups', function (req, res, next) {
+  var queryString = {
+    //search : search_value,
+    depth: "complete" //["minimal", "partial " ,"complete"]
+  }
+  iam_eloqua.system.users.security_groups(queryString).then((result) => {
+      res.json(result.data);
+
+      //console.log(request_data
+    
+  }).catch((err) => {
+    console.error(err);
+    res.json(false);
+  });
+});
 
 module.exports = router;
