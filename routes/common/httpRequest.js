@@ -49,7 +49,8 @@ exports.sender = async function(url , method  , data){
   var result ;
   await request(options, function (error, response, body) {
 
-   
+    console.log(11);
+    console.log( response.statusCode );
     if(error){
       console.log(123);
       console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
