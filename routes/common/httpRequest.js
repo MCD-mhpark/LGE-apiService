@@ -38,7 +38,7 @@ exports.sender = async function(url , method  , data){
 
     options = {
       url : url,
-      method: method,
+      method: "POST",
       headers:headers,
       body : data ,
       json : true
