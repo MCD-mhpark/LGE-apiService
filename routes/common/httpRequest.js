@@ -37,7 +37,6 @@ exports.sender = async function(url , method  , data){
       url : url,
       method: method,
       headers:headers,
-      encoding:'binary',
       body : data ,
       json : true
     };
@@ -50,6 +49,8 @@ exports.sender = async function(url , method  , data){
   await request(options, function (error, response, body) {
 
     console.log(11);
+    console.log(response);
+    console.log(body);
     console.log( response.statusCode );
     if(error){
       console.log(123);
