@@ -299,7 +299,7 @@ function GetConvertVerticalType2Code(_Business_Sector_Name, _Business_Sector_Ver
         case "Broadcasting/Studio":
           result = "0106"; break;
 
-        case "Traning/Experience center":
+        case "Training/Experience center":
           result = "0117"; break;
 
         case "Show room/Briefing center":
