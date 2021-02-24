@@ -893,7 +893,7 @@ async function get_b2bgerp_global_bant_data(_business_name , start_date, end_dat
 
   
   //var yesterday_Object = utils.today_getDateTime();
-  var queryText = "C_DateModified>" + "'" + yesterday_Object.start + " 00:00:01'" + "C_DateModified<" + "'" + yesterday_Object.end + " 23:59:59'" + status_bant + "='MQL'";
+  var queryText = "C_DateModified>" + "'" + yesterday_Object.start + " 10:00:00'" + "C_DateModified<" + "'" + yesterday_Object.end + " 11:00:59'" + status_bant + "='MQL'";
   //yesterday_getUnixTime
   console.log("queryText : " + queryText);
   queryString['search'] = queryText;
@@ -923,7 +923,7 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
       var FieldValues_data = contacts_data.elements[i].fieldValues;
 
       //result_item.INTERFACE_ID = "ELOQUA_0003" // this.INTERFACE_ID = "ELOQUA_0003"
-      result_item.INTERFACE_ID = moment().format('YYYYMMDD') + lpad(seq_cnt, 4, "0");
+      result_item.INTERFACE_ID = moment().format('YYYYMMDD') + lpad(seq_cnt, 4, "6");
       //리드네임 [MQL]Subsidiary_BU_Platform&Activity_Register Date+Hour 값을 조합
       //리드네임 {{Business Unit}}_{{Subsidiary}}_{{Platform}}_{{Activity}}_{{Date}}
       //리드네임 {{Business Unit}}_{{Subsidiary}}_{{Platform&Activity}}_{{Date}}
@@ -1082,6 +1082,7 @@ router.get('/sender', async function (req, res, next) {
     var result = await httpRequest.sender( send_url , "LGE_GERP_GLOBAL_POST", { ContentList: request_data });
     // res.json({ ContentList: request_data });
 
+    
     setBant_Update(contact_list); 
     // console.log(contact_list);
     console.log("LGE B2BGERP SERVER RESPONSE");

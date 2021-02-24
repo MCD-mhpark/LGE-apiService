@@ -25,7 +25,7 @@ async function get_INTEGRATION_DB_bant_data() {
   
   var contacts_data;
 
-  await b2bgerp_eloqua.data.contacts.get(queryString).then((result) => {
+  await csintergration_eloqua_config.data.contacts.get(queryString).then((result) => {
     console.log(result.data);
 
     console.log("true");
@@ -587,7 +587,7 @@ router.get('/', async function (req, res, next) {
 
 router.get('/req_data', function (req, res, next) {
   var id = 941;
-  b2bgerp_eloqua.data.contacts.getOne(id).then((result) => {
+  csintergration_eloqua_config.data.contacts.getOne(id).then((result) => {
     console.log(result.data);
     httpRequest.sender("http://localhost:8001/b2bgerp_kr_us/contacts/req_data_yn", "POST" , result.data);
   }).catch((err) => {

@@ -102,14 +102,17 @@ global.logManager = require('./routes/common/history.js');
 var index =  require('./routes/index'); 
 var log =  require('./routes/log'); 
 // Data/contacts 만 쓰는 project
-var b2bgerp_global_data_contacts= require('./routes/b2bgerp_global/Data/contacts');
-var b2bgerp_kr_us_data_contacts= require('./routes/b2bgerp_kr_us/Data/contacts');
-var cs_integration_data_contacts= require('./routes/cs_integration/Data/contacts');
+var b2bgerp_global_data_contacts = require('./routes/b2bgerp_global/Data/contacts');
+var b2bgerp_kr_us_data_contacts = require('./routes/b2bgerp_kr_us/Data/contacts');
+var cs_integration_data_contacts = require('./routes/cs_integration/Data/contacts');
+var cs_integration_data_activities = require('./routes/cs_integration/Data/activities');
+var cs_integration_Assets_campaign = require('./routes/cs_integration/Assets/campaigns');
 
 // bulk 혹은 system user 를 사용하는 project
 var bscard_app_bulk_contacts= require('./routes/bscard_app/Bulk/contacts/imports');
 var bscard_app_bulk_syncAction= require('./routes/bscard_app/Bulk/contacts/syncAction');
 var bscard_app_data_contacts = require('./routes/bscard_app/Data/contacts');
+
 
 var etc_function = require('./routes/common/etc_function');
 
@@ -141,6 +144,8 @@ app.use('/log', log);
 app.use('/b2bgerp_global/contacts', b2bgerp_global_data_contacts);
 app.use('/b2bgerp_kr/contacts', b2bgerp_kr_us_data_contacts);
 app.use('/cs_integration/contacts', cs_integration_data_contacts);
+app.use('/cs_integration/activities', cs_integration_data_activities);
+app.use('/cs_integration/campaign', cs_integration_Assets_campaign);
 
 app.use('/bscard_app/contacts/syncAction', bscard_app_bulk_syncAction);
 app.use('/bscard_app/contacts/imports', bscard_app_bulk_contacts);
