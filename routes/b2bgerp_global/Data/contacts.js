@@ -1062,13 +1062,14 @@ router.get('/sender', async function (req, res, next) {
   //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr)
   //BANT기준 B2B GERP GLOBAL CONTACTS 조회
   var contacts_data = await get_b2bgerp_global_bant_data(business_name , start_date , end_date);
-
+  console.log(contacts_data)
   // return;
   if (contacts_data != null) {
     //Eloqua Contacts
     //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr )
     var request_data = await Convert_B2BGERP_GLOBAL_DATA( contacts_data, business_name);
-    // console.log(contacts_data)
+    return;
+   
     var contact_list = contacts_data.elements.map(row => { 
       return {
         id : row.id ,
