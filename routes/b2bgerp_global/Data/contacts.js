@@ -12,14 +12,14 @@ var seq_cnt = 0;
 
 
 function B2B_GERP_GLOBAL_ENTITY() {
-  this.INTERFACE_ID = "ELOQUA_0003",
-    this.LEAD_NAME = "";        //리드네임 [MQL]Subsidiary_BU_Platform&Activity_Register Date+Hour 값을 조합
-  this.SITE_NAME = "";				//사이트네임
+  this.INTERFACE_ID = "ELOQUA_0003", //  (필수값) 
+  this.LEAD_NAME = "";        // (필수값) 리드네임 [MQL]Subsidiary_BU_Platform&Activity_Register Date+Hour 값을 조합
+  this.SITE_NAME = "";				// (필수값) 사이트네임
   this.LEAD_SOURCE_NAME = "";	//리드소스 네임 Platform&Activity 필드 매핑
-  this.LEAD_SOURCE_TYPE = "11";//default 11 ? Eloqua에서 넘어오는 값이면 By Marketing, 영업인원이 수기입할 경우 By Sales로 지정
+  this.LEAD_SOURCE_TYPE = "11";// (필수값) default 11 ? Eloqua에서 넘어오는 값이면 By Marketing, 영업인원이 수기입할 경우 By Sales로 지정
   this.ENTRY_TYPE = "L"       //default L
-  this.ACCOUNT = "";          //회사
-  this.CONTACT_POINT = "";    //Contact Point는 Eloqua 필드 중 -> Customer Name/Email/Phone No. 를 연결 시켜 매핑 필요
+  this.ACCOUNT = "";          // (필수값) 회사
+  this.CONTACT_POINT = "";    // (필수값) Contact Point는 Eloqua 필드 중 -> Customer Name/Email/Phone No. 를 연결 시켜 매핑 필요
   this.CORPORATION = "";      //법인정보
   this.OWNER = "";            //데이터 없음
   this.ADDRESS = "";          //현업확인 Address1 + Address2 + Address3
@@ -47,9 +47,9 @@ function B2B_GERP_GLOBAL_ENTITY() {
   this.ATTRIBUTE_21 = "";     //ELOQUA 내 Product 2 없을경우 NULL
   this.ATTRIBUTE_22 = "";     //ELOQUA 내 Product 3 없을경우 NULL
   this.ATTRIBUTE_23 = "";     //Vertical Type B2B GERP Global Code mapping
-  this.REGISTER_DATE = "";    //어떤 날짜 정보인지 확인 필요
-  this.TRANSFER_DATE = "";    //어떤 날짜 정보인지 확인 필요
-  this.TRANSFER_FLAG = "";		//TRANSFER_FLAG N , Y 값의 용도 확인 필요 
+  this.REGISTER_DATE = "";    // (필수값) 어떤 날짜 정보인지 확인 필요
+  this.TRANSFER_DATE = "";    // (필수값) 어떤 날짜 정보인지 확인 필요
+  this.TRANSFER_FLAG = "";		// (필수값) TRANSFER_FLAG N , Y 값의 용도 확인 필요 
   this.LAST_UPDATE_DATE = "";
   //Building Type을 Vertical Type으로 변경하고 전사 Vertical 기준에 맞추어 매핑 필요 - LG.com내에도 항목 수정 필요하니 요청 필요함 호텔정보 
 }
