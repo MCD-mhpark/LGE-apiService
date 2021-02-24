@@ -145,7 +145,7 @@ app.use('/b2bgerp_global/contacts', b2bgerp_global_data_contacts);
 app.use('/b2bgerp_kr/contacts', b2bgerp_kr_us_data_contacts);
 app.use('/cs_integration/contacts', cs_integration_data_contacts);
 app.use('/cs_integration/activities', cs_integration_data_activities);
-app.use('/cs_integration/campaign', cs_integration_Assets_campaign);
+app.use('/cs_integration/campaigns', cs_integration_Assets_campaign);
 
 app.use('/bscard_app/contacts/syncAction', bscard_app_bulk_syncAction);
 app.use('/bscard_app/contacts/imports', bscard_app_bulk_contacts);

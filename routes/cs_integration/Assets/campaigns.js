@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var moment = require('moment');
 
 // var eloqua_config = {
 //     sitename: 'TechnologyPartnerGoldenPlanet',
@@ -8,16 +9,16 @@ var router = express.Router();
 // };
 
 router.get('/', function (req, res, next) {
-    console.log(1234);
-    var dayInfo = getUnixTime(-7);
-    var queryString ={
-        startDate : dayInfo.start,
-        endDate : dayInfo.end,
-        type : "webVisit"
-        // type : //event 에 대한 type 지정
+    // console.log(1234);
+    // var dayInfo = getUnixTime(-7);
+     var queryString = {
+        //  startDate : dayInfo.start,
+        //  endDate : dayInfo.end,
+        //  type : "webVisit"
+         // type : //event 에 대한 type 지정
     }
-    console.log(queryString);
-    csintergration_eloqua_config.data.campaigns.get(req.params.id , queryString ).then((result) => {
+    //console.log(queryString);
+    csintergration_eloqua.assets.campaigns.get().then((result) => {
       console.log(result.data);
       res.json(result.data);
     }).catch((err) => {
