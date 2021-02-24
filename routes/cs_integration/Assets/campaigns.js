@@ -17,7 +17,7 @@ router.get('/', function (req, res, next) {
         // type : //event 에 대한 type 지정
     }
     console.log(queryString);
-    eloqua.data.campaigns.get(req.params.id , queryString ).then((result) => {
+    csintergration_eloqua_config.data.campaigns.get(req.params.id , queryString ).then((result) => {
       console.log(result.data);
       res.json(result.data);
     }).catch((err) => {
