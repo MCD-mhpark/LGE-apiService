@@ -34,6 +34,20 @@ class Activities {
     }, cb);
   }
 
+new_Get(id, type , querystring, cb) {
+  let qs = {};
+
+  if (querystring) {
+    qs = _classPrivateFieldLooseBase(this, _parent)[_parent]._validate(['count', 'endDate', 'startDate', 'type' , 'startAt' , 'endAt'], querystring);
+  }
+
+  return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
+    api: 'REST',
+    uri: `/data/activities/contact/${id}/${type}`,
+    qs: qs
+  }, cb);
+}
+
 }
 
 exports.default = Activities;

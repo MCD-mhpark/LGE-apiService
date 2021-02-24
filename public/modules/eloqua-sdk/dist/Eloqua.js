@@ -69,6 +69,7 @@ class Eloqua {
     this.axiosOptions = {
       headers: {}
     };
+  
     this.restVersion = options && options.restVersion ? options.restVersion : '2.0';
     this.bulkVersion = options && options.bulkVersion ? options.bulkVersion : '2.0';
     _classPrivateFieldLooseBase(this, _request)[_request] = _axios.default.create();

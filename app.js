@@ -79,11 +79,20 @@ var iam_eloqua_config = {
   password: 'QWer1234!@'
 };
 
+var for_old_eloqua_config = {
+  sitename: 'LGElectronics',
+  username: 'Lg_api.Integrated',
+  password: 'QWer1234!@', 
+  restVersion : '1.0'
+
+}
+
 global.bscard_eloqua = new EloquaApi(bscard_eloqua_config);
 global.b2bgerp_eloqua = new EloquaApi(b2bgerp_eloqua_config);
 global.b2bkr_eloqua = new EloquaApi(b2bkr_eloqua_config);
 global.csintergration_eloqua = new EloquaApi(csintergration_eloqua_config);
 global.iam_eloqua = new EloquaApi(iam_eloqua_config);
+global.old_eloqua = new EloquaApi(for_old_eloqua_config);
 global.logManager = require('./routes/common/history.js');
 // console.log(process.platform);
 // console.log(dbConfig);
