@@ -33,28 +33,7 @@ function getUnixTime(term){
 
 
 
-router.get('/:id', function (req, res, next) {
-    console.log(1234);
-    var dayInfo = getUnixTime(-7);
-    var queryString ={
-        startDate : dayInfo.start,
-        endDate : dayInfo.end,
-        type : "emailSend"
-        // type : //event 에 대한 type 지정
-    }
-    
-    
-    old_eloqua.data.activities.get(req.params.id , queryString ).then((result) => {
-      console.log(result.data);
-      res.json(result.data);
-    }).catch((err) => {
-      console.error(err);
-      res.json(false);
-    });
-});
-
-
-router.get('/tester/:id/:type', function (req, res, next) {
+router.get('/:id/:type', function (req, res, next) {
   console.log(1234);
   var dayInfo = getUnixTime(-7);
   var queryString ={
@@ -63,8 +42,16 @@ router.get('/tester/:id/:type', function (req, res, next) {
       // type : "emailSend"
       // type : //event 에 대한 type 지정
   }
-  
-  
+
+  // type list
+  // campaignMembership
+  // emailClickThrough
+  // emailOpen
+  // emailSend
+  // emailSubscribe
+  // emailUnsubscribe
+  // formSubmit
+  // webVisit
   csintergration_eloqua.data.activities.new_Get(req.params.id , req.params.type,  queryString ).then((result) => {
     console.log(result.data);
     res.json(result.data);
