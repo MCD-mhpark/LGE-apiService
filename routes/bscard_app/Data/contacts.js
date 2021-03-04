@@ -212,20 +212,22 @@ function Convert_BS_CARD_DATA_SEARCH(body_data){
         dataObject.updateDate = GetDataValue("Eloqua Not Make Field");
         
 
-        // console.log(fieldValues.length);        
-        for(var j =0 ; fieldValues.length > j ; j++){
-            // console.log(fieldValues[j].id);
-            var id = fieldValues[j].id;
-            var value = fieldValues[j].value;
-            switch(id){
+        // console.log(fieldValues.length);
+        if(fieldValues){
+            for(var j =0 ; fieldValues.length > j ; j++){
+                // console.log(fieldValues[j].id);
+                var id = fieldValues[j].id;
+                var value = fieldValues[j].value;
+                switch(id){
 
-                case "100196" : dataObject.userCode = GetDataValue(value); break;
-                case "100229" : dataObject.product = GetDataValue(value); break;
-                case "100292" : dataObject.rank = GetDataValue(value); break;
-                case "100252" : dataObject.homepage = GetDataValue(value) ; break;
+                    case "100196" : dataObject.userCode = GetDataValue(value); break;
+                    case "100229" : dataObject.product = GetDataValue(value); break;
+                    case "100292" : dataObject.rank = GetDataValue(value); break;
+                    case "100252" : dataObject.homepage = GetDataValue(value) ; break;
+                }
             }
-        }
-        delete items.fieldValues;
+        }        
+        // delete items.fieldValues;
         result_list.push(dataObject);
         
     }
