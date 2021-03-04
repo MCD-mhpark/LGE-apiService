@@ -182,7 +182,7 @@ function Convert_BS_CARD_DATA_SEARCH(body_data){
 
     var result_data = {};
     var result_list = [];
-
+    
     if(body_data){
         for(var i = 0 ; body_data.elements.length > i ; i++){
             // 명함앱의 필드중 엘로콰에서 기본필드를 명함앱으로 역매핑
@@ -231,12 +231,12 @@ function Convert_BS_CARD_DATA_SEARCH(body_data){
             result_list.push(dataObject);
             
         }
-    }
 
-    var result_data = {"elements" : result_list };
-    result_data.page = body_data.page;
-    result_data.pageSize = body_data.pageSize;
-    result_data.total = body_data.total;
+        result_data = {"elements" : result_list };
+        result_data.page = body_data.page;
+        result_data.pageSize = body_data.pageSize;
+        result_data.total = body_data.total;
+    }
 
     console.log(result_data);
     return result_data;
