@@ -197,10 +197,10 @@ function Convert_BS_CARD_DATA_SEARCH(body_data){
         dataObject.company = GetDataValue(body_data.elements[i].accountName);
         dataObject.hp = GetDataValue(body_data.elements[i].mobilePhone);
         dataObject.tel = GetDataValue(body_data.elements[i].businessPhone);
-        dataObject.fax =  GetDataValue(body_data.elements[i].fax);
-        dataObject.addr1 =GetDataValue(body_data.elements[i].address1);
-        dataObject.addr2 =GetDataValue(body_data.elements[i].address2);
-        dataObject.email =GetDataValue(body_data.elements[i].emailAddress);
+        dataObject.fax = GetDataValue(body_data.elements[i].fax);
+        dataObject.addr1 = GetDataValue(body_data.elements[i].address1);
+        dataObject.addr2 = GetDataValue(body_data.elements[i].address2);
+        dataObject.email = GetDataValue(body_data.elements[i].emailAddress);
         dataObject.etc1 = GetDataValue("Eloqua Not Make Field");
         dataObject.mailingDate = GetDataValue("Eloqua Not Make Field");
         dataObject.subscriptionDate = GetDataValue("Eloqua Not Make Field");
