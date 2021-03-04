@@ -13,7 +13,7 @@ var seq_cnt = 0;
 
 function B2B_GERP_GLOBAL_ENTITY() {
   this.INTERFACE_ID = "ELOQUA_0003", //  (필수값) 
-  this.LEAD_NAME = "";        // (필수값) 리드네임 [MQL]Subsidiary_BU_Platform&Activity_Register Date+Hour 값을 조합
+    this.LEAD_NAME = "";        // (필수값) 리드네임 [MQL]Subsidiary_BU_Platform&Activity_Register Date+Hour 값을 조합
   this.SITE_NAME = "";				// (필수값) 사이트네임
   this.LEAD_SOURCE_NAME = "";	//리드소스 네임 Platform&Activity 필드 매핑
   this.LEAD_SOURCE_TYPE = "11";// (필수값) default 11 ? Eloqua에서 넘어오는 값이면 By Marketing, 영업인원이 수기입할 경우 By Sales로 지정
@@ -80,9 +80,9 @@ function GetCustomFiledValue(contacts_customfields, customfieldID) {
   return result_data;
 }
 
-function setCustomFieldValue (custom_id , custom_value){
-  return { 
-    "id": custom_id , 
+function setCustomFieldValue(custom_id, custom_value) {
+  return {
+    "id": custom_id,
     "value": custom_value
   }
 }
@@ -265,26 +265,26 @@ function GetConvertVerticalType2Code(_Business_Sector_Name, _Business_Sector_Ver
 
     case "15":
       switch (_Business_Sector_Vertival2_Name) {
-        case "Apartment": 
-        result = "1501"; break;
+        case "Apartment":
+          result = "1501"; break;
 
-        case "Officetel": 
-        result = "1502"; break;
+        case "Officetel":
+          result = "1502"; break;
 
         case "Townhouse":
-        result = "1503"; break;
+          result = "1503"; break;
 
         case "Villa / Single-Family Home":
-        result = "1504"; break;
+          result = "1504"; break;
 
         case "Others":
-        result = "1505"; break;
+          result = "1505"; break;
       }
       break;
 
     case "01":
       switch (_Business_Sector_Vertival2_Name) {
-        case "Office": 
+        case "Office":
           result = "0113"; break;
 
         case "Conference/Meeting Room/Collaboration spaces":
@@ -309,7 +309,7 @@ function GetConvertVerticalType2Code(_Business_Sector_Name, _Business_Sector_Ver
           result = "0119"; break;
 
         case "Client interaction venue/space":
-           result = "0120"; break;
+          result = "0120"; break;
 
         case "Others":
           result = "0121"; break;
@@ -795,43 +795,43 @@ function GetBusiness_Department_data(fieldValues, business_department, key) {
   return result_data;
 }
 
-function setBant_Update (contact_info){
+function setBant_Update(contact_info) {
   var bant_list = [
-    100254 , 100255 , 100256 , // ID 
-    100264 , 100265 , 100266 , // IT
-    100291 , 100272 , 100273 , // Solar
-    100215 , 100220 , 100221 , // AS
-    100276 , 100278 , 100279 , // CLS
-    100282 , 100284 , 100285 , // CM
-    100222 , 100223 , 100224 , // Solution
+    100254, 100255, 100256, // ID 
+    100264, 100265, 100266, // IT
+    100291, 100272, 100273, // Solar
+    100215, 100220, 100221, // AS
+    100276, 100278, 100279, // CLS
+    100282, 100284, 100285, // CM
+    100222, 100223, 100224, // Solution
   ]
 
-  var status_list = [ 100337 , 100338 , 100339 , 100336 , 100341 , 100342 , 100343 ] // 순서대로 ID , IT , Solar , AS , CLS , CM , Solution 의 Status
+  var status_list = [100337, 100338, 100339, 100336, 100341, 100342, 100343] // 순서대로 ID , IT , Solar , AS , CLS , CM , Solution 의 Status
 
 
   contact_info.forEach(async item => {
-    let update_data = { 
-      id : item.id,
-      emailAddress: item.emailAddress 
+    let update_data = {
+      id: item.id,
+      emailAddress: item.emailAddress
     };
     update_data.fieldValues = [];
-  
-    await bant_list.forEach( field_id =>{
-      update_data.fieldValues.push(setCustomFieldValue(field_id , ""));
-    });
-  
-    await status_list.forEach(field_id =>{
-      update_data.fieldValues.push(setCustomFieldValue(field_id , "Contact"));
+
+    await bant_list.forEach(field_id => {
+      update_data.fieldValues.push(setCustomFieldValue(field_id, ""));
     });
 
-    await b2bgerp_eloqua.data.contacts.update(item.id , update_data ).then((result) => {
+    await status_list.forEach(field_id => {
+      update_data.fieldValues.push(setCustomFieldValue(field_id, "Contact"));
+    });
+
+    await b2bgerp_eloqua.data.contacts.update(item.id, update_data).then((result) => {
       // console.log(result.data);
     }).catch((err) => {
       console.error(err.message);
     });
   })
- 
-  
+
+
 }
 
 function lpad(str, padLen, padStr) {
@@ -853,7 +853,7 @@ function lpad(str, padLen, padStr) {
 //#region B2B GERP 사업부별 조회 Endpoint
 
 //BANT 조건 Eloqua 조회 함수
-async function get_b2bgerp_global_bant_data(_business_name , start_date, end_date) {
+async function get_b2bgerp_global_bant_data(_business_name, start_date, end_date) {
   //BANT 조건 : Status - Contact / Pre-lead / MQL
 
   var business_name = _business_name;
@@ -889,9 +889,9 @@ async function get_b2bgerp_global_bant_data(_business_name , start_date, end_dat
 
   var yesterday_Object = utils.yesterday_getDateTime();
   start_date ? yesterday_Object.start = start_date : null;
-  end_date ? yesterday_Object.end = end_date : null ;
+  end_date ? yesterday_Object.end = end_date : null;
 
-  
+
   //var yesterday_Object = utils.today_getDateTime();
   var queryText = "C_DateModified>" + "'" + yesterday_Object.start + " 10:00:00'" + "C_DateModified<" + "'" + yesterday_Object.end + " 11:00:59'" + status_bant + "='MQL'";
   //yesterday_getUnixTime
@@ -904,7 +904,7 @@ async function get_b2bgerp_global_bant_data(_business_name , start_date, end_dat
 
     if (result.data.total && result.data.total > 0) {
       contacts_data = result.data;
-      
+
     }
   }).catch((err) => {
     console.error(err);
@@ -938,13 +938,13 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
         business_department + "_" +
         GetCustomFiledValue(FieldValues_data, 100202) + "_" +
         moment().format('YYYYMMDD');
-      result_item.SITE_NAME = GetCustomFiledValue(FieldValues_data, 100187);        //100187	Territory //SITE_NAME ( 현장명 매핑필드 확인 ) //2021-02-02 기준 데이터 없음
+      result_item.SITE_NAME = GetCustomFiledValue(FieldValues_data, 100187) == "" ? "N/A" : GetCustomFiledValue(FieldValues_data, 100187);        //100187	Territory //SITE_NAME ( 현장명 매핑필드 확인 ) //2021-02-02 기준 데이터 없음
       result_item.LEAD_SOURCE_TYPE = "11";                                          //default 11 (협의됨) //Eloqua에서 넘어오는 값이면 By Marketing, 영업인원이 수기입할 경우 By Sales로 지정
 
-      result_item.LEAD_SOURCE_NAME = GetCustomFiledValue(FieldValues_data, 100202); //리드소스 네임 Platform&Activity 필드 매핑 // 폼에 히든값으로 존재
+      result_item.LEAD_SOURCE_NAME = GetCustomFiledValue(FieldValues_data, 100202) == "" ? "N/A" : GetCustomFiledValue(FieldValues_data, 100202); //리드소스 네임 Platform&Activity 필드 매핑 // 폼에 히든값으로 존재
 
       result_item.ENTRY_TYPE = "L"                                                  //default L
-      result_item.ACCOUNT = GetDataValue(contacts_data.elements[i].accountName);    //ACCOUNT ( 회사 )  // Company Name
+      result_item.ACCOUNT = GetDataValue(contacts_data.elements[i].accountName) == "" ? "N/A" : GetDataValue(contacts_data.elements[i].accountName);    //ACCOUNT ( 회사 )  // Company Name
       result_item.CONTACT_POINT =
         GetCustomFiledValue(FieldValues_data, 100172) + "/" +
         //GetDataValue(contacts_data.elements[i].firstName) + " " + GetDataValue(contacts_data.elements[i].lastName) + "/" +
@@ -1015,25 +1015,25 @@ router.get('/:businessName/:start_date/:end_date', async function (req, res, nex
   //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr)
 
   //BANT기준 B2B GERP GLOBAL CONTACTS 조회
-  var contacts_data = await get_b2bgerp_global_bant_data(business_name , start_date , end_date);
+  var contacts_data = await get_b2bgerp_global_bant_data(business_name, start_date, end_date);
   // res.json(contacts_data);
   // return;
   if (contacts_data != null) {
     //Eloqua Contacts
     //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr )
-    var request_data = await Convert_B2BGERP_GLOBAL_DATA( contacts_data, business_name);
+    var request_data = await Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_name);
     console.log(contacts_data);
-    var contact_list = contacts_data.elements.map(row => { 
+    var contact_list = contacts_data.elements.map(row => {
       return {
-        id : row.id ,
-        emailAddress : row.emailAddress
-      }; 
-  });
-    
+        id: row.id,
+        emailAddress: row.emailAddress
+      };
+    });
+
 
     res.json({ ContentList: request_data });
 
-    setBant_Update(contact_list) 
+    setBant_Update(contact_list)
     console.log(contact_list);
 
 
@@ -1060,60 +1060,60 @@ router.post('/req_data_yn', function (req, res, next) {
 
 // 가상의 LG API GATEWAY의 
 router.get('/bant_test/', async function (req, res, next) {
-  await httpRequest.sender( "http://localhost:8010/restfulApi/eloqua" , "GET", {});
+  await httpRequest.sender("http://localhost:8010/restfulApi/eloqua", "GET", {});
 });
 
 // 가상의 LG API GATEWAY의 
 router.get('/sender', async function (req, res, next) {
-	bant_send();
+  bant_send();
 });
 
 //# region Bant 조건 사업부별 contact 데이터 전송을 하는 함수
-bant_send = function(){
-	console.log(1234);
-	var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
-  	// let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solar" , "Solution"];
-	let bant_list = ["CLS"];
- 	bant_list.forEach(async business_name =>{
-    	let contacts_data = await get_b2bgerp_global_bant_data(business_name );
-    	// console.log(contacts_data);
-		console.log(1);
-  		// return;
-  		if (contacts_data != null) {
-			//Eloqua Contacts
-			//business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr )
-			var request_data = await Convert_B2BGERP_GLOBAL_DATA( contacts_data, business_name);
-			
-			
-			var contact_list = contacts_data.elements.map(row => { 
-			return {
-				id : row.id ,
-				emailAddress : row.emailAddress
-			}; 
-			});
-		
-			// console.log(request_data);
-			// httpRequest.sender("http://localhost:8001/b2bgerp_global/contacts/req_data_yn", "POST", { ContentList: request_data });
-			
-			var result = await httpRequest.sender( send_url , "LGE_GERP_GLOBAL_POST", { ContentList: request_data });
-			// res.json({ ContentList: request_data });
+bant_send = function () {
+  console.log(1234);
+  var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
+  // let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solar" , "Solution"];
+  let bant_list = ["CLS"];
+  bant_list.forEach(async business_name => {
+    let contacts_data = await get_b2bgerp_global_bant_data(business_name);
+    // console.log(contacts_data);
+    console.log(1);
+    // return;
+    if (contacts_data != null) {
+      //Eloqua Contacts
+      //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr )
+      var request_data = await Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_name);
 
-		
-			// BANT 업데이트는 운영에서만 필요함
-			//setBant_Update(contact_list); 
-			// console.log(contact_list);
-			console.log("LGE B2BGERP SERVER RESPONSE");
-			console.log(result);
 
-			return;
-		}
-		else {
-			res.json(false);
-		}
-		//API Gateway 데이터 전송
+      var contact_list = contacts_data.elements.map(row => {
+        return {
+          id: row.id,
+          emailAddress: row.emailAddress
+        };
+      });
 
-  //Log
-  	})
+      // console.log(request_data);
+      // httpRequest.sender("http://localhost:8001/b2bgerp_global/contacts/req_data_yn", "POST", { ContentList: request_data });
+
+      var result = await httpRequest.sender(send_url, "LGE_GERP_GLOBAL_POST", { ContentList: request_data });
+      // res.json({ ContentList: request_data });
+
+
+      // BANT 업데이트는 운영에서만 필요함
+      //setBant_Update(contact_list); 
+      // console.log(contact_list);
+      console.log("LGE B2BGERP SERVER RESPONSE");
+      console.log(result);
+
+      return;
+    }
+    else {
+      res.json(false);
+    }
+    //API Gateway 데이터 전송
+
+    //Log
+  })
 }
 
 module.exports = router;
