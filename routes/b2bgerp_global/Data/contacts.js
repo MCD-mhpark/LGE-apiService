@@ -4,7 +4,7 @@ var router = express.Router();
 var httpRequest = require('../../common/httpRequest');
 var utils = require('../../common/utils');
 const { param } = require('../../common/history');
-
+var schedule = require('node-schedule');
 var seq_cnt = 0;
 /* Contacts */
 
@@ -797,13 +797,13 @@ function GetBusiness_Department_data(fieldValues, business_department, key) {
 
 function setBant_Update (contact_info){
   var bant_list = [
-    100254 , 100255 , 100256 , 100262 , 100322 , // ID 
-    100264 , 100265 , 100266 , 100269 , 100214 , // IT
-    100291 , 100272 , 100273 , 100290 , 100324 , // Solar
-    100215 , 100220 , 100221 , 100219 , 100323 , // AS
-    100276 , 100278 , 100279 , 100289 , 100327 , // CLS
-    100282 , 100284 , 100285 , 100288 , 100325 , // CM
-    100222 , 100223 , 100224 , 100228 , 100321 , // Solution
+    100254 , 100255 , 100256 , // ID 
+    100264 , 100265 , 100266 , // IT
+    100291 , 100272 , 100273 , // Solar
+    100215 , 100220 , 100221 , // AS
+    100276 , 100278 , 100279 , // CLS
+    100282 , 100284 , 100285 , // CM
+    100222 , 100223 , 100224 , // Solution
   ]
 
   var status_list = [ 100337 , 100338 , 100339 , 100336 , 100341 , 100342 , 100343 ] // 순서대로 ID , IT , Solar , AS , CLS , CM , Solution 의 Status
@@ -1112,19 +1112,53 @@ router.post('/req_data_yn', function (req, res, next) {
 });
 
 // 가상의 LG API GATEWAY의 
-router.get('/bant_test/:id/:email', async function (req, res, next) {
-  console.log("call tester");
-  
-  
-  var bant_init_data = await setBant_Update(req.params.id , req.params.email) ;
-  console.log(bant_init_data);
-  b2bgerp_eloqua.data.contacts.update(req.params.id , bant_init_data ).then((result) => {
-    console.log(result.data);
-    res.json(result.data);
-  }).catch((err) => {
-    console.error(err.message);
-    res.send(false);
-  });
+router.get('/bant_test/', async function (req, res, next) {
+  await httpRequest.sender( "http://localhost:8010/restfulApi/eloqua" , "GET", {});
 });
 
+//# region Bant 조건 사업부별 contact 데이터 전송을 하는 함수
+bant_send = function(){
+	console.log(1234);
+  	let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solar" , "Solution"];
+
+ 	bant_list.forEach(async business_name =>{
+    	let contacts_data = await get_b2bgerp_global_bant_data(business_name );
+    	console.log(contacts_data);
+  		// return;
+  		if (contacts_data != null) {
+			//Eloqua Contacts
+			//business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr )
+			var request_data = await Convert_B2BGERP_GLOBAL_DATA( contacts_data, business_name);
+			return;
+	
+			var contact_list = contacts_data.elements.map(row => { 
+			return {
+				id : row.id ,
+				emailAddress : row.emailAddress
+			}; 
+			});
+		
+			console.log(request_data);
+			// httpRequest.sender("http://localhost:8001/b2bgerp_global/contacts/req_data_yn", "POST", { ContentList: request_data });
+			var result = await httpRequest.sender( send_url , "LGE_GERP_GLOBAL_POST", { ContentList: request_data });
+			// res.json({ ContentList: request_data });
+
+		
+			setBant_Update(contact_list); 
+			// console.log(contact_list);
+			console.log("LGE B2BGERP SERVER RESPONSE");
+			console.log(result);
+
+			return;
+		}
+		else {
+			res.json(false);
+		}
+		//API Gateway 데이터 전송
+
+  //Log
+  	})
+}
+
 module.exports = router;
+module.exports.bant_send = bant_send;
