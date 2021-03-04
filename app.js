@@ -200,7 +200,6 @@ function schedule_Request(){
   //test data
  
   Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,async function(){
-    console.log(1);
     b2bgerp_global_data_contacts.bant_send();
   });
 }
