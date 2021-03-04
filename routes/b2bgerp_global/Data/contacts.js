@@ -1117,53 +1117,48 @@ router.get('/bant_test/', async function (req, res, next) {
 });
 
 //# region Bant 조건 사업부별 contact 데이터 전송을 하는 함수
-function bant_send(){
+bant_send = function(){
+	console.log(1234);
+  	let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solar" , "Solution"];
 
-  let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solar" , "Solution"];
+ 	bant_list.forEach(async business_name =>{
+    	let contacts_data = await get_b2bgerp_global_bant_data(business_name );
+    	console.log(contacts_data);
+  		// return;
+  		if (contacts_data != null) {
+			//Eloqua Contacts
+			//business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr )
+			var request_data = await Convert_B2BGERP_GLOBAL_DATA( contacts_data, business_name);
+			return;
+	
+			var contact_list = contacts_data.elements.map(row => { 
+			return {
+				id : row.id ,
+				emailAddress : row.emailAddress
+			}; 
+			});
+		
+			console.log(request_data);
+			// httpRequest.sender("http://localhost:8001/b2bgerp_global/contacts/req_data_yn", "POST", { ContentList: request_data });
+			var result = await httpRequest.sender( send_url , "LGE_GERP_GLOBAL_POST", { ContentList: request_data });
+			// res.json({ ContentList: request_data });
 
-  bant_list.forEach(async business_name =>{
-    let contacts_data = await get_b2bgerp_global_bant_data(business_name , start_date , end_date);
-    console.log(contacts_data);
-  // return;
-  if (contacts_data != null) {
-    //Eloqua Contacts
-    //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr )
-    var request_data = await Convert_B2BGERP_GLOBAL_DATA( contacts_data, business_name);
-    return;
-   
-    var contact_list = contacts_data.elements.map(row => { 
-      return {
-        id : row.id ,
-        emailAddress : row.emailAddress
-      }; 
-    });
-    
-    console.log(request_data);
-    // httpRequest.sender("http://localhost:8001/b2bgerp_global/contacts/req_data_yn", "POST", { ContentList: request_data });
-    var result = await httpRequest.sender( send_url , "LGE_GERP_GLOBAL_POST", { ContentList: request_data });
-    // res.json({ ContentList: request_data });
+		
+			setBant_Update(contact_list); 
+			// console.log(contact_list);
+			console.log("LGE B2BGERP SERVER RESPONSE");
+			console.log(result);
 
-    
-    setBant_Update(contact_list); 
-    // console.log(contact_list);
-    console.log("LGE B2BGERP SERVER RESPONSE");
-    console.log(result);
-
-    return;
-  }
-  else {
-    res.json(false);
-  }
-  //API Gateway 데이터 전송
+			return;
+		}
+		else {
+			res.json(false);
+		}
+		//API Gateway 데이터 전송
 
   //Log
-  })
-  
-  
-
-   
- 
-
+  	})
 }
 
 module.exports = router;
+module.exports.bant_send = bant_send;

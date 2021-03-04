@@ -6,6 +6,7 @@ var logger = require('morgan');
 var methodOverride = require('method-override');
 var EloquaApi = require('./public/modules/eloqua-sdk');
 var gerp_global = require('./routes/b2bgerp_global/data/contacts');
+                    
 var moment = require('moment');
 const schedule = require('node-schedule');
 // var engine = require('ejs-locals');
@@ -188,10 +189,9 @@ app.use(function(err, req, res, next) {
 
 function schedule_Request(){
   let uniqe_jobs_name = "B2B GERP GLOBAL" +  moment().format('YYYYMMDD')
-  console.log(123);
-  let second = "0";
-  let minutes = "0";
-  let hours = "12";
+  let second = "*";
+  let minutes = "*";
+  let hours = "*";
   let dayofmonth = "*";
   let month = "*";
   let weekindex = "*";
@@ -200,7 +200,8 @@ function schedule_Request(){
   //test data
  
   Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,async function(){
-    gerp_global.bant_send();
+    console.log(1);
+    b2bgerp_global_data_contacts.bant_send();
   });
 }
 schedule_Request();
