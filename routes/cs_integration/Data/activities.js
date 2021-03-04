@@ -45,6 +45,7 @@ router.get('/:id/:type', function (req, res, next) {
 
   // type list
   // campaignMembership
+  // automation/campaignentry
   // emailClickThrough
   // emailOpen
   // emailSend
@@ -52,6 +53,7 @@ router.get('/:id/:type', function (req, res, next) {
   // emailUnsubscribe
   // formSubmit
   // webVisit
+  
   csintergration_eloqua.data.activities.new_Get(req.params.id , req.params.type,  queryString ).then((result) => {
     console.log(result.data);
     res.json(result.data);
