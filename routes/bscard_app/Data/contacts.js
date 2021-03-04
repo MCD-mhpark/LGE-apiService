@@ -78,20 +78,22 @@ async function mappedContacts(bs_data, depth){
     return bs_data;
 }
 
+function GetDataValue(contacts_fieldvalue) {
+    try {
+      if (contacts_fieldvalue != undefined) {
+        return contacts_fieldvalue;
+      }
+      else {
+        return "";
+      }
+    }
+    catch (e) {
+      console.log(e);
+      return "";
+    }
+  }
 
-router.get('/all', async function (req, res, next) {
-    var queryString = {
-        depth : req.query.depth
-    };
-    await bscard_eloqua.data.contacts.get(queryString).then((result) => { 
-        console.log(result.data);
-        // res.json(true);
-        res.json(result.data);
-    }).catch((err) => {
-        console.error(err);
-        res.json(false);
-    });
-});
+
 
 //이메일 배열 값으로 여러 contacts id를 조회
 router.post('/search_all', async function (req, res, next) {
@@ -100,14 +102,17 @@ router.post('/search_all', async function (req, res, next) {
     var depth = req.body.depth;
     var contacts_data = await getContacts(email_list , depth );
 
-    if(contacts_data && contacts_data.total > 0) res.json(contacts_data);
+    var convert_data = await Convert_BS_CARD_DATA_SEARCH(contacts_data);
+
+
+    if(convert_data && convert_data.total > 0) res.json(convert_data);
     else res.json(false);
 
 });
 
 router.get('/search_one/:id', function (req, res, next) {
     var queryString = {
-        depth : "complete"
+        depth : "partial"
     }  ;
 
 
@@ -123,23 +128,36 @@ router.get('/search_one/:id', function (req, res, next) {
     });
 });
 
-router.post('/search_ids', function (req, res, next) {
-    var queryString = {
-        ids : req.body.ids,
-        depth : req.body.depth ? req.body.depth : "complete"
-    }  ;
+function BS_CARD_SEARCH_ENTITY(){          
+                                    // 숫자 + 영문 조합이면 Customfield , 영문만 있을 경우 BasicField
+    this.userId = "";               // salsePerson 값
+    this.userCode = "";             // 100196 Subsidiary 
+    this.product = "";              // 100229 Business Unit
+    this.firstName = "";            // firstName
+    this.lastName = "";             // lastName
+    this.company = "";              // accountname 
+    this.rank = "";                 // 100292 Job Title
+    this.hp = "";                   // mobilePhone
+    this.tel = "";                  // businessPhone
+    this.fax = "";                  // fax
+    this.addr1 = "";                // address1
+    this.addr2 = "";                // address2
+    this.email = "";                // emailAddress
+    this.homepage = "";             // 100252 Website
+    this.etc1 = "";                 // No Field
+    this.mailingDate = "";          // No Field
+    this.subscriptionDate = "";     // No Field
+    this.campaignName = "";         // No Field
+    this.campaignDate = "";         // No Field
+    this.customerProduct = "";      // No Field
+    this.country = "";              // country
+    this.krMkt = "";                // No Field
+    this.updateDate = "";           // No Field
 
-    bscard_eloqua.data.contacts.getMulti( queryString).then((result) => {
-        console.log(result.data);
-        res.json(result.data);
-        // res.json(true);
-    }).catch((err) => {
-        console.error(err);
-        res.json(false);
-    });
-});
+   
+}
 
-function BS_CARD_ENTITY() {
+function BS_CARD_INS_UPD_ENTITY() {
 
     this.id = "";
     this.salesPerson = "";      // 판매원 ID
@@ -159,6 +177,68 @@ function BS_CARD_ENTITY() {
     
   }
 
+function Convert_BS_CARD_DATA_SEARCH(body_data){
+    
+
+    var result_data = {};
+    var result_list = [];
+
+    if(!body_data.elements) return;
+    for(var i = 0 ; body_data.elements.length > i ; i++){
+        // 명함앱의 필드중 엘로콰에서 기본필드를 명함앱으로 역매핑
+
+        var dataObject = {};
+        var items = body_data.elements[i];
+        var fieldValues = items.fieldValues;
+
+        dataObject.userId = GetDataValue(body_data.elements[i].salesPerson);
+        dataObject.firstName = GetDataValue(body_data.elements[i].firstName);
+        dataObject.lastName = GetDataValue(body_data.elements[i].lastName);
+        dataObject.company = GetDataValue(body_data.elements[i].accountName);
+        dataObject.hp = GetDataValue(body_data.elements[i].mobilePhone);
+        dataObject.tel = GetDataValue(body_data.elements[i].businessPhone);
+        dataObject.fax =  GetDataValue(body_data.elements[i].fax);
+        dataObject.addr1 =GetDataValue(body_data.elements[i].address1);
+        dataObject.addr2 =GetDataValue(body_data.elements[i].address2);
+        dataObject.email =GetDataValue(body_data.elements[i].emailAddress);
+        dataObject.etc1 = GetDataValue("Eloqua Not Make Field");
+        dataObject.mailingDate = GetDataValue("Eloqua Not Make Field");
+        dataObject.subscriptionDate = GetDataValue("Eloqua Not Make Field");
+        dataObject.campaignName = GetDataValue("Eloqua Not Make Field");
+        dataObject.campaignDate = GetDataValue("Eloqua Not Make Field");
+        dataObject.customerProduct = GetDataValue("Eloqua Not Make Field");
+        dataObject.country = GetDataValue(body_data.elements[i].country);
+        dataObject.krMkt = GetDataValue("Eloqua Not Make Field");
+        dataObject.updateDate = GetDataValue("Eloqua Not Make Field");
+        
+
+        // console.log(fieldValues.length);        
+        for(var j =0 ; fieldValues.length > j ; j++){
+            // console.log(fieldValues[j].id);
+            var id = fieldValues[j].id;
+            var value = fieldValues[j].value;
+            switch(id){
+
+                case "100196" : dataObject.userCode = GetDataValue(value); break;
+                case "100229" : dataObject.product = GetDataValue(value); break;
+                case "100292" : dataObject.rank = GetDataValue(value); break;
+                case "100252" : dataObject.homepage = GetDataValue(value) ; break;
+            }
+        }
+        delete items.fieldValues;
+        result_list.push(dataObject);
+        
+    }
+
+    var result_data = {"elements" : result_list };
+    result_data.page = body_data.page;
+    result_data.pageSize = body_data.pageSize;
+    result_data.total = body_data.total;
+
+    console.log(result_data);
+    return result_data;
+}
+
 function Convert_BS_CARD_DATA(body_data) {
 
     var items = body_data;
@@ -166,7 +246,7 @@ function Convert_BS_CARD_DATA(body_data) {
 
     for(var i = 0 ; items.length > i ; i++){
 
-        var bs_card_data = new BS_CARD_ENTITY();
+        var bs_card_data = new BS_CARD_INS_UPD_ENTITY();
         var item = items[i];
 
         try

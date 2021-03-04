@@ -5,9 +5,12 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var methodOverride = require('method-override');
 var EloquaApi = require('./public/modules/eloqua-sdk');
+var gerp_global = require('./routes/b2bgerp_global/data/contacts');
+var moment = require('moment');
+const schedule = require('node-schedule');
 // var engine = require('ejs-locals');
 
-var schedule = require('node-schedule');
+
 var Jobs;
 // var oracledb = require('oracledb');
 // var dbConfig = require('./config/dbconfig.js');
@@ -183,20 +186,24 @@ app.use(function(err, req, res, next) {
 
 
 
-function schedule_Request(uniqe_jobs_name , url ,  time , method){
+function schedule_Request(){
+  let uniqe_jobs_name = "B2B GERP GLOBAL" +  moment().format('YYYYMMDD')
   console.log(123);
-  // var schedate = sec + ' ' + minutes + ' ' + hours + ' * * ' + weekindex;
- 
-
-
+  let second = "0";
+  let minutes = "0";
+  let hours = "12";
+  let dayofmonth = "*";
+  let month = "*";
+  let weekindex = "*";
+  var schedate = second + ' ' + minutes + ' ' + hours + ' ' + dayofmonth + ' ' + month + ' ' + weekindex;
 
   //test data
  
-  Jobs = schedule.scheduleJob(uniqe_jobs_name,time,async function(){
-    
-
+  Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,async function(){
+    gerp_global.bant_send();
   });
 }
+schedule_Request();
 
 // schedule_Request("test1", "http://localhost:8001/bscard_app/contacts/test" , "10 * * * * *" , "GET");
 // schedule_Request("test2", "http://localhost:8001/bscard_app/contacts/test" , "25 * * * * *" , "GET");
