@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var methodOverride = require('method-override');
 var EloquaApi = require('./public/modules/eloqua-sdk');
-var gerp_global = require('./routes/b2bgerp_global/data/contacts');
+
                     
 var moment = require('moment');
 const schedule = require('node-schedule');
