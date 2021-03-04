@@ -46,25 +46,25 @@ exports.sender = async function(url , method  , data){
   }
   
 
-  console.log(new Date());
-  console.log(options);
+  // console.log(new Date());
+  // console.log(options);
   var result ;
+
   await request(options, function (error, response, body) {
 
-    console.log(11);
-    console.log(response);
-    console.log(body);
+    // console.log(11);
+    // console.log(response);
+    // console.log(body);
     console.log( response.statusCode );
+    debugger;
     if(error){
-      console.log(123);
       console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
       console.log(error);
     } 
     if (!error && response.statusCode == 200) {
-      console.log(1234);
       result = body;
       // console.log(body);
-      console.log(response);
+      // console.log(response);
     }
   });
 
