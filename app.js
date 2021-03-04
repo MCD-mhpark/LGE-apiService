@@ -204,7 +204,7 @@ function schedule_Request(){
     b2bgerp_global_data_contacts.bant_send();
   });
 }
-schedule_Request();
+if(__dirname == "/home/opc/LGE/b2bgerp_global/bin") schedule_Request();
 
 // schedule_Request("test1", "http://localhost:8001/bscard_app/contacts/test" , "10 * * * * *" , "GET");
 // schedule_Request("test2", "http://localhost:8001/bscard_app/contacts/test" , "25 * * * * *" , "GET");
