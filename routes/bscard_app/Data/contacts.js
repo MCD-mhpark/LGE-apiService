@@ -182,58 +182,61 @@ function Convert_BS_CARD_DATA_SEARCH(body_data){
 
     var result_data = {};
     var result_list = [];
+    
+    if(body_data){
+        for(var i = 0 ; body_data.elements.length > i ; i++){
+            // 명함앱의 필드중 엘로콰에서 기본필드를 명함앱으로 역매핑
 
-    if(!body_data.elements) return;
-    for(var i = 0 ; body_data.elements.length > i ; i++){
-        // 명함앱의 필드중 엘로콰에서 기본필드를 명함앱으로 역매핑
+            var dataObject = {};
+            var items = body_data.elements[i];
+            var fieldValues = items.fieldValues;
 
-        var dataObject = {};
-        var items = body_data.elements[i];
-        var fieldValues = items.fieldValues;
+            dataObject.userId = GetDataValue(body_data.elements[i].salesPerson);
+            dataObject.firstName = GetDataValue(body_data.elements[i].firstName);
+            dataObject.lastName = GetDataValue(body_data.elements[i].lastName);
+            dataObject.company = GetDataValue(body_data.elements[i].accountName);
+            dataObject.hp = GetDataValue(body_data.elements[i].mobilePhone);
+            dataObject.tel = GetDataValue(body_data.elements[i].businessPhone);
+            dataObject.fax = GetDataValue(body_data.elements[i].fax);
+            dataObject.addr1 = GetDataValue(body_data.elements[i].address1);
+            dataObject.addr2 = GetDataValue(body_data.elements[i].address2);
+            dataObject.email = GetDataValue(body_data.elements[i].emailAddress);
+            dataObject.etc1 = GetDataValue("Eloqua Not Make Field");
+            dataObject.mailingDate = GetDataValue("Eloqua Not Make Field");
+            dataObject.subscriptionDate = GetDataValue("Eloqua Not Make Field");
+            dataObject.campaignName = GetDataValue("Eloqua Not Make Field");
+            dataObject.campaignDate = GetDataValue("Eloqua Not Make Field");
+            dataObject.customerProduct = GetDataValue("Eloqua Not Make Field");
+            dataObject.country = GetDataValue(body_data.elements[i].country);
+            dataObject.krMkt = GetDataValue("Eloqua Not Make Field");
+            dataObject.updateDate = GetDataValue("Eloqua Not Make Field");
+            
 
-        dataObject.userId = GetDataValue(body_data.elements[i].salesPerson);
-        dataObject.firstName = GetDataValue(body_data.elements[i].firstName);
-        dataObject.lastName = GetDataValue(body_data.elements[i].lastName);
-        dataObject.company = GetDataValue(body_data.elements[i].accountName);
-        dataObject.hp = GetDataValue(body_data.elements[i].mobilePhone);
-        dataObject.tel = GetDataValue(body_data.elements[i].businessPhone);
-        dataObject.fax = GetDataValue(body_data.elements[i].fax);
-        dataObject.addr1 = GetDataValue(body_data.elements[i].address1);
-        dataObject.addr2 = GetDataValue(body_data.elements[i].address2);
-        dataObject.email = GetDataValue(body_data.elements[i].emailAddress);
-        dataObject.etc1 = GetDataValue("Eloqua Not Make Field");
-        dataObject.mailingDate = GetDataValue("Eloqua Not Make Field");
-        dataObject.subscriptionDate = GetDataValue("Eloqua Not Make Field");
-        dataObject.campaignName = GetDataValue("Eloqua Not Make Field");
-        dataObject.campaignDate = GetDataValue("Eloqua Not Make Field");
-        dataObject.customerProduct = GetDataValue("Eloqua Not Make Field");
-        dataObject.country = GetDataValue(body_data.elements[i].country);
-        dataObject.krMkt = GetDataValue("Eloqua Not Make Field");
-        dataObject.updateDate = GetDataValue("Eloqua Not Make Field");
-        
+            // console.log(fieldValues.length);
+            if(fieldValues){
+                for(var j =0 ; fieldValues.length > j ; j++){
+                    // console.log(fieldValues[j].id);
+                    var id = fieldValues[j].id;
+                    var value = fieldValues[j].value;
+                    switch(id){
 
-        // console.log(fieldValues.length);        
-        for(var j =0 ; fieldValues.length > j ; j++){
-            // console.log(fieldValues[j].id);
-            var id = fieldValues[j].id;
-            var value = fieldValues[j].value;
-            switch(id){
-
-                case "100196" : dataObject.userCode = GetDataValue(value); break;
-                case "100229" : dataObject.product = GetDataValue(value); break;
-                case "100292" : dataObject.rank = GetDataValue(value); break;
-                case "100252" : dataObject.homepage = GetDataValue(value) ; break;
-            }
+                        case "100196" : dataObject.userCode = GetDataValue(value); break;
+                        case "100229" : dataObject.product = GetDataValue(value); break;
+                        case "100292" : dataObject.rank = GetDataValue(value); break;
+                        case "100252" : dataObject.homepage = GetDataValue(value) ; break;
+                    }
+                }
+            }        
+            // delete items.fieldValues;
+            result_list.push(dataObject);
+            
         }
-        delete items.fieldValues;
-        result_list.push(dataObject);
-        
-    }
 
-    var result_data = {"elements" : result_list };
-    result_data.page = body_data.page;
-    result_data.pageSize = body_data.pageSize;
-    result_data.total = body_data.total;
+        result_data = {"elements" : result_list };
+        result_data.page = body_data.page;
+        result_data.pageSize = body_data.pageSize;
+        result_data.total = body_data.total;
+    }
 
     console.log(result_data);
     return result_data;

@@ -6,7 +6,7 @@ var logger = require('morgan');
 var methodOverride = require('method-override');
 var EloquaApi = require('./public/modules/eloqua-sdk');
 
-                    
+										
 var moment = require('moment');
 const schedule = require('node-schedule');
 // var engine = require('ejs-locals');
@@ -23,28 +23,28 @@ var fs = require('fs');
 
 function get_system_foldername()
 {
-  var result_data = "";
+	var result_data = "";
 
-  fs.readdir(FolderPath, function(error, filelist){
+	fs.readdir(FolderPath, function(error, filelist){
 
-    
-  
-    if (filelist != null && filelist.length > 0) {
-      for(i=0; i<filelist.length; i++)
-      {
-        switch(filelist[i])
-        {
-          case "bscard": result_data = "bscard"; break;
-          case "iam": result_data = "iam"; break;
-          case "b2bgerp_global": result_data = "b2bgerp_global"; break;
-          case "b2bgerp_kr": result_data = "b2bgerp_kr"; break;
-          case "cs_intergration": result_data = "cs_intergration"; break;
-        }
-      }
-    }
-  });
+		
+	
+		if (filelist != null && filelist.length > 0) {
+			for(i=0; i<filelist.length; i++)
+			{
+				switch(filelist[i])
+				{
+					case "bscard": result_data = "bscard"; break;
+					case "iam": result_data = "iam"; break;
+					case "b2bgerp_global": result_data = "b2bgerp_global"; break;
+					case "b2bgerp_kr": result_data = "b2bgerp_kr"; break;
+					case "cs_intergration": result_data = "cs_intergration"; break;
+				}
+			}
+		}
+	});
 
-  return result_data;
+	return result_data;
 }
 
 
@@ -58,36 +58,36 @@ function get_system_foldername()
 // 전부 비밀번호 :  QWer1234!@
 
 var bscard_eloqua_config = {
-  sitename: 'LGElectronics',
-  username: 'Lg_api.Card',
-  password: 'QWer1234!@'
+	sitename: 'LGElectronics',
+	username: 'Lg_api.Card',
+	password: 'QWer1234!@'
 };
 var b2bgerp_eloqua_config = {
-  sitename: 'LGElectronics',
-  username: 'Lg_api.B2b_global',
-  password: 'QWer1234!@'
+	sitename: 'LGElectronics',
+	username: 'Lg_api.B2b_global',
+	password: 'QWer1234!@'
 };
 var b2bkr_eloqua_config = {
-  sitename: 'LGElectronics',
-  username: 'Lg_api.B2b_kr',
-  password: 'QWer1234!@'
+	sitename: 'LGElectronics',
+	username: 'Lg_api.B2b_kr',
+	password: 'QWer1234!@'
 };
 var csintergration_eloqua_config = {
-  sitename: 'LGElectronics',
-  username: 'Lg_api.Integrated',
-  password: 'QWer1234!@'
+	sitename: 'LGElectronics',
+	username: 'Lg_api.Integrated',
+	password: 'QWer1234!@'
 };
 var iam_eloqua_config = {
-  sitename: 'LGElectronics',
-  username: 'Lg_api.Iam',
-  password: 'QWer1234!@'
+	sitename: 'LGElectronics',
+	username: 'Lg_api.Iam',
+	password: 'QWer1234!@'
 };
 
 var for_old_eloqua_config = {
-  sitename: 'LGElectronics',
-  username: 'Lg_api.Integrated',
-  password: 'QWer1234!@', 
-  restVersion : '1.0'
+	sitename: 'LGElectronics',
+	username: 'Lg_api.Integrated',
+	password: 'QWer1234!@', 
+	restVersion : '1.0'
 
 }
 
@@ -171,38 +171,37 @@ app.use('/iam/', iam_system_users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+	next(createError(404));
 });
 
 // error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+	// set locals, only providing error in development
+	res.locals.message = err.message;
+	res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+	// render the error page
+	res.status(err.status || 500);
+	res.render('error');
 });
 
 
 
 function schedule_Request(){
-  let uniqe_jobs_name = "B2B GERP GLOBAL" +  moment().format('YYYYMMDD')
-  let second = "0";
-  let minutes = "0";
-  let hours = "12";
-  let dayofmonth = "*";
-  let month = "*";
-  let weekindex = "*";
-  var schedate = second + ' ' + minutes + ' ' + hours + ' ' + dayofmonth + ' ' + month + ' ' + weekindex;
+	let uniqe_jobs_name = "B2B GERP GLOBAL" +  moment().format('YYYYMMDD')
+	let second = "0";
+	let minutes = "0";
+	let hours = "12";
+	let dayofmonth = "*";
+	let month = "*";
+	let weekindex = "*";
+	var schedate = second + ' ' + minutes + ' ' + hours + ' ' + dayofmonth + ' ' + month + ' ' + weekindex;
 
-  //test data
+	//test data
  
-  Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,async function(){
-    console.log(1);
-    b2bgerp_global_data_contacts.bant_send();
-  });
+	Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,async function(){
+			b2bgerp_global_data_contacts.bant_send();
+	});
 }
 if(__dirname == "/home/opc/LGE/b2bgerp_global/bin") schedule_Request();
 
