@@ -1,6 +1,7 @@
 var moment = require('moment');
 var express = require('express');
 var router = express.Router();
+var request = require('request');
 var httpRequest = require('../../common/httpRequest');
 var utils = require('../../common/utils');
 const { param } = require('../../common/history');
@@ -1065,15 +1066,15 @@ router.get('/bant_test/', async function (req, res, next) {
 
 // 가상의 LG API GATEWAY의 
 router.get('/sender', async function (req, res, next) {
-  	bant_send();
+  	bant_send(res);
 });
 
 //# region Bant 조건 사업부별 contact 데이터 전송을 하는 함수
-bant_send = async function(){
+bant_send = async function(res){
 	console.log(1234);
 	var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
-	  // let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solar" , "Solution"];
-	let bant_list = ["CLS"];
+  let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solar" , "Solution"];
+	//let bant_list = ["CLS"];
 	bant_list.forEach(async business_name =>{
 		let contacts_data = await get_b2bgerp_global_bant_data(business_name );
 		// console.log(contacts_data);
@@ -1127,6 +1128,8 @@ bant_send = async function(){
 					result = body;
 					// console.log(11);
 					console.log(body);
+          
+          res.json(body);
 					// console.log(response);
 					// BANT 업데이트는 운영에서만 필요함
 					//setBant_Update(contact_list); 
