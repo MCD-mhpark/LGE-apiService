@@ -112,7 +112,7 @@ router.post('/search_all', async function (req, res, next) {
 
 router.get('/search_one/:id', function (req, res, next) {
     var queryString = {
-        depth : "partial"
+        depth : "complete"
     }  ;
 
 
@@ -191,6 +191,7 @@ function Convert_BS_CARD_DATA_SEARCH(body_data){
             var items = body_data.elements[i];
             var fieldValues = items.fieldValues;
 
+            dataObject.id = GetDataValue(body_data.elements[i].id);
             dataObject.userId = GetDataValue(body_data.elements[i].salesPerson);
             dataObject.firstName = GetDataValue(body_data.elements[i].firstName);
             dataObject.lastName = GetDataValue(body_data.elements[i].lastName);
@@ -220,7 +221,10 @@ function Convert_BS_CARD_DATA_SEARCH(body_data){
                     var value = fieldValues[j].value;
                     switch(id){
 
-                        case "100196" : dataObject.userCode = GetDataValue(value); break;
+                        case "100196" : 
+                            if(value == 'N/A') value = value.replace("N/A" , "");
+                            dataObject.userCode = GetDataValue(value ? "LGE" + value : null );
+                            break;
                         case "100229" : dataObject.product = GetDataValue(value); break;
                         case "100292" : dataObject.rank = GetDataValue(value); break;
                         case "100252" : dataObject.homepage = GetDataValue(value) ; break;
@@ -257,7 +261,7 @@ function Convert_BS_CARD_DATA(body_data) {
             bs_card_data.id = item.id;              // update 와 delete 의 데이터 처리를 위해 Eloqua 의 id값
             bs_card_data.salesPerson = item.userId; //"userId": "jbpark",
     
-            var userCode = { "id": "100196", "value": item.userCode }; //100196 Subsidiary custom field//"userCode": "LGEVU",
+            var userCode = { "id": "100196", "value": item.userCode.replace("LGE" , "")  }; //100196 Subsidiary custom field//"userCode": "LGEVU",
             bs_card_data.fieldValues.push(userCode);
         
             var product_data = { "id": "100229", "value": item.product }; //"product": "IT_B2B_Cloud", | Eloqua 필드 없음 | 사업부별 인지 확인 필요
@@ -278,6 +282,9 @@ function Convert_BS_CARD_DATA(body_data) {
         
             var website_data = { "id": "100252", "value": item.homepage };
             bs_card_data.fieldValues.push(website_data);
+
+            var rank_data = { "id": "100292", "value": item.rank };
+            bs_card_data.fieldValues.push(rank_data);
         
             // bs_card_data.description = item.etc1; //"etc1": "메모 남김"  | Eloqua 필드 없음
         
