@@ -855,11 +855,12 @@ function lpad(str, padLen, padStr) {
 //#region B2B GERP 사업부별 조회 Endpoint
 
 //BANT 조건 Eloqua 조회 함수
-async function get_b2bgerp_global_bant_data(business_name, start_date, end_date) {
+async function get_b2bgerp_global_bant_data(_business_name, start_date, end_date) {
   //BANT 조건 : Status - Contact / Pre-lead / MQL
 
+  var business_name = _business_name;
   var status_bant = "";
-	console.log(business_name);
+
   var contacts_data;
   var queryString = {}
   var queryText = "";
@@ -906,8 +907,6 @@ async function get_b2bgerp_global_bant_data(business_name, start_date, end_date)
 		if (result.data.total && result.data.total > 0) {
 			contacts_data = result.data;
 		}
-
-		console.log(result)
 	}).catch((err) => {
 		console.error(err);
 		return null;
@@ -920,7 +919,9 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
   	var result_data = [];
 
   	for (var i = 0; i < contacts_data.elements.length; i++) {
+
 		try {
+
 			var result_item = new B2B_GERP_GLOBAL_ENTITY();
 			var FieldValues_data = contacts_data.elements[i].fieldValues;
 
@@ -940,6 +941,7 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 				business_department + "_" +
 				GetCustomFiledValue(FieldValues_data, 100202) + "_" +
 				moment().format('YYYYMMDD');
+        
 			result_item.SITE_NAME = GetCustomFiledValue(FieldValues_data, 100187) == "" ? "N/A" : GetCustomFiledValue(FieldValues_data, 100187);        //100187	Territory //SITE_NAME ( 현장명 매핑필드 확인 ) //2021-02-02 기준 데이터 없음
 			result_item.LEAD_SOURCE_TYPE = "11";                                          //default 11 (협의됨) //Eloqua에서 넘어오는 값이면 By Marketing, 영업인원이 수기입할 경우 By Sales로 지정
 
@@ -952,7 +954,7 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 			//GetDataValue(contacts_data.elements[i].firstName) + " " + GetDataValue(contacts_data.elements[i].lastName) + "/" +
 			GetDataValue(contacts_data.elements[i].emailAddress) + "/" +
 			GetDataValue(contacts_data.elements[i].mobilePhone);                        //Contact Point는 Eloqua 필드 중 -> Customer Name/Email/Phone No. 를 연결 시켜 매핑 필요
-			result_item.CORPORATION = "LGE" + GetCustomFiledValue(FieldValues_data, 100196);  //법인정보 (확인필요); 	"LGE" + {{Subsidiary}}
+			result_item.CORPORATION = "LGE" + GetCustomFiledValue(FieldValues_data, 100196);  //법인정보 "LGE" + {{Subsidiary}}
 			result_item.OWNER = "";                                                       //(확인필요);
 			result_item.ADDRESS =
 			GetDataValue(contacts_data.elements[i].address1) + " " +
@@ -999,7 +1001,8 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 			result_item.TRANSFER_FLAG = "Y";	 //TRANSFER_FLAG N , Y 값의 용도 확인 필요
 			result_item.LAST_UPDATE_DATE = utils.timeConverter("GET_DATE", contacts_data.elements[i].updatedAt);
 
-			result_data.push(result_item);
+      if( result_item.CORPORATION != "" && result_item.CORPORATION != "LGE" ) 
+			  result_data.push(result_item);
 		}
 		catch (e) {
 			console.log(e);
@@ -1008,48 +1011,48 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
  	return result_data;
 }
 
-// router.get('/:businessName/:start_date/:end_date', async function (req, res, next) {
-//   var business_name = req.params.businessName;
-//   var start_date = req.params.start_date;
-//   var end_date = req.params.end_date;
-//   console.log(start_date);
-//   console.log(end_date);
-//   //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr)
+router.get('/:businessName/:start_date/:end_date', async function (req, res, next) {
+  var business_name = req.params.businessName;
+  var start_date = req.params.start_date;
+  var end_date = req.params.end_date;
+  console.log(start_date);
+  console.log(end_date);
+  //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr)
 
-//   //BANT기준 B2B GERP GLOBAL CONTACTS 조회
-//   var contacts_data = await get_b2bgerp_global_bant_data(business_name, start_date, end_date);
-//   res.json(contacts_data);
-//   return;
-//   if (contacts_data != null) {
-//     //Eloqua Contacts
-//     //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr )
-//     var request_data = await Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_name);
-//     console.log(contacts_data);
-//     var contact_list = contacts_data.elements.map(row => {
-//       return {
-//         id: row.id,
-//         emailAddress: row.emailAddress
-//       };
-//     });
-
-
-//     res.json({ ContentList: request_data });
-
-//     setBant_Update(contact_list)
-//     console.log(contact_list);
+  //BANT기준 B2B GERP GLOBAL CONTACTS 조회
+  var contacts_data = await get_b2bgerp_global_bant_data(business_name, start_date, end_date);
+  // res.json(contacts_data);
+  // return;
+  if (contacts_data != null) {
+    //Eloqua Contacts
+    //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr )
+    var request_data = await Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_name);
+    console.log(contacts_data);
+    var contact_list = contacts_data.elements.map(row => {
+      return {
+        id: row.id,
+        emailAddress: row.emailAddress
+      };
+    });
 
 
-//     return;
-//   }
-//   else {
-//     res.json(false);
-//   }
-//   //API Gateway 데이터 전송
+    res.json({ ContentList: request_data });
 
-//   //Log
-//   //res.json(true);
-//   return;
-// });
+    setBant_Update(contact_list)
+    console.log(contact_list);
+
+
+    return;
+  }
+  else {
+    res.json(false);
+  }
+  //API Gateway 데이터 전송
+
+  //Log
+  //res.json(true);
+  return;
+});
 //#endregion
 
 // 가상의 LG API GATEWAY의 
@@ -1066,18 +1069,18 @@ router.get('/bant_test/', async function (req, res, next) {
 });
 
 // 가상의 LG API GATEWAY의 
-router.get('/sender/:start_date/:end_date', async function (req, res, next) {
-  	bant_send(res , req.params.start_date , req.params.end_date);
+router.get('/sender', async function (req, res, next) {
+  	bant_send(res);
 });
 
 //# region Bant 조건 사업부별 contact 데이터 전송을 하는 함수
-bant_send = async function(res , start_date , end_date){
+bant_send = async function(res){
 	console.log(1234);
 	var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
-  	let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solar" , "Solution"];
+  let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solar" , "Solution"];
 	//let bant_list = ["CLS"];
 	bant_list.forEach(async business_name =>{
-		let contacts_data = await get_b2bgerp_global_bant_data(business_name , start_date , end_date );
+		let contacts_data = await get_b2bgerp_global_bant_data(business_name );
 		// console.log(contacts_data);
 	  	console.log(1);
 		// return;
@@ -1130,7 +1133,7 @@ bant_send = async function(res , start_date , end_date){
 					// console.log(11);
 					console.log(body);
           
-         			res.json(body);
+          res.json(body);
 					// console.log(response);
 					// BANT 업데이트는 운영에서만 필요함
 					//setBant_Update(contact_list); 
