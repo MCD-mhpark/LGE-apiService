@@ -906,6 +906,7 @@ async function get_b2bgerp_global_bant_data(business_name, start_date, end_date)
 		if (result.data.total && result.data.total > 0) {
 			contacts_data = result.data;
 		}
+
 		console.log(result)
 	}).catch((err) => {
 		console.error(err);
