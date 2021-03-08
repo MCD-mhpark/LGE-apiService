@@ -893,6 +893,7 @@ async function get_b2bgerp_global_bant_data(_business_name, start_date, end_date
 	start_date ? yesterday_Object.start = start_date : null;
 	end_date ? yesterday_Object.end = end_date : null;
 
+  yesterday_Object.start = "2021-03-05";
 
 	//var yesterday_Object = utils.today_getDateTime();
 	var queryText = "C_DateModified>" + "'" + yesterday_Object.start + " 10:00:00'" + "C_DateModified<" + "'" + yesterday_Object.end + " 11:00:59'" + status_bant + "='MQL'";
@@ -926,7 +927,7 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 			var FieldValues_data = contacts_data.elements[i].fieldValues;
 
 			//result_item.INTERFACE_ID = "ELOQUA_0003" // this.INTERFACE_ID = "ELOQUA_0003"
-			result_item.INTERFACE_ID = moment().format('YYYYMMDD') + lpad(seq_cnt, 4, "6");
+			result_item.INTERFACE_ID = moment().format('YYYYMMDD') + lpad(seq_cnt, 6, "6");
 			//리드네임 [MQL]Subsidiary_BU_Platform&Activity_Register Date+Hour 값을 조합
 			//리드네임 {{Business Unit}}_{{Subsidiary}}_{{Platform}}_{{Activity}}_{{Date}}
 			//리드네임 {{Business Unit}}_{{Subsidiary}}_{{Platform&Activity}}_{{Date}}
@@ -1146,6 +1147,71 @@ bant_send = async function(res){
 
 	})
 }
+
+router.get('/search_gerp_data/:business_name', async function (req, res, next) {
+  
+  let business_name = req.params.business_name;
+  //let bant_list = ["AS", "CLS", "CM", "ID", "IT", "Solar", "Solution"];
+    
+    try {
+      let contacts_data = await get_b2bgerp_global_bant_data(business_name);
+
+      if (contacts_data != null) {
+
+        console.log(contacts_data.total);
+
+        var request_data = await Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_name);
+
+        // var contact_list = contacts_data.elements.map(row => { 
+        //   return {
+        //     id : row.id ,
+        //     emailAddress : row.emailAddress
+        //   }; 
+        // });
+
+        //console.log(request_data.length);
+        return res.json(request_data);
+
+        // var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
+        // var headers = {
+        //   'Content-Type': "application/json",
+        //   'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
+        // }
+        
+        
+        // options = {
+        //   url : send_url,
+        //   method: "POST",
+        //   headers:headers,
+        //   body : { ContentList: request_data } ,
+        //   json : true
+        // };
+        
+        // var result = await request(options, async function (error, response, body) {
+    
+        //   // console.log(11);
+        //   // console.log(response);
+        //   if(error){
+        //     console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
+        //     console.log(error);
+        //   } 
+        //   if (!error && response.statusCode == 200) {
+        //     result = body;
+        //     // console.log(11);
+        //     console.log(body);
+            
+        //     res.json(body);
+        //     // console.log(response);
+        //     // BANT 업데이트는 운영에서만 필요함
+        //     //setBant_Update(contact_list); 
+        //   }
+        // });
+      }
+    }
+    catch (e) {
+      return res.json(false);
+    }
+});
 
 module.exports = router;
 module.exports.bant_send = bant_send;

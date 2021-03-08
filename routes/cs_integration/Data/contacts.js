@@ -1,31 +1,32 @@
 var utils = require('../../common/utils');
 var moment = require('moment');
 var express = require('express');
+var request = require('request');
 var router = express.Router();
 
 /* Contacts */
 
 //BANT 조건 Eloqua 조회 함수
-async function get_INTEGRATION_DB_bant_data() {
-  //BANT 조건
-  var queryString = {
-    //search : 'emailAddress=' + emailAddress,
-    depth: "complete",
-    count: 1000,
-    //page: 2,
-    //MAX LIMIT 1000
-    //limit: 1000
-    count: 10
-    //limit: 10
-  }
-
-  // Test Code 한줄
-  queryString = { search : "emailAddress='hso_Test@goldenplanet.co.kr'" , depth: "complete"};
-  
+async function get_INTEGRATION_DB_Data() {
   
   var contacts_data;
+  var queryString = {}
+  
+  var yesterday_Object = utils.yesterday_getDateTime();
+	//start_date ? yesterday_Object.start = start_date : null;
+	//end_date ? yesterday_Object.end = end_date : null;
 
-  await csintergration_eloqua_config.data.contacts.get(queryString).then((result) => {
+  yesterday_Object.start = "2021-03-05";
+
+	//var yesterday_Object = utils.today_getDateTime();
+	var queryText = "C_DateModified>" + "'" + yesterday_Object.start + " 10:00:00'" + "C_DateModified<" + "'" + yesterday_Object.end + " 11:00:59'";
+	//yesterday_getUnixTime
+	console.log("queryText : " + queryText);
+	queryString['search'] = queryText;
+	queryString['depth'] = "complete";
+  queryString['count'] = 10;
+
+  await csintergration_eloqua.data.contacts.get(queryString).then((result) => {
     console.log(result.data);
 
     console.log("true");
@@ -377,6 +378,19 @@ function GetBusiness_Department_data(fieldValues, business_department, key) {
   return result_data;
 }
 
+function lpad(str, padLen, padStr) {
+  if (padStr.length > padLen) {
+    console.log("오류 : 채우고자 하는 문자열이 요청 길이보다 큽니다");
+    return str;
+  }
+  str += ""; // 문자로
+  padStr += ""; // 문자로
+  while (str.length < padLen)
+    str = padStr + str;
+  str = str.length >= padLen ? str.substring(0, padLen) : str;
+  return str;
+}
+
 function INTEGRATION_DB_ENTITY(){
   this.INTERFACE_ID = "";               //PK	HQ , USSolar, USID
   this.PROSPECT_ID = "";                //apc14000350967, ilc14000349979 ( Eloqua Contact ID )
@@ -461,6 +475,7 @@ function INTEGRATION_DB_ENTITY(){
   this.SALESFORCE_ID = "";              //?	 ex) 00Q0I00012QbogUAC
 }
 
+var seq_cnt = 0;
 //Eloqua Data B2B GERP Global Mapping 데이터 생성
 function Convert_INTEGRATION_DB_DATA(contacts_data, business_department) {
   var result_data = [];
@@ -471,7 +486,10 @@ function Convert_INTEGRATION_DB_DATA(contacts_data, business_department) {
       var item = contacts_data.elements[i];
       var FieldValues_data = contacts_data.elements[i].fieldValues;
 
-      result_item.INTERFACE_ID = "ELOQUA_0005";               //PK	HQ , USSolar, USID
+      //result_item.INTERFACE_ID = "ELOQUA_0005";               //PK	HQ , USSolar, USID
+      result_item.INTERFACE_ID = moment().format('YYYYMMDD') + lpad(seq_cnt, 6, "6");
+      seq_cnt = seq_cnt + 1;
+
       this.PROSPECT_ID = GetDataValue(item.id);               //apc14000350967, ilc14000349979 ( Eloqua Contact ID )
       result_item.FIRST_NAME = GetDataValue(item.firstName);  //firstName 이름
       result_item.LAST_NAME = GetDataValue(item.lastName);    //lastName 성
@@ -565,14 +583,52 @@ function Convert_INTEGRATION_DB_DATA(contacts_data, business_department) {
 router.get('/', async function (req, res, next) {
 
   //BANT기준 B2B GERP GLOBAL CONTACTS 조회
-  var contacts_data = await get_INTEGRATION_DB_bant_data();
+  var contacts_data = await get_INTEGRATION_DB_Data();
 
   if( contacts_data != null )
   {
     //Eloqua Contacts 조회
     var request_data = Convert_INTEGRATION_DB_DATA(contacts_data, "AS");
     
-    res.json({ContentList:request_data});;
+    //res.json({ContentList:request_data});;
+
+    var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/customer/api2api/eloqua/eloquaPardot.lge";
+
+    var headers = {
+      'Content-Type': "application/json",
+      'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
+    }
+    
+    
+    options = {
+      url : send_url,
+      method: "POST",
+      headers:headers,
+      body : { ContentList: request_data } ,
+      //body : { elements: request_data } ,
+      json : true
+    };
+    
+    var result = await request(options, async function (error, response, body) {
+
+      // console.log(11);
+      // console.log(response);
+      if(error){
+        console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
+        console.log(error);
+      } 
+      if (!error && response.statusCode == 200) {
+        result = body;
+        // console.log(11);
+        console.log(body);
+        
+        res.json(body);
+        // console.log(response);
+        // BANT 업데이트는 운영에서만 필요함
+        //setBant_Update(contact_list); 
+      }
+    });
+
   }
   else
   {
