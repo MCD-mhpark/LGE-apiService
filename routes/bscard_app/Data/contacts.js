@@ -47,7 +47,6 @@ async function mappedContacts(bs_data, depth){
     for(var i = 0 ; bs_data.length > i ; i++ ){
         if(bs_data.length > 1 ) emailString += "emailAddress='" + bs_data[i].email + "'";
         else emailString += "emailAddress=" + bs_data[i].email + "";
-
     }
     
 
@@ -261,7 +260,7 @@ function Convert_BS_CARD_DATA(body_data) {
             bs_card_data.id = item.id;              // update 와 delete 의 데이터 처리를 위해 Eloqua 의 id값
             bs_card_data.salesPerson = item.userId; //"userId": "jbpark",
     
-            var userCode = { "id": "100196", "value": item.userCode.replace("LGE" , "")  }; //100196 Subsidiary custom field//"userCode": "LGEVU",
+            var userCode = { "id": "100196", "value": item.userCode ? item.userCode.replace("LGE" , "") : "" }; //100196 Subsidiary custom field//"userCode": "LGEVU",
             bs_card_data.fieldValues.push(userCode);
         
             var product_data = { "id": "100229", "value": item.product }; //"product": "IT_B2B_Cloud", | Eloqua 필드 없음 | 사업부별 인지 확인 필요
@@ -347,6 +346,7 @@ router.post('/create', async function (req, res, next) {
     var failed_count = 0;
     var result_list = [];
 
+
     for(var i = 0 ; data.length > i ; i++){
         await bscard_eloqua.data.contacts.create( data[i] ).then((result) => {
             console.log(result.data);
@@ -358,9 +358,10 @@ router.post('/create', async function (req, res, next) {
             });
             success_count++;
         }).catch((err) => {
-            console.log(data[i].fieldValues);
-            console.log(err.response.status);
-            console.log(err.response.statusText);
+            // console.log(data[i].fieldValues);
+            console.log(err);
+            // console.log(err.response.status);
+            // console.log(err.response.statusText);
             result_list.push({
                 email : data[i].emailAddress,
                 status : err.response.status ? err.response.status : "ETC Error",
@@ -516,25 +517,9 @@ router.delete('/delete', async function (req, res, next) {
 });
 
 router.post('/specific_search', async function (req, res, next) {
-    var queryString = {}  ;
-
-    // var id = getContacts(email , "minimal");
-    var queryString = {};
-    var query_list = [];
-    query_list = req.body.items;
     
-    console.log(query_list);
-    var depth =  req.body.depth;
-    var search_text = "";
-    for(var i = 0; query_list.length > i ; i++){
-        var item = query_list[i];
-        console.log(item);
-        search_text += item.field + item.operator + "'" + item.value + "'";
-    }
-    queryString['search'] = search_text;
-    queryString['depth'] = depth ? depth : "";
 
-    console.log(queryString);
+    
     bscard_eloqua.data.contacts.get(  queryString).then((result) => {
         console.log(result.data);
         res.json(result.data);
@@ -555,11 +540,71 @@ router.get('/test2', async function (req, res, next) {
     console.log(utils.timeConverter("GET_DATE", 1577616544));
 });
 
-// eloqua api를 통한 create 나 update 시 유효한 이름을 찾기위함
-router.get('/test3', async function (req, res, next) {
-    var yesterday_Object = utils.yesterday_getDateTime();
-    var today_Object = utils.today_getDateTime();
-    console.log(yesterday_Object);
+// eloqua api를 통해 테스트용 데이터를 한꺼번에 지우기 위한 기능(최대 천건 가능)
+router.post('/multi_delete', async function (req, res, next) { 
+    var emailString = req.body.emailString; 
+    var search_data = []; 
+    for(var i = 0 ; 1 > i; i++){
+        search_data.push({
+            email : emailString
+        })
+    }
+    
+    console.log(search_data);
+    var search_list = await mappedContacts(search_data , "minimal");
+    var delete_data = search_list.elements;
+    console.log(search_list);
+
+    return;
+    var form = {};
+    var success_count = 0;
+    var failed_count = 0;
+
+    var result_list = [];
+    for (var i =0; delete_data.length > i ; i++){
+        console.log(delete_data[i]);
+        
+        await bscard_eloqua.data.contacts.delete(delete_data[i].id).then((result) => {
+            // console.log(result);
+          
+            result_list.push({
+                email : delete_data[i].email,
+                status : 200 ,
+                message : "success"
+            });
+            success_count++;
+        }).catch((err) => {
+            console.log("delete error");
+            console.log(err);
+            if(!delete_data[i].id) {
+                result_list.push({
+                    email : delete_data[i].email,
+                    status : "500" ,
+                    message : "Not Found Eloqua Data for Delete "
+                });
+                
+            }else{
+                result_list.push({
+                    email : delete_data[i].email,
+                    status : err.response.status ? err.response.status : "ETC Error",
+                    message : err.response.statusText ? err.response.statusText : "Unknown Error"
+                });
+               
+            }
+            failed_count++;
+           
+        });
+        
+    }
+
+    console.log("total count : " + delete_data.length + "  ::: success_count : " + success_count + "  ::: failed_count : " + success_count );
+    form.total = delete_data.length;
+    form.success_count = success_count;
+    form.failed_count = failed_count;
+    form.result_list = result_list;
+ 
+    res.json(form);
+
 });
 
 module.exports = router;
