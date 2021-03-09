@@ -598,14 +598,13 @@ router.get('/', async function (req, res, next) {
       'Content-Type': "application/json",
       'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
     }
-    
-    
+        
     options = {
       url : send_url,
       method: "POST",
       headers:headers,
-      body : { ContentList: request_data } ,
-      //body : { elements: request_data } ,
+      //body : { ContentList: request_data } ,
+      body : { elements : request_data } ,
       json : true
     };
     
