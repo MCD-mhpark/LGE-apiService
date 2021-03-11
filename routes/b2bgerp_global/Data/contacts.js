@@ -987,7 +987,12 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 			result_item.ATTRIBUTE_7 = GetCustomFiledValue(FieldValues_data, 100069);          //지역 - 국가 eloqua filed 정보
 			result_item.ATTRIBUTE_8 = "";
 			result_item.ATTRIBUTE_9 = GetBusiness_Department_data(FieldValues_data, business_department, "Job Function"); //(Job Function 사업부별 컬럼 확인 필요)
-			result_item.ATTRIBUTE_10 = GetCustomFiledValue(FieldValues_data, 100229) //(Business Unit 가장 최근 기준 BU값)
+
+      //GetCustomFiledValue(FieldValues_data, 100229) //(Business Unit 가장 최근 기준 BU값)
+      //2021-03-11 수정내용 - BU값을 엘로코아 BU가 아닌 코드상에서 정의 합니다. "AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"  
+      //"Solution사업부에 관련하여 대소문자 주의!!"
+			result_item.ATTRIBUTE_10 = business_department; 
+
 			//result_item.ATTRIBUTE_10 = GetBusiness_Department_data(FieldValues_data, business_department, "Business Unit"); //(Business Unit 사업부별 컬럼 확인 필요)
 
 			result_item.ATTRIBUTE_11 = "";                                                    //division (확인필요) 사업부코드( 코드마스터 필요 ) 예) HE    LGE 앞자리 빼는지 확인 필요
@@ -1169,6 +1174,13 @@ bant_send = async function(res){
 	})
 }
 
+//===============================================================================================================
+// 2021-03-09 MQL 기준 조회 하여 LG전자 B2B GERP Global 데이터 전송
+// business_name = "AS", "CLS", "CM", "ID", "IT", "Solar", "Solution"   Solution 사업부의경우 대소문자 주의!
+// 개발 URL : send_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
+// 운영 URL : send_url = "https://apigw-ext.lge.com:7211/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
+// LG전자 개발과 운영 데이터 전송 위치가 적혀 있으므로 항상 주의!! 요망
+//===============================================================================================================
 router.get('/search_gerp_data/:business_name', async function (req, res, next) {
   
   let business_name = req.params.business_name;
@@ -1194,10 +1206,10 @@ router.get('/search_gerp_data/:business_name', async function (req, res, next) {
         //return res.json(request_data);
 
         //LG전자 개발 URL
-	      //var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
+	      var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
 
         //LG전자 운영 URL
-        var send_url = "https://apigw-ext.lge.com:7211/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
+        //var send_url = "https://apigw-ext.lge.com:7211/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
 
         var headers = {
           'Content-Type': "application/json",
@@ -1237,6 +1249,72 @@ router.get('/search_gerp_data/:business_name', async function (req, res, next) {
       return res.json(false);
     }
 });
+
+//===============================================================================================================
+// 2021-03-11 MQL 기준 조회 하여 JSON 리턴 정보 확인용
+//===============================================================================================================
+router.get('/search_gerp_test_data/:business_name', async function (req, res, next) {
+  
+  let business_name = req.params.business_name;
+  //let bant_list = ["AS", "CLS", "CM", "ID", "IT", "Solution"];
+  try {
+    let contacts_data = await get_b2bgerp_global_bant_data(business_name);
+
+    if (contacts_data != null) {
+
+      var request_data = await Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_name);
+
+      console.log(request_data.length);
+      //return res.json({ ContentList: request_data }); 
+      return res.json(request_data);
+    }
+  }
+  catch (e) {
+    return res.json(false);
+  }
+});
+
+
+//===============================================================================================================
+// 2021-03-11 MQL 기준 조회된 Contact ID별 사업부별 업데이트 함수
+//===============================================================================================================
+bant_contacts_id_update = function(business_department , list_id){
+  var bant_list = [
+    100254, 100255, 100256, // ID 
+    100264, 100265, 100266, // IT
+    //100291, 100272, 100273, // Solar
+    100215, 100220, 100221, // AS
+    100276, 100278, 100279, // CLS
+    100282, 100284, 100285, // CM
+    100222, 100223, 100224, // Solution
+  ]
+
+  //var status_list = [100337, 100338, 100339, 100336, 100341, 100342, 100343] // 순서대로 ID , IT , Solar , AS , CLS , CM , Solution 의 Status
+  var status_list = [100337, 100338, 100336, 100341, 100342, 100343] // 순서대로 ID , IT , AS , CLS , CM , Solution 의 Status
+
+
+  list_id.forEach(async id => {
+    let update_data = {
+      id: item.id,
+      emailAddress: item.emailAddress
+    };
+    update_data.fieldValues = [];
+
+    await bant_list.forEach(field_id => {
+      update_data.fieldValues.push(setCustomFieldValue(field_id, ""));
+    });
+
+    await status_list.forEach(field_id => {
+      update_data.fieldValues.push(setCustomFieldValue(field_id, "Contact"));
+    });
+
+    await b2bgerp_eloqua.data.contacts.update(item.id, update_data).then((result) => {
+      // console.log(result.data);
+    }).catch((err) => {
+      console.error(err.message);
+    });
+  })
+}
 
 module.exports = router;
 module.exports.bant_send = bant_send;
