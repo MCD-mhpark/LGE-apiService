@@ -801,7 +801,7 @@ function setBant_Update(contact_info) {
   var bant_list = [
     100254, 100255, 100256, // ID 
     100264, 100265, 100266, // IT
-    100291, 100272, 100273, // Solar
+    //100291, 100272, 100273, // Solar
     100215, 100220, 100221, // AS
     100276, 100278, 100279, // CLS
     100282, 100284, 100285, // CM
@@ -1091,8 +1091,13 @@ router.get('/sender', async function (req, res, next) {
 //# region Bant 조건 사업부별 contact 데이터 전송을 하는 함수
 bant_send = async function(res){
 	console.log(1234);
+  //LG전자 개발 URL
 	var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
-  let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solar" , "Solution"];
+
+  //LG전자 운영 URL
+  //var send_url = "https://apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
+
+  let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
 	//let bant_list = ["CLS"];
 	bant_list.forEach(async business_name =>{
 		let contacts_data = await get_b2bgerp_global_bant_data(business_name );
@@ -1148,10 +1153,12 @@ bant_send = async function(res){
 					// console.log(11);
 					console.log(body);
           
+          //setBant_Update(contact_list); 
+          
           res.json(body);
 					// console.log(response);
 					// BANT 업데이트는 운영에서만 필요함
-					//setBant_Update(contact_list); 
+					
 				}
 			});
 			
@@ -1176,22 +1183,26 @@ router.get('/search_gerp_data/:business_name', async function (req, res, next) {
 
         var request_data = await Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_name);
 
-        // var contact_list = contacts_data.elements.map(row => { 
-        //   return {
-        //     id : row.id ,
-        //     emailAddress : row.emailAddress
-        //   }; 
-        // });
+        var contact_list = contacts_data.elements.map(row => { 
+          return {
+            id : row.id ,
+            emailAddress : row.emailAddress
+          };
+        });
 
         console.log(request_data.length);
         //return res.json(request_data);
 
-        var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
+        //LG전자 개발 URL
+	      //var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
+
+        //LG전자 운영 URL
+        var send_url = "https://apigw-ext.lge.com:7211/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
+
         var headers = {
           'Content-Type': "application/json",
           'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
         }
-        
         
         options = {
           url : send_url,

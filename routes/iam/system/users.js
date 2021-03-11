@@ -1,6 +1,7 @@
 var moment = require('moment');
 var utils = require('../../common/utils');
 var express = require('express');
+var request = require('request');
 var router = express.Router();
 
 //=====================================================================================================================================================================================================
@@ -320,7 +321,11 @@ function CONVERT_IAM_USER_RESPONSIBILITY_DATA(_eloqua_items) {
                 data.ATTRIBUTE1 = "";
                 data.ATTRIBUTE2 = "";
                 data.ATTRIBUTE3 = "";
-                data.ATTRIBUTE4 = "";
+                data.ATTRIBUTE4 = "";//권한 관리자 사번
+// ID / IT : 서판규 선임 268965
+// Solar / CM / CLS / Solution  김효진 선임 261922
+// AS : 김정준 선임 255147
+
                 data.ATTRIBUTE5 = "";
                 data.ATTRIBUTE6 = "";
                 data.ATTRIBUTE7 = "";
@@ -418,10 +423,10 @@ function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items) {
             data.ATTRIBUTE2 = "";
             data.ATTRIBUTE3 = "";
             data.ATTRIBUTE4 = "";
-            data.ATTRIBUTE5 = GetBusinessExtraction(item.name);
-            data.ATTRIBUTE6 = GetCorporationExtraction(item.name);
-            data.ATTRIBUTE7 = GetRullExtraction(item.name);
-            data.ATTRIBUTE8 = "";
+            data.ATTRIBUTE5 = "";
+            data.ATTRIBUTE6 = GetBusinessExtraction(item.name);
+            data.ATTRIBUTE7 = GetCorporationExtraction(item.name);
+            data.ATTRIBUTE8 = GetRullExtraction(item.name);
             data.ATTRIBUTE9 = "";
             data.ATTRIBUTE10 = "";
             data.ATTRIBUTE11 = "";
@@ -445,26 +450,59 @@ function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items) {
     return result;
 }
 
-router.get('/responsibility', function (req, res, next) {
+router.get('/responsibility', async function (req, res, next) {
     var queryString = {
         //search : search_value,
-        depth: "partial" //["minimal", "partial " ,"complete"]
+        depth: "partial", //["minimal", "partial " ,"complete"]
+        count: 1000
     }
-    iam_eloqua.system.users.security_groups(queryString).then((result) => {
 
-        console.log(result.data);
-
-        var return_data = {};
-
+    iam_eloqua.system.users.security_groups(queryString).then(async(result) => {
+      var return_data = {};
         var responsibility_data = CONVERT_IAM_RESPONSIBILITY_DATA(result.data);
-
         if (responsibility_data.length > 0) {
+            
+            //console.log(responsibility_data);
             return_data.ContentList = responsibility_data;
+            //return_data.elements = responsibility_data;
             return_data.page = result.data.page;
             return_data.pageSize = result.data.pageSize;
             return_data.total = result.data.total;
-            res.json(return_data);
+            console.log(return_data);
+            //res.json(return_data);
+         
+	      var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam/api2db/put/SODRESPONSIBILITY_SB";
+          var headers = {
+            'Content-Type': "application/json",
+            'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
+          }
+          
+          options = {
+            url : send_url,
+            method: "POST",
+            headers:headers,
+            body : return_data ,
+            json : true
+          };
 
+          //return res.json(return_data);
+
+          var result = await request(options, async function (error, response, body) {
+      
+            // console.log(11);
+            // console.log(response);
+            if(error){
+              console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
+              console.log(error);
+            } 
+            if (!error && response.statusCode == 200) {
+              result = body;
+              // console.log(11);
+              console.log(body);
+              
+              res.json(body);
+            }
+          });
             //console.log(request_data);
             //res.json({ ContentList: request_data });
         }

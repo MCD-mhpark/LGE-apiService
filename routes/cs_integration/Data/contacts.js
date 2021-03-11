@@ -25,6 +25,7 @@ async function get_INTEGRATION_DB_Data() {
 	queryString['search'] = queryText;
 	queryString['depth'] = "complete";
   queryString['count'] = 10;
+  queryString['page'] = 1;
 
   await csintergration_eloqua.data.contacts.get(queryString).then((result) => {
     console.log(result.data);
