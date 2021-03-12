@@ -198,9 +198,13 @@ function schedule_Request(){
 	var schedate = second + ' ' + minutes + ' ' + hours + ' ' + dayofmonth + ' ' + month + ' ' + weekindex;
 
 	//test data
- 
+
 	Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,async function(){
-			b2bgerp_global_data_contacts.bant_send();
+		let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
+		bant_list.forEach( async BusinessName =>{
+			b2bgerp_global_data_contacts.bant_send(BusinessName);
+		})
+			
 	});
 }
 if(__dirname == "/home/opc/LGE/b2bgerp_global/bin") schedule_Request();

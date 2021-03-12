@@ -93,6 +93,17 @@ class Contacts {
     }, cb);
   }
 
+  onlyCustomUpdate(id, contact, cb) {
+    const data = _classPrivateFieldLooseBase(this, _parent)[_parent]._validate(['id' , 'emailAddress' , 'fieldValues'], contact);
+
+    return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
+      api: 'REST',
+      uri: `/data/contact/${id}`,
+      method: 'put',
+      data: data
+    }, cb);
+  }
+
   delete(id, cb) {
     return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
       api: 'REST',

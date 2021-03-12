@@ -55,7 +55,7 @@ async function mappedContacts(bs_data, depth){
     console.log(queryString);
 
     await bscard_eloqua.data.contacts.get(queryString).then((result) => { 
-        console.log(result.data);
+        // console.log(result.data);
         // console.log(result.data.total);
         
         if(result.data.total && result.data.total > 0 ){
@@ -63,6 +63,44 @@ async function mappedContacts(bs_data, depth){
             for(var i = 0 ; bs_data.length > i ; i++){
                 for(var j = 0 ; result.length > j ; j++){ 
                     if(bs_data[i].email == result[j].emailAddress){
+                        bs_data[i].id = result[j].id;
+                    }
+                }
+            }
+        }
+
+    }).catch((err) => {
+        console.error(err);
+        
+    });
+    // console.log(bs_data);
+    return bs_data;
+}
+
+
+async function mappedContacts2(bs_data, depth){
+    
+    var queryString = {};
+    var emailString = "?";
+    for(var i = 0 ; bs_data.length > i ; i++ ){
+        if(bs_data.length > 1 ) emailString += "emailAddress='" + bs_data[i].emailAddress + "'";
+        else emailString += "emailAddress=" + bs_data[i].email + "";
+    }
+    
+
+    queryString['search'] = emailString;
+    queryString['depth'] = depth ? depth : "";
+    console.log(queryString);
+
+    await bscard_eloqua.data.contacts.get(queryString).then((result) => { 
+        // console.log(result.data);
+        // console.log(result.data.total);
+        
+        if(result.data.total && result.data.total > 0 ){
+            var result = result.data.elements;
+            for(var i = 0 ; bs_data.length > i ; i++){
+                for(var j = 0 ; result.length > j ; j++){ 
+                    if(bs_data[i].emailAddress == result[j].emailAddress){
                         bs_data[i].id = result[j].id;
                     }
                 }
@@ -110,6 +148,7 @@ router.post('/search_all', async function (req, res, next) {
 });
 
 router.get('/search_one/:id', function (req, res, next) {
+    console.log(123)
     var queryString = {
         depth : "complete"
     }  ;
@@ -338,8 +377,8 @@ router.post('/create', async function (req, res, next) {
     //}
     var data = Convert_BS_CARD_DATA(req.body);
 
-    console.log(data);
-    console.log(typeof(data));
+    // console.log(data);
+    // console.log(typeof(data));
 
     var form = {};
     var success_count = 0;
@@ -396,6 +435,75 @@ router.put('/update/', async function (req, res, next) {
     console.log(2);
     console.log(bs_data);
     
+  
+
+
+    var form = {};
+    var success_count = 0;
+    var failed_count = 0;
+    var result_list = [];
+    
+    console.log("bs_data.length");
+    console.log(bs_data.length);
+    for(var i = 0 ; bs_data.length > i ; i++){
+        console.log(bs_data[i].id)
+        var id = bs_data[i].id;
+        
+        await bscard_eloqua.data.contacts.update( id, bs_data[i] ).then((result) => {
+            console.log(result.data);
+            // res.json(result.data);
+            result_list.push({
+                email : bs_data[i].emailAddress,
+                status : 200 ,
+                message : "success"
+            });
+
+            success_count++;
+        }).catch((err) => {
+            console.log(err.response.status);
+            console.log(err.response.statusText);
+            if(bs_data[i].id){
+                result_list.push({
+                    email : bs_data[i].emailAddress,
+                    status : err.response.status ? err.response.status : "ETC Error",
+                    message : err.response.statusText ? err.response.statusText : "Unknown Error"
+                });
+            }else{
+                result_list.push({
+                    email : bs_data[i].emailAddress,
+                    status : "500" ,
+                    message : "Not Found Eloqua Data for Update "
+                });
+            }
+
+            failed_count++;
+           
+        });
+    }
+
+    console.log("total count : " + bs_data.length + "  ::: success_count : " + success_count + "  ::: failed_count : " + success_count );
+    form.total = bs_data.length;
+    form.success_count = success_count;
+    form.failed_count = failed_count;
+    form.result_list = result_list;
+ 
+    res.json(form);
+
+});
+
+router.post('/bant_update', async function (req, res, next) {
+
+  
+    console.log("update_call");
+    console.log(req.body);
+    var bs_data = await mappedContacts2(req.body , "partial");
+
+    // console.log(1);
+    // console.log(bs_data);
+
+  
+    console.log(2);
+    console.log(bs_data);
   
 
 
@@ -542,24 +650,22 @@ router.get('/test2', async function (req, res, next) {
 
 // eloqua api를 통해 테스트용 데이터를 한꺼번에 지우기 위한 기능(최대 천건 가능)
 router.post('/multi_delete', async function (req, res, next) { 
-    var emailString = req.body.emailString; 
+    var email_list = req.body.email_list; 
     var search_data = []; 
-    for(var i = 0 ; 1 > i; i++){
-        search_data.push({
-            email : emailString
-        })
-    }
     
-    console.log(search_data);
-    var search_list = await mappedContacts(search_data , "minimal");
-    var delete_data = search_list.elements;
+    
+    // console.log(search_data);
+    var search_list = await getContacts(email_list , "minimal");
+    console.log("search_list");
     console.log(search_list);
 
-    return;
+    var delete_data = search_list.elements;
+    console.log(delete_data);
+  
     var form = {};
     var success_count = 0;
     var failed_count = 0;
-
+    
     var result_list = [];
     for (var i =0; delete_data.length > i ; i++){
         console.log(delete_data[i]);
