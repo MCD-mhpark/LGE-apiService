@@ -3,20 +3,20 @@ var moment = require('moment');
 var express = require('express');
 var request = require('request');
 var router = express.Router();
-
+var fs 		= require("mz/fs");
 /* Contacts */
 
 //BANT 조건 Eloqua 조회 함수
 async function get_INTEGRATION_DB_Data() {
   
-  var contacts_data;
-  var queryString = {}
+	var contacts_data;
+	var queryString = {}
   
-  var yesterday_Object = utils.yesterday_getDateTime();
+  	var yesterday_Object = utils.yesterday_getDateTime();
 	//start_date ? yesterday_Object.start = start_date : null;
 	//end_date ? yesterday_Object.end = end_date : null;
 
-  yesterday_Object.start = "2021-03-05";
+  	yesterday_Object.start = "2021-03-05";
 
 	//var yesterday_Object = utils.today_getDateTime();
 	var queryText = "C_DateModified>" + "'" + yesterday_Object.start + " 10:00:00'" + "C_DateModified<" + "'" + yesterday_Object.end + " 11:00:59'";
@@ -24,23 +24,23 @@ async function get_INTEGRATION_DB_Data() {
 	console.log("queryText : " + queryText);
 	queryString['search'] = queryText;
 	queryString['depth'] = "complete";
-  queryString['count'] = 10;
-  queryString['page'] = 1;
+	queryString['count'] = 10;
+	queryString['page'] = 1;
 
-  await csintergration_eloqua.data.contacts.get(queryString).then((result) => {
-    console.log(result.data);
+ 	await csintergration_eloqua.data.contacts.get(queryString).then((result) => {
+		console.log(result.data);
 
-    console.log("true");
+		console.log("true");
 
-    if (result.data.total && result.data.total > 0) {
-      contacts_data = result.data;
-      console.log(contacts_data);
-    }
-  }).catch((err) => {
-    console.error(err.message);
-    return null;
-  });
-  return contacts_data;
+		if (result.data.total && result.data.total > 0) {
+		contacts_data = result.data;
+		console.log(contacts_data);
+		}
+  	}).catch((err) => {
+    	console.error(err.message);
+    	return null;
+	});
+	return contacts_data;
 }
 
 function GetCustomFiledValue(contacts_customfields, customfieldID) {
@@ -601,32 +601,54 @@ router.get('/', async function (req, res, next) {
     }
         
     options = {
-      url : send_url,
-      method: "POST",
-      headers:headers,
-      //body : { ContentList: request_data } ,
-      body : { elements : request_data } ,
-      json : true
+		url : send_url,
+		method: "POST",
+		headers:headers,
+		//body : { ContentList: request_data } ,
+		body : { elements : request_data } ,
+		json : true
     };
-    
+
+
+    fs.writeFile(__dirname + "/request_cs_integration.txt", JSON.stringify(request_data), 'utf8', function(error){ 
+		if(error) {
+			console.log(err);
+		}else{
+			console.log('request write end') ;
+		}
+		
+	});
+
     var result = await request(options, async function (error, response, body) {
 
-      // console.log(11);
-      // console.log(response);
-      if(error){
-        console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
-        console.log(error);
-      } 
-      if (!error && response.statusCode == 200) {
-        result = body;
-        // console.log(11);
-        console.log(body);
-        
-        res.json(body);
-        // console.log(response);
-        // BANT 업데이트는 운영에서만 필요함
-        //setBant_Update(contact_list); 
-      }
+		// console.log(11);
+		// console.log(response);
+		if(error){
+			console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
+			console.log(error);
+		} 
+		if (!error && response.statusCode == 200) {
+			result = body;
+			// console.log(11);
+			console.log(body);
+			
+			
+
+			res.json(body);
+
+			fs.writeFile(__dirname + "/reponse_cs_integration.txt", JSON.stringify(request_data), 'utf8', function(error){ 
+				if(error) {
+					console.log(err);
+				}else{
+					console.log('response write end') ;
+				}
+				
+			});
+		
+			// console.log(response);
+			// BANT 업데이트는 운영에서만 필요함
+			//setBant_Update(contact_list); 
+		}
     });
 
   }

@@ -199,15 +199,15 @@ function schedule_Request(){
 
 	//test data
 
-	Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,async function(){
-		let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
-		bant_list.forEach( async BusinessName =>{
-			await b2bgerp_global_data_contacts.bant_send(BusinessName);
-		})
+	// Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,async function(){
+	// 	let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
+	// 	bant_list.forEach( async BusinessName =>{
+	// 		await b2bgerp_global_data_contacts.bant_send(BusinessName);
+	// 	})
 			
-	});
+	// });
 }
-if(__dirname == "/home/opc/LGE/b2bgerp_global/bin") schedule_Request();
+// if(__dirname == "/home/opc/LGE/b2bgerp_global/bin") schedule_Request();
 
 // schedule_Request("test1", "http://localhost:8001/bscard_app/contacts/test" , "10 * * * * *" , "GET");
 // schedule_Request("test2", "http://localhost:8001/bscard_app/contacts/test" , "25 * * * * *" , "GET");
