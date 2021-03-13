@@ -190,7 +190,7 @@ app.use(function(err, req, res, next) {
 function schedule_Request(){
 	let uniqe_jobs_name = "B2B GERP GLOBAL" +  moment().format('YYYYMMDD')
 	let second = "0";
-	let minutes = "0";
+	let minutes = "30";
 	let hours = "12";
 	let dayofmonth = "*";
 	let month = "*";
@@ -202,7 +202,7 @@ function schedule_Request(){
 	Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,async function(){
 		let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
 		bant_list.forEach( async BusinessName =>{
-			b2bgerp_global_data_contacts.bant_send(BusinessName);
+			await b2bgerp_global_data_contacts.bant_send(BusinessName);
 		})
 			
 	});

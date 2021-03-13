@@ -6,7 +6,7 @@ var httpRequest = require('../../common/httpRequest');
 var utils = require('../../common/utils');
 const { param } = require('../../common/history');
 var schedule = require('node-schedule');
-var seq_cnt = 0;
+var seq_cnt = 2;
 var fs 		= require("mz/fs");
 /* Contacts */
 
@@ -797,41 +797,41 @@ function GetBusiness_Department_data(fieldValues, business_department, key) {
   return result_data;
 }
 
-function setBant_Update(bant_name ,  contact_list) {
+async function setBant_Update(bant_name ,  contact_list) {
 
-  	var bant_list = [];
+  	var bu_bant_id_list = [];
 
   	switch(bant_name) {
 		case "ID" : 
-			bant_list = [100254 , 100255 , 100256, 100337 ];
+            bu_bant_id_list = [ '100254', '100255', '100256', '100337' ];
 		break;
 
 		case "IT" : 
-			bant_list = [ 100264, 100265, 100266, 100338 ];
+            bu_bant_id_list = [ '100264', '100265', '100266', '100338' ];
 		break;
 
 		case "Solar" : 
-			bant_list = [ 100291, 100272, 100273, 100339 ];
+            bu_bant_id_list = [ '100291', '100272', '100273', '100339' ];
 		break;
 
 		case "AS" : 
-			bant_list = [ 100215, 100220, 100221, 100336 ];
+            bu_bant_id_list = [ '100215', '100220', '100221', '100336' ];
 		break;
 
 		case "CLS" : 
-			bant_list = [ 100276, 100278, 100279, 100341 ];
+            bu_bant_id_list = [ '100276', '100278', '100279', '100341' ];
 		break;
 
 		case "CM" : 
-			bant_list = [ 100282, 100284, 100285, 100342 ];
+            bu_bant_id_list = [ '100282', '100284', '100285', '100342' ];
 		break;
 
 		case "Solution" : 
-			bant_list = [ 100222, 100223, 100224, 100343 ];
+            bu_bant_id_list = [ '100222', '100223', '100224', '100343' ];
 		break;
 
         case "TEST" : 
-            bant_list = [ 100215, 100220, 100221, 100336 ];
+            bu_bant_id_list = [ '100215', '100220', '100221', '100336' ];
         break;
   }
 //   var bant_list = [
@@ -847,27 +847,24 @@ function setBant_Update(bant_name ,  contact_list) {
 //   var status_list = [100337, 100338, 100339, 100336, 100341, 100342, 100343] // 순서대로 ID , IT , Solar , AS , CLS , CM , Solution 의 Status
 
     
-    contact_list.forEach(async item => {
-		let update_data = {
-            id: item.id,
-            emailAddress: item.emailAddress
-	    };
-        update_data.fieldValues = [];
+    for(let i = 0; contact_list.length > i ; i++){
+        contact_list[i]['accountname'] = contact_list[i].accountName;
+        delete contact_list[i].accountName;
 
-        await bant_list.forEach(field_id => {
-            update_data.fieldValues.push(setCustomFieldValue(field_id, ""));
-        });
-
-        // await status_list.forEach(field_id => {
-        //   update_data.fieldValues.push(setCustomFieldValue(field_id, "Contact"));
-        // });
-        console.log(update_data);
-        await b2bgerp_eloqua.data.contacts.onlyCustomUpdate(item.id, update_data).then((result) => {
+        for(let j = 0 ; contact_list[i].fieldValues.length > j ; j++){
+            var FieldValues_item = contact_list[i].fieldValues[j];
+            if(bu_bant_id_list.indexOf(FieldValues_item.id) > -1){
+                contact_list[i].fieldValues[j].value = "";
+            }
+        }
+        
+        console.log(contact_list[i]);
+        await b2bgerp_eloqua.data.contacts.update(contact_list[i].id, contact_list[i]).then((result) => {
              console.log(result.data);
         }).catch((err) => {
             console.error(err.message);
         });
-    })
+    }
 }
 
 function lpad(str, padLen, padStr) {
@@ -930,7 +927,7 @@ async function get_b2bgerp_global_bant_data(_business_name, start_date, end_date
 	start_date ? yesterday_Object.start = start_date : null;
 	end_date ? yesterday_Object.end = end_date : null;
 
-    yesterday_Object.start = "2021-03-05";
+    // yesterday_Object.start = "2021-03-05";
 
 	//var yesterday_Object = utils.today_getDateTime();
 
@@ -1124,33 +1121,34 @@ router.get('/bant_test/', async function (req, res, next) {
 
 // 가상의 LG API GATEWAY의 
 router.get('/sender', async function (req, res, next) {
-  	bant_send(req.query.bsname);
+  	bant_send(req.query.bsname , res);
 });
 
 //# region Bant 조건 사업부별 contact 데이터 전송을 하는 함수
-bant_send = async function(business_name){
+bant_send = async function(business_name , res){
 	// console.log(1234);
   	//LG전자 개발 URL
-	var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
+	// var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
 
 	//LG전자 운영 URL
-	// var send_url = "https://apigw-ext.lge.com:7211/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
+	var send_url = "https://apigw-ext.lge.com:7211/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
 
-  
+    
 
     let contacts_data = await get_b2bgerp_global_bant_data(business_name );
-
-    // console.log(1);
-    // return;
+    
     if (contacts_data != null) {
         //Eloqua Contacts
         //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr )
         
+
+        // contacts_data : Eloqua 에 Bant 업데이트를 하기 위한 필드
+        // request_data : B2B GERP 에 전송할 데이터
         var request_data = await Convert_B2BGERP_GLOBAL_DATA( contacts_data, business_name);
 
-        console.log(request_data);
+        // console.log(request_data);
     
-        console.log(request_data.length);
+        // console.log(request_data.length);
 
         // console.log(request_data);
         // httpRequest.sender("http://localhost:8001/b2bgerp_global/contacts/req_data_yn", "POST", { ContentList: request_data });
@@ -1161,6 +1159,8 @@ bant_send = async function(business_name){
             'Content-Type': "application/json",
             'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
         }
+
+
         
         
         options = {
@@ -1170,7 +1170,46 @@ bant_send = async function(business_name){
             body : { ContentList: request_data } ,
             json : true
         };
+
+        var contact_list = contacts_data.elements;
+
+        //BANT 업데이트 데이터 구성 테스트 코드
+        // console.log(contacts_data)
+        // contact_list = contacts_data.elements;
+        // bu_bant_id_list = [ '100264', '100265', '100266', '100338' ];
+        // for(let i = 0; contact_list.length > i ; i++){
+        //     contact_list[i]['accountname'] = contact_list[i].accountName;
+        //     delete contact_list[i].accountName;
+    
+        //     for(let j = 0 ; contact_list[i].fieldValues.length > j ; j++){
+        //         var FieldValues_item = contact_list[i].fieldValues[j];
+        //         if(bu_bant_id_list.indexOf(FieldValues_item.id) > -1){
+        //             contact_list[i].fieldValues[j].value = "";
+        //         }
+        //     }
+        // }
+        // res.json(contact_list);
+        // console.log(contact_list);
         
+        // return;
+
+        // BANT 업데이트 데이터 구성 테스트 코드 끝
+        
+        // console.log(contact_list);
+        // console.log(contact_list.length);
+
+        // res.json(contact_list);
+        // fs.writeFile(__dirname ,contact_list );
+        fs.writeFile(__dirname + "/request_" + business_name + ".txt", JSON.stringify(contact_list), 'utf8', function(error){ 
+            if(error) {
+                console.log(err);
+            }else{
+                console.log('write end') ;
+            }
+            
+        });
+
+
         var result = await request(options, async function (error, response, body) {
 
             // console.log(11);
@@ -1183,22 +1222,30 @@ bant_send = async function(business_name){
              
                 // console.log(11);
                 console.log(body.resultData);
-                var contacts_list = []
-                contacts_list = contacts_data.elements.map(row => { 
-                    // 이미 전송한 데이터를 bant_update 해야 하기 때문에 변경
-                    //if(row.code != 'E') return row.id;
-                    return {
-                        id : row.id ,
-                        emailAddress : row.emailAddress
-                    }
-                });
+                // contacts_list = contacts_data.elements.map(row => { 
+                //     // 이미 전송한 데이터를 bant_update 해야 하기 때문에 변경
+                //     //if(row.code != 'E') return row.id;
+                   
+                // });
                 // res.json(contacts_list);
-                console.log(contacts_list.length);
-                if(contacts_list.length > 0 ) {
-                    console.log(contacts_list);
-                    setBant_Update( business_name , contacts_list);
-                
-                 
+
+                // for(let i = 0 ; contact_list.length > i ; i++ ){
+                //     contact_list[i]
+                // }
+
+                fs.writeFile(__dirname + "/response_" + business_name + ".txt", JSON.stringify(body.resultData), 'utf8', function(error){ 
+                    if(error) {
+                        console.log(err);
+                    }else{
+                        console.log('write end') ;
+                    }
+                    
+                });
+
+                console.log(contact_list.length);
+                if(contact_list.length > 0 ) {
+                    console.log(contact_list);
+                    setBant_Update( business_name , contact_list);
                 } 
             
                 // console.log(response);
