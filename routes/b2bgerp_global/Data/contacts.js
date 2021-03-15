@@ -1126,7 +1126,7 @@ router.get('/sender', async function (req, res, next) {
 
 //# region Bant 조건 사업부별 contact 데이터 전송을 하는 함수
 bant_send = async function(business_name , res){
-	// console.log(1234);
+	console.log("bant send function BS NAME : " + business_name);
   	//LG전자 개발 URL
 	// var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
 
@@ -1136,32 +1136,18 @@ bant_send = async function(business_name , res){
     
 
     let contacts_data = await get_b2bgerp_global_bant_data(business_name );
-    
+
+
     if (contacts_data != null) {
-        //Eloqua Contacts
-        //business_department ( AS , CLS , CM , ID , IT , Solar , Solution, Kr )
-        
 
         // contacts_data : Eloqua 에 Bant 업데이트를 하기 위한 필드
         // request_data : B2B GERP 에 전송할 데이터
         var request_data = await Convert_B2BGERP_GLOBAL_DATA( contacts_data, business_name);
-
-        // console.log(request_data);
-    
-        // console.log(request_data.length);
-
-        // console.log(request_data);
-        // httpRequest.sender("http://localhost:8001/b2bgerp_global/contacts/req_data_yn", "POST", { ContentList: request_data });
-        
-        // var result = await httpRequest.sender( send_url , "LGE_GERP_GLOBAL_POST", { ContentList: request_data } );
         
         var headers = {
             'Content-Type': "application/json",
             'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
         }
-
-
-        
         
         options = {
             url : send_url,

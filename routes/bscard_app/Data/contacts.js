@@ -127,6 +127,36 @@ router.get('/search_one/:id', function (req, res, next) {
     });
 });
 
+router.post('/search_origin', function (req, res, next) {
+    
+     
+    var queryString = {};
+    var emailString = "";
+    var email_list = [];
+    var depth = req.body.depth;
+    if(req.body.email_list){
+        email_list = req.body.email_list;
+        emailString += "?";
+    } 
+    for(var i = 0 ; email_list.length > i ; i++ ){
+        emailString += "emailAddress='" + email_list[i] + "'";
+    }
+    queryString['search'] = emailString ;
+    queryString['depth'] = depth ? depth : "";
+
+    console.log(queryString);
+    
+    bscard_eloqua.data.contacts.get( queryString).then((result) => {
+        console.log(result.data);
+        res.json(result.data);
+        // res.json(true);
+    }).catch((err) => {
+        console.error(err);
+        res.json(false);
+    });
+});
+
+
 function BS_CARD_SEARCH_ENTITY(){          
                                     // 숫자 + 영문 조합이면 Customfield , 영문만 있을 경우 BasicField
     this.userId = "";               // salsePerson 값
@@ -284,7 +314,10 @@ function Convert_BS_CARD_DATA(body_data) {
 
             var rank_data = { "id": "100292", "value": item.rank };
             bs_card_data.fieldValues.push(rank_data);
-        
+            
+            var platform_activity_data = { "id": "100202", "value": "LBCS" };
+            bs_card_data.fieldValues.push(platform_activity_data);
+            
             // bs_card_data.description = item.etc1; //"etc1": "메모 남김"  | Eloqua 필드 없음
         
             //"mailingDate": "2021-01-30 19:10:15", | Eloqua 필드 없음

@@ -190,7 +190,7 @@ app.use(function(err, req, res, next) {
 function schedule_Request(){
 	let uniqe_jobs_name = "B2B GERP GLOBAL" +  moment().format('YYYYMMDD')
 	let second = "0";
-	let minutes = "30";
+	let minutes = "5";
 	let hours = "12";
 	let dayofmonth = "*";
 	let month = "*";
@@ -199,15 +199,17 @@ function schedule_Request(){
 
 	//test data
 
-	// Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,async function(){
-	// 	let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
-	// 	bant_list.forEach( async BusinessName =>{
-	// 		await b2bgerp_global_data_contacts.bant_send(BusinessName);
-	// 	})
+	Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,async function(){
+		let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
+		bant_list.forEach( async BusinessName =>{
+			await b2bgerp_global_data_contacts.bant_send(BusinessName);
+		})
 			
-	// });
+	});
 }
 // if(__dirname == "/home/opc/LGE/b2bgerp_global/bin") schedule_Request();
+
+schedule_Request();
 
 // schedule_Request("test1", "http://localhost:8001/bscard_app/contacts/test" , "10 * * * * *" , "GET");
 // schedule_Request("test2", "http://localhost:8001/bscard_app/contacts/test" , "25 * * * * *" , "GET");
