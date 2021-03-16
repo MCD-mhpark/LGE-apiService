@@ -636,7 +636,7 @@ router.get('/', async function (req, res, next) {
 
 			res.json(body);
 
-			fs.writeFile(__dirname + "/reponse_cs_integration.txt", JSON.stringify(request_data), 'utf8', function(error){ 
+			fs.writeFile(__dirname + "/reponse_cs_integration.txt", JSON.stringify(body), 'utf8', function(error){ 
 				if(error) {
 					console.log(err);
 				}else{
