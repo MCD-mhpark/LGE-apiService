@@ -3,6 +3,7 @@ var express = require('express');
 var router = express.Router();
 var converters = require('../../common/converters');
 var utils = require('../../common/utils');
+var fs 		= require("mz/fs");
 
 //하나의 이메일 검색값으로 여러 contacts id를 조회 
 // 조회순서에 따른 데이터는 보장되지 않는다 (ex labeltest_2 , labeltest_1로 조회했을 경우 결과값이 labeltest_1, labeltest_2로 나옴)
@@ -29,7 +30,7 @@ async function getContacts(data_list, depth ){
         
         if(result.data.total && result.data.total > 0 ){
             contacts_data = result.data;
-            console.log(contacts_data);
+            // console.log(contacts_data);
         }
     }).catch((err) => {
         console.error(err.message);
@@ -103,6 +104,16 @@ router.post('/search_all', async function (req, res, next) {
 
     var convert_data = await Convert_BS_CARD_DATA_SEARCH(contacts_data);
 
+    // if(req.body.fileRecord){
+    //     fs.writeFile(__dirname + "/request_search_all_80-125"  + ".txt", JSON.stringify(contacts_data), 'utf8', function(error){ 
+    //         if(error) {
+    //             console.log(err);
+    //         }else{
+    //             console.log('write end') ;
+    //         }
+            
+    //     });
+    // }
 
     if(convert_data && convert_data.total > 0) res.json(convert_data);
     else res.json(false);
@@ -189,17 +200,27 @@ function BS_CARD_SEARCH_ENTITY(){
 function BS_CARD_INS_UPD_ENTITY() {
 
     this.id = "";
-    this.salesPerson = "";      // 판매원 ID
-    this.firstName = "";        // 이름
-    this.lastName = "";		    // 성
-    this.accountName = "";      // 회사명
-    this.mobilePhone = "";      // 핸드폰 번호
-    this.businessPhone = "";    // 비지니스용 연락처
-    this.fax = "";              // 팩스번호
-    this.address1 = "";         // 주소1
-    this.address2 = "";         // 주소2
-    this.emailAddress = "";     // 이메일
+    this.salesPerson = "";          // 판매원 ID
+    this.firstName = "";            // 이름
+    this.lastName = "";		        // 성
+    this.accountName = "";          // 회사명
+    this.mobilePhone = "";          // 핸드폰 번호
+    this.businessPhone = "";        // 비지니스용 연락처
+    this.fax = "";                  // 팩스번호
+    this.address1 = "";             // 주소1
+    this.address2 = "";             // 주소2
+    this.emailAddress = "";         // 이메일
 
+    this.etc1 = "";                 // No Field
+    this.mailingDate = "";          // No Field
+    this.subscriptionDate = "";     // No Field
+    this.campaignName = "";         // No Field
+    this.campaignDate = "";         // No Field
+    this.customerProduct = "";      // No Field
+    this.country = "";              // country
+    this.krMkt = "";                // No Field
+    this.updateDate = "";           // No Field
+   
 
     this.fieldValues = [];      // Custom Field List 
     
@@ -290,11 +311,11 @@ function Convert_BS_CARD_DATA(body_data) {
             bs_card_data.id = item.id;              // update 와 delete 의 데이터 처리를 위해 Eloqua 의 id값
             bs_card_data.salesPerson = item.userId; //"userId": "jbpark",
     
-            var userCode = { "id": "100196", "value": item.userCode ? item.userCode.replace("LGE" , "") : "" }; //100196 Subsidiary custom field//"userCode": "LGEVU",
-            bs_card_data.fieldValues.push(userCode);
+     		//100196 Subsidiary custom field//"userCode": "LGEVU",
+            bs_card_data.fieldValues.push( { "id": "100196", "value": item.userCode ? item.userCode.replace("LGE" , "") : "" });
         
-            var product_data = { "id": "100229", "value": item.product }; //"product": "IT_B2B_Cloud", | Eloqua 필드 없음 | 사업부별 인지 확인 필요
-            bs_card_data.fieldValues.push(product_data);
+			 //"product": "IT_B2B_Cloud", | Eloqua 필드 없음 | 사업부별 인지 확인 필요
+            bs_card_data.fieldValues.push({ "id": "100229", "value": item.product }); 
             
             bs_card_data.firstName = item.firstName; //"firstName": "진범",
             bs_card_data.lastName = item.lastName; //"lastName": "박",
@@ -309,14 +330,9 @@ function Convert_BS_CARD_DATA(body_data) {
             bs_card_data.address2 = item.addr2; //"addr2": "서초구 양재",
             bs_card_data.emailAddress = item.email; //"email": "jbpark@intellicode.co.kr",
         
-            var website_data = { "id": "100252", "value": item.homepage };
-            bs_card_data.fieldValues.push(website_data);
-
-            var rank_data = { "id": "100292", "value": item.rank };
-            bs_card_data.fieldValues.push(rank_data);
-            
-            var platform_activity_data = { "id": "100202", "value": "LBCS" };
-            bs_card_data.fieldValues.push(platform_activity_data);
+            bs_card_data.fieldValues.push( { "id": "100252", "value": item.homepage });
+            bs_card_data.fieldValues.push( { "id": "100292", "value": item.rank });
+            bs_card_data.fieldValues.push( { "id": "100202", "value": "LBCS" });
             
             // bs_card_data.description = item.etc1; //"etc1": "메모 남김"  | Eloqua 필드 없음
         
@@ -328,8 +344,56 @@ function Convert_BS_CARD_DATA(body_data) {
             //"krMkt": "N", | Eloqua 필드값 확인 필요 | Eloqua 필드 없음
             bs_card_data.country = item.country; // "country": "Netherlands Antilles",
         
-            // var updateDt_data = { "id": "", "value": item.updateDate }; "2031-01-01 00:00:00", | Eloqua 필드 없음
-            // bs_card_data.fieldValues.push(updateDt_data);  
+            // Marketing Event || Campagin Name_ Campagin Date 조합 || 100203
+            bs_card_data.fieldValues.push( { "id": "100203", "value": item.campaignName + "|" + item.campaignDate  });
+            
+            if(item.krMkt == 'Y'){
+                
+                //들어온 값이 없어도 자동으로 업데이트 해야하는 동의 여부 및 동의 날짜 필드
+                // KR_Privacy Policy_Optin || 한영본 메일 발송 동의 여부 || 100318
+				bs_card_data.fieldValues.push( { "id": "100211", "value": "Yes" });
+                // KR_Privacy Policy_Optin_Date || 한영본 메일 발송 동의 여부 날짜 || 100319
+				bs_card_data.fieldValues.push( { "id": "100319", "value": utils.today_getOneUnixTime() });
+                // KR_Privacy Policy_Collection and Usage || 한영본 개인정보 수집 동의 여부 || 100315
+				bs_card_data.fieldValues.push( { "id": "100315", "value": "Yes" });
+                // KR_Privacy Policy_Collection and Usage_AgreedDate || 한영본 개인정보 수집 동의 날짜 || 100320
+				bs_card_data.fieldValues.push( { "id": "100320", "value": utils.today_getOneUnixTime() });
+                // KR_Privacy Policy_Consignment of PI || (현재 동의여부 필드만 있고, 데이트 관련 필드 없음) || 100316
+				bs_card_data.fieldValues.push( { "id": "100316", "value": "Yes" });
+                // KR_Privacy Policy_Transfer PI Aborad || (현재 동의여부 필드만 있고, 데이트 관련 필드 없음) || 100317
+				bs_card_data.fieldValues.push( { "id": "100317", "value": "Yes" });
+
+				// KR_Product Category || 한영본 customer product || 100311
+				bs_card_data.fieldValues.push( { "id": "100311", "value": item.customerProduct });
+
+               
+
+                
+
+            }else{
+
+				// DirectMarketing_EM_TXT_SNS || 글로벌 메일 발송 동의 여부 || 100211
+           		bs_card_data.fieldValues.push( { "id": "100211", "value": "Yes" });
+                // DirectMarketing_EM_TXT_SNS_AgreedDate || 글로벌 메일 발송 동의 날짜 || 100200
+				bs_card_data.fieldValues.push( { "id": "100200", "value": utils.today_getOneUnixTime() });
+                // Privacy Policy_Agreed || 개인정보 이용 동의 여부 || 100213 
+				bs_card_data.fieldValues.push( { "id": "100213", "value": "Yes" });
+                // Privacy Policy_AgreedDate || 개인정보 이용 동의 날짜 || 100199
+				bs_card_data.fieldValues.push( { "id": "100199", "value": utils.today_getOneUnixTime() });
+                // TransferOutsideCountry || 개인정보 국외이전 동의 여부 || 100210
+				bs_card_data.fieldValues.push( { "id": "100210", "value": "Yes" });
+                // TransferOutsideCountry_AgreedDate || 개인정보 국외이전 동의 날짜 || 100208
+				bs_card_data.fieldValues.push( { "id": "100208", "value": utils.today_getOneUnixTime() });
+
+				// customer product || Global customer product || 아직 안만들어짐
+				bs_card_data.fieldValues.push( { "id": "", "value": item.customerProduct });
+
+			
+                
+                
+               
+            }
+
             result_data.push(bs_card_data);
         }
         catch(e)
@@ -487,7 +551,10 @@ router.put('/update/', async function (req, res, next) {
 
 router.delete('/delete', async function (req, res, next) {
     var email_list = [];
-    email_list = req.body.email_list;
+    email_list = req.body.email_list
+    
+    console.log(email_list);
+
     var delete_data = [];
     for(var i = 0 ; email_list.length > i; i++){
         delete_data.push({
@@ -496,7 +563,7 @@ router.delete('/delete', async function (req, res, next) {
     }
     
     delete_data = await mappedContacts(delete_data , "partial");
-    // console.log(delete_data);
+    console.log(delete_data);
     
     var form = {};
     var success_count = 0;
@@ -539,7 +606,7 @@ router.delete('/delete', async function (req, res, next) {
         
     }
 
-    console.log("total count : " + delete_data.length + "  ::: success_count : " + success_count + "  ::: failed_count : " + success_count );
+    console.log("total count : " + delete_data.length + "  ::: success_count : " + success_count + "  ::: failed_count : " + failed_count );
     form.total = delete_data.length;
     form.success_count = success_count;
     form.failed_count = failed_count;

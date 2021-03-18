@@ -50,6 +50,19 @@ exports.today_getUnixTime = function (){
         end : endUnix
     }
 
+}
+
+exports.today_getOneUnixTime = function (){
+    //ex date = 2019-12-29 19:48:08
+    //ex unix =  1577616544 
+
+    // var today = moment().format("YYYY-MM-DD");
+    var today_start = moment().format("YYYY-MM-DD"); 
+
+
+    return moment(today_start).unix();
+
+
 
 }
 

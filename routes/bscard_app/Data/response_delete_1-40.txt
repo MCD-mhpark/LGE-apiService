@@ -1,0 +1,207 @@
+{
+    "total": 40,
+    "success_count": 39,
+    "failed_count": 1,
+    "result_list": [
+        {
+            "email": "hyunwook.jin@dkbmc.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "heyjin.choi@dkbmc.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "gcho@tobem.jp",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "hslee2@coleomarketing.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "eunji1.choi@lge.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "jaemini.kim@lge.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "vicky.sarantopoulou@lge.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "athanassia.dile@lge.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "n.portokalakis@atraposmedia.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "theo.papanagiotou@gmail.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "vic.sarantopoulou@gmail.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "stefanos.kiposis@lge.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "y.portokalakis@atraposmedia.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "jeongjun.kim@lge.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "pk.suh@lge.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "jasowit@cdw.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "b1.ramachandran@lge.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "sangkyung.yoon@lge.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "ming.lay@lge.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "hyojini.kim@lge.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "abel.oh@lge.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "danai.ar@lge.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "kykim@clearwin.co.kr",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "chanuk.song@lge.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "sangkaeo2010@gmail.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "pmichas@wisetech.gr",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "siecom@siecom.fr",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "jwbaek@lgi.co.kr",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "sattawat_w@geodesign.co.th",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "chalunnop.t@wep.co.th",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "wontaek@microsoft.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "gk@edxarabia.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "jsmoon@pknwise.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "younggyu.kim@assaabloy.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "foryou@kioskkorea.kr",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "kkh0302@ititech.co.kr",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "michel.houtzager@lge.com",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "Nick.Williams@avmi.com",
+            "status": "500",
+            "message": "Not Found Eloqua Data for Delete "
+        },
+        {
+            "email": "joe.martoccia@fabriweld.co.uk",
+            "status": 200,
+            "message": "success"
+        },
+        {
+            "email": "koen.niville@lge.com",
+            "status": 200,
+            "message": "success"
+        }
+    ]
+}
