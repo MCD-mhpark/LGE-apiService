@@ -6,6 +6,7 @@ var httpRequest = require('../../common/httpRequest');
 var utils = require('../../common/utils');
 const { param } = require('../../common/history');
 var schedule = require('node-schedule');
+var moment = require('moment');
 var seq_cnt = 2;
 var fs 		= require("mz/fs");
 /* Contacts */
@@ -1186,7 +1187,9 @@ bant_send = async function(business_name , res){
 
         // res.json(contact_list);
         // fs.writeFile(__dirname ,contact_list );
-        fs.writeFile(__dirname + "/request_" + business_name + ".txt", JSON.stringify(contact_list), 'utf8', function(error){ 
+        // 
+        var today = moment().format("YYYY-MM-DD"); 
+        fs.writeFile(__dirname + "/requestEloqua_" + business_name + ".txt", JSON.stringify(contact_list), 'utf8', function(error){ 
             if(error) {
                 console.log(err);
             }else{
@@ -1194,6 +1197,15 @@ bant_send = async function(business_name , res){
             }
             
         });
+
+        fs.writeFile(__dirname + "/requestConvert_" + business_name + ".txt", JSON.stringify(request_data), 'utf8', function(error){ 
+          if(error) {
+              console.log(err);
+          }else{
+              console.log('write end') ;
+          }
+          
+      });
 
 
         var result = await request(options, async function (error, response, body) {

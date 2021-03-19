@@ -311,11 +311,9 @@ function Convert_BS_CARD_DATA(body_data) {
             bs_card_data.id = item.id;              // update 와 delete 의 데이터 처리를 위해 Eloqua 의 id값
             bs_card_data.salesPerson = item.userId; //"userId": "jbpark",
     
-     		//100196 Subsidiary custom field//"userCode": "LGEVU",
-            bs_card_data.fieldValues.push( { "id": "100196", "value": item.userCode ? item.userCode.replace("LGE" , "") : "" });
+     		
         
-			 //"product": "IT_B2B_Cloud", | Eloqua 필드 없음 | 사업부별 인지 확인 필요
-            bs_card_data.fieldValues.push({ "id": "100229", "value": item.product }); 
+			
             
             bs_card_data.firstName = item.firstName; //"firstName": "진범",
             bs_card_data.lastName = item.lastName; //"lastName": "박",
@@ -334,7 +332,7 @@ function Convert_BS_CARD_DATA(body_data) {
             bs_card_data.fieldValues.push( { "id": "100292", "value": item.rank });
             bs_card_data.fieldValues.push( { "id": "100202", "value": "LBCS" });
             
-            // bs_card_data.description = item.etc1; //"etc1": "메모 남김"  | Eloqua 필드 없음
+            
         
             //"mailingDate": "2021-01-30 19:10:15", | Eloqua 필드 없음
             bs_card_data.subscriptionDate = utils.timeConverter("GET_UNIX",  item.subscriptionDate); //"subscriptionDate": "2021-01-30 19:11:22",
@@ -342,16 +340,26 @@ function Convert_BS_CARD_DATA(body_data) {
             //"campaignDate": "2031-01-01 00:00:00", | Eloqua 필드 없음
             //"customerProduct": "as", | 박진범 이사님 Product 값이 AS , ID , IT , CLS , CM , Solor , Solution 값이 전부 인지 확인 필요 
             //"krMkt": "N", | Eloqua 필드값 확인 필요 | Eloqua 필드 없음
+
+
+            // KR_Privacy Policy_Optin || 한영본 메일 발송 동의 여부 || 100318
+            
             bs_card_data.country = item.country; // "country": "Netherlands Antilles",
         
+            // LBCS_memo || etc1 || 100365
+            bs_card_data.fieldValues.push( { "id": "100365", "value": item.etc1  });
+
             // Marketing Event || Campagin Name_ Campagin Date 조합 || 100203
             bs_card_data.fieldValues.push( { "id": "100203", "value": item.campaignName + "|" + item.campaignDate  });
+
+            // product |  Business Unit || 100229
+            bs_card_data.fieldValues.push({ "id": "100229", "value": item.product }); 
             
             if(item.krMkt == 'Y'){
                 
                 //들어온 값이 없어도 자동으로 업데이트 해야하는 동의 여부 및 동의 날짜 필드
                 // KR_Privacy Policy_Optin || 한영본 메일 발송 동의 여부 || 100318
-				bs_card_data.fieldValues.push( { "id": "100211", "value": "Yes" });
+				bs_card_data.fieldValues.push( { "id": "100318", "value": "Yes" });
                 // KR_Privacy Policy_Optin_Date || 한영본 메일 발송 동의 여부 날짜 || 100319
 				bs_card_data.fieldValues.push( { "id": "100319", "value": utils.today_getOneUnixTime() });
                 // KR_Privacy Policy_Collection and Usage || 한영본 개인정보 수집 동의 여부 || 100315
@@ -363,12 +371,13 @@ function Convert_BS_CARD_DATA(body_data) {
                 // KR_Privacy Policy_Transfer PI Aborad || (현재 동의여부 필드만 있고, 데이트 관련 필드 없음) || 100317
 				bs_card_data.fieldValues.push( { "id": "100317", "value": "Yes" });
 
+                //100196 Subsidiary custom field//"userCode": "LGEVU"
+                // krMkt Y인 경우 Subsidiary를 KR로 찍고 N인 경우 Global 이기에 Country 값을 봐도 되기 떄문에 빈값으로 찍는다.
+                bs_card_data.fieldValues.push( { "id": "100196", "value": "KR" });
+
+              
 				// KR_Product Category || 한영본 customer product || 100311
 				bs_card_data.fieldValues.push( { "id": "100311", "value": item.customerProduct });
-
-               
-
-                
 
             }else{
 
@@ -385,13 +394,14 @@ function Convert_BS_CARD_DATA(body_data) {
                 // TransferOutsideCountry_AgreedDate || 개인정보 국외이전 동의 날짜 || 100208
 				bs_card_data.fieldValues.push( { "id": "100208", "value": utils.today_getOneUnixTime() });
 
-				// customer product || Global customer product || 아직 안만들어짐
-				bs_card_data.fieldValues.push( { "id": "", "value": item.customerProduct });
+                //100196 Subsidiary custom field//"userCode": "LGEVU"
+                // krMkt Y인 경우 Subsidiary를 KR로 찍고 N인 경우 Global 이기에 Country 값을 봐도 되기 떄문에 빈값으로 찍는다.
+                bs_card_data.fieldValues.push( { "id": "100196", "value": "" });
 
-			
+
+				// LBCS_customerProduct || Global customer product || 100366    
+				bs_card_data.fieldValues.push( { "id": "100366", "value": item.customerProduct });
                 
-                
-               
             }
 
             result_data.push(bs_card_data);
