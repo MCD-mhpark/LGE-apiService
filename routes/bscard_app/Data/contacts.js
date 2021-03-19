@@ -22,10 +22,10 @@ async function getContacts(data_list, depth ){
     queryString['search'] = emailString ;
     queryString['depth'] = depth ? depth : "";
 
-    console.log(queryString);
+    // console.log(queryString);
     var contacts_data ;
     await bscard_eloqua.data.contacts.get(queryString).then((result) => { 
-        console.log(result.data);
+        // console.log(result.data);
         // console.log(result.data.total);
         
         if(result.data.total && result.data.total > 0 ){
@@ -270,14 +270,16 @@ async function Convert_BS_CARD_DATA_SEARCH(body_data){
             dataObject.addr1 = GetDataValue(body_data.elements[i].address1);
             dataObject.addr2 = GetDataValue(body_data.elements[i].address2);
             dataObject.email = GetDataValue(body_data.elements[i].emailAddress);
+            dataObject.country = GetDataValue(body_data.elements[i].country);
+            dataObject.updateDate = GetDataValue(utils.timeConverter("GET_DATE" , body_data.elements[i].updatedAt));
        
  
-            var Business_Unit = "";
+         
             var krMkt = "";
-            
-            await getBuniessUnit(fieldValues);
+            console.log(fieldValues);
+            let Business_Unit = await getBuniessUnit(fieldValues);
 
-            if(Business_Unit != '') krMkt = "N";
+            if(Business_Unit) krMkt = "N";
             else krMkt = "Y";
 
             console.log("Business_Unit : " + Business_Unit);
@@ -304,13 +306,14 @@ async function Convert_BS_CARD_DATA_SEARCH(body_data){
                             case "100252" : dataObject.homepage = GetDataValue(value) ; break;
                             case "100203" : 
                                 if(GetDataValue(value)) {
-                                    dataObject.campaignName =  GetDataValue(value).split[0];
-                                    dataObject.campaignDate =  GetDataValue(value).split[1];
+                                    dataObject.campaignName = GetDataValue(value).split("|")[0];
+                                    dataObject.campaignDate = GetDataValue(value).split("|")[1];
                                 }
                                 break;
                             case "100319" : dataObject.mailingDate = utils.timeConverter("GET_DATE" , GetDataValue(value)) ; break;
                             case "100320" : dataObject.subscriptionDate = utils.timeConverter("GET_DATE" , GetDataValue(value)) ; break;
-                       
+                            case "100311" : dataObject.customerProduct =  GetDataValue(value) ; break;
+                          
                         }  
                     }else{
                         switch(id){
@@ -334,13 +337,15 @@ async function Convert_BS_CARD_DATA_SEARCH(body_data){
                             case "100252" : dataObject.homepage = GetDataValue(value) ; break;
                             case "100203" : 
                                 if(GetDataValue(value)) {
-                                    dataObject.campaignName =  GetDataValue(value).split[0];
-                                    dataObject.campaignDate =  GetDataValue(value).split[1];
+                                    dataObject.campaignName = GetDataValue(value).split("|")[0];
+                                    dataObject.campaignDate = GetDataValue(value).split("|")[1];
                                 }
                                 break;
                             
-                            case "100200" : dataObject.mailingDate =utils.timeConverter("GET_DATE" , GetDataValue(value)) ; break;
+                            case "100200" : dataObject.mailingDate = utils.timeConverter("GET_DATE" , GetDataValue(value)) ; break;
                             case "100199" : dataObject.subscriptionDate = utils.timeConverter("GET_DATE" , GetDataValue(value)) ; break;
+                            case "100366" : dataObject.customerProduct =  GetDataValue(value) ; break;
+                            
                             
                         }
                     }
@@ -350,7 +355,7 @@ async function Convert_BS_CARD_DATA_SEARCH(body_data){
                 result_list.push(dataObject);
             
             }
-
+            
             result_data = {"elements" : result_list };
             result_data.page = body_data.page;
             result_data.pageSize = body_data.pageSize;
@@ -358,7 +363,7 @@ async function Convert_BS_CARD_DATA_SEARCH(body_data){
         }
     }
 
-    console.log(result_data);
+    
     return result_data;
 }
 
@@ -569,8 +574,8 @@ router.put('/update/', async function (req, res, next) {
     // console.log(bs_data);
 
     bs_data =  Convert_BS_CARD_DATA(bs_data);
-    console.log(2);
-    console.log(bs_data);
+    // console.log(2);
+    // console.log(bs_data);
     
   
 
@@ -580,8 +585,8 @@ router.put('/update/', async function (req, res, next) {
     var failed_count = 0;
     var result_list = [];
     
-    console.log("bs_data.length");
-    console.log(bs_data.length);
+    // console.log("bs_data.length");
+    // console.log(bs_data.length);
     for(var i = 0 ; bs_data.length > i ; i++){
         console.log(bs_data[i].id)
         var id = bs_data[i].id;
