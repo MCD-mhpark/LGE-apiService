@@ -227,7 +227,24 @@ function BS_CARD_INS_UPD_ENTITY() {
     
   }
 
-function Convert_BS_CARD_DATA_SEARCH(body_data){
+function getBuniessUnit(fieldValues){
+    let Business_Unit = "";
+    if(fieldValues){
+        for(var j =0 ; fieldValues.length > j ; j++){
+            let id = fieldValues[j].id ;
+            let value = fieldValues[j].value ;
+        
+            if( id == '100229' ) {
+                console.log(id);
+                Business_Unit = value;
+            }
+        }
+    }
+    
+    return Business_Unit;
+}
+
+async function Convert_BS_CARD_DATA_SEARCH(body_data){
     
 
     var result_data = {};
@@ -240,7 +257,8 @@ function Convert_BS_CARD_DATA_SEARCH(body_data){
             var dataObject = {};
             var items = body_data.elements[i];
             var fieldValues = items.fieldValues;
-
+            
+            
             dataObject.id = GetDataValue(body_data.elements[i].id);
             dataObject.userId = GetDataValue(body_data.elements[i].salesPerson);
             dataObject.firstName = GetDataValue(body_data.elements[i].firstName);
@@ -252,44 +270,92 @@ function Convert_BS_CARD_DATA_SEARCH(body_data){
             dataObject.addr1 = GetDataValue(body_data.elements[i].address1);
             dataObject.addr2 = GetDataValue(body_data.elements[i].address2);
             dataObject.email = GetDataValue(body_data.elements[i].emailAddress);
-            dataObject.etc1 = GetDataValue("Eloqua Not Make Field");
-            dataObject.mailingDate = GetDataValue("Eloqua Not Make Field");
-            dataObject.subscriptionDate = GetDataValue("Eloqua Not Make Field");
-            dataObject.campaignName = GetDataValue("Eloqua Not Make Field");
-            dataObject.campaignDate = GetDataValue("Eloqua Not Make Field");
-            dataObject.customerProduct = GetDataValue("Eloqua Not Make Field");
-            dataObject.country = GetDataValue(body_data.elements[i].country);
-            dataObject.krMkt = GetDataValue("Eloqua Not Make Field");
-            dataObject.updateDate = GetDataValue("Eloqua Not Make Field");
+       
+ 
+            var Business_Unit = "";
+            var krMkt = "";
             
+            await getBuniessUnit(fieldValues);
 
+            if(Business_Unit != '') krMkt = "N";
+            else krMkt = "Y";
+
+            console.log("Business_Unit : " + Business_Unit);
+            console.log("krMkt : " + krMkt);
             // console.log(fieldValues.length);
             if(fieldValues){
-                for(var j =0 ; fieldValues.length > j ; j++){
+                for(var k =0 ; fieldValues.length > k ; k++){
                     // console.log(fieldValues[j].id);
-                    var id = fieldValues[j].id;
-                    var value = fieldValues[j].value;
-                    switch(id){
+                    var id = fieldValues[k].id ;
+                    var value = fieldValues[k].value ;
 
-                        case "100196" : 
-                            if(value == 'N/A') value = value.replace("N/A" , "");
-                            dataObject.userCode = GetDataValue(value ? "LGE" + value : null );
-                            break;
-                        case "100229" : dataObject.product = GetDataValue(value); break;
-                        case "100292" : dataObject.rank = GetDataValue(value); break;
-                        case "100252" : dataObject.homepage = GetDataValue(value) ; break;
+                    // 한영본 데이터 조회
+                    if(krMkt == 'Y'){
+                        switch(id){
+                            case "100365" : 
+                                dataObject.etc1 = GetDataValue(value);
+                                break;
+                            case "100196" : 
+                                if(value == 'N/A') value = value.replace("N/A" , "");
+                                dataObject.userCode = GetDataValue(value ? "LGE" + value : null );
+                                break;
+                            case "100229" : dataObject.product = GetDataValue(value); break;
+                            case "100292" : dataObject.rank = GetDataValue(value); break;
+                            case "100252" : dataObject.homepage = GetDataValue(value) ; break;
+                            case "100203" : 
+                                if(GetDataValue(value)) {
+                                    dataObject.campaignName =  GetDataValue(value).split[0];
+                                    dataObject.campaignDate =  GetDataValue(value).split[1];
+                                }
+                                break;
+                            case "100319" : dataObject.mailingDate = utils.timeConverter("GET_DATE" , GetDataValue(value)) ; break;
+                            case "100320" : dataObject.subscriptionDate = utils.timeConverter("GET_DATE" , GetDataValue(value)) ; break;
+                       
+                        }  
+                    }else{
+                        switch(id){
+                            // dataObject.mailingDate = GetDataValue("Eloqua Not Make Field");
+                            // dataObject.subscriptionDate = GetDataValue("Eloqua Not Make Field");
+                            // dataObject.campaignName = GetDataValue("Eloqua Not Make Field");
+                            // dataObject.campaignDate = GetDataValue("Eloqua Not Make Field");
+                            // dataObject.customerProduct = GetDataValue("Eloqua Not Make Field");
+                            // dataObject.country = GetDataValue(body_data.elements[i].country);
+                            // dataObject.krMkt = GetDataValue("Eloqua Not Make Field");
+                            // dataObject.updateDate = GetDataValue("Eloqua Not Make Field");
+                            case "100365" : 
+                                dataObject.etc1 = GetDataValue(value);
+                                break;
+                            case "100196" : 
+                                if(value == 'N/A') value = value.replace("N/A" , "");
+                                dataObject.userCode = GetDataValue(value ? "LGE" + value : null );
+                                break;
+                            case "100229" : dataObject.product = GetDataValue(value); break;
+                            case "100292" : dataObject.rank = GetDataValue(value); break;
+                            case "100252" : dataObject.homepage = GetDataValue(value) ; break;
+                            case "100203" : 
+                                if(GetDataValue(value)) {
+                                    dataObject.campaignName =  GetDataValue(value).split[0];
+                                    dataObject.campaignDate =  GetDataValue(value).split[1];
+                                }
+                                break;
+                            
+                            case "100200" : dataObject.mailingDate =utils.timeConverter("GET_DATE" , GetDataValue(value)) ; break;
+                            case "100199" : dataObject.subscriptionDate = utils.timeConverter("GET_DATE" , GetDataValue(value)) ; break;
+                            
+                        }
                     }
-                }
-            }        
-            // delete items.fieldValues;
-            result_list.push(dataObject);
+                      
+                }        
+                // delete items.fieldValues;
+                result_list.push(dataObject);
             
-        }
+            }
 
-        result_data = {"elements" : result_list };
-        result_data.page = body_data.page;
-        result_data.pageSize = body_data.pageSize;
-        result_data.total = body_data.total;
+            result_data = {"elements" : result_list };
+            result_data.page = body_data.page;
+            result_data.pageSize = body_data.pageSize;
+            result_data.total = body_data.total;
+        }
     }
 
     console.log(result_data);
@@ -336,6 +402,7 @@ function Convert_BS_CARD_DATA(body_data) {
         
             //"mailingDate": "2021-01-30 19:10:15", | Eloqua 필드 없음
             bs_card_data.subscriptionDate = utils.timeConverter("GET_UNIX",  item.subscriptionDate); //"subscriptionDate": "2021-01-30 19:11:22",
+            
             //"campaignName": "",  | Eloqua 필드 없음
             //"campaignDate": "2031-01-01 00:00:00", | Eloqua 필드 없음
             //"customerProduct": "as", | 박진범 이사님 Product 값이 AS , ID , IT , CLS , CM , Solor , Solution 값이 전부 인지 확인 필요 
@@ -361,11 +428,13 @@ function Convert_BS_CARD_DATA(body_data) {
                 // KR_Privacy Policy_Optin || 한영본 메일 발송 동의 여부 || 100318
 				bs_card_data.fieldValues.push( { "id": "100318", "value": "Yes" });
                 // KR_Privacy Policy_Optin_Date || 한영본 메일 발송 동의 여부 날짜 || 100319
-				bs_card_data.fieldValues.push( { "id": "100319", "value": utils.today_getOneUnixTime() });
+				bs_card_data.fieldValues.push( { "id": "100319", "value": utils.timeConverter("GET_UNIX" , item.mailingDate) });
+                console.log(utils.timeConverter("GET_UNIX" , item.mailingDate));
+                console.log(utils.timeConverter("GET_UNIX" , item.subscriptionDate));
                 // KR_Privacy Policy_Collection and Usage || 한영본 개인정보 수집 동의 여부 || 100315
 				bs_card_data.fieldValues.push( { "id": "100315", "value": "Yes" });
                 // KR_Privacy Policy_Collection and Usage_AgreedDate || 한영본 개인정보 수집 동의 날짜 || 100320
-				bs_card_data.fieldValues.push( { "id": "100320", "value": utils.today_getOneUnixTime() });
+				bs_card_data.fieldValues.push( { "id": "100320", "value": utils.timeConverter("GET_UNIX" , item.subscriptionDate) });
                 // KR_Privacy Policy_Consignment of PI || (현재 동의여부 필드만 있고, 데이트 관련 필드 없음) || 100316
 				bs_card_data.fieldValues.push( { "id": "100316", "value": "Yes" });
                 // KR_Privacy Policy_Transfer PI Aborad || (현재 동의여부 필드만 있고, 데이트 관련 필드 없음) || 100317
@@ -384,11 +453,11 @@ function Convert_BS_CARD_DATA(body_data) {
 				// DirectMarketing_EM_TXT_SNS || 글로벌 메일 발송 동의 여부 || 100211
            		bs_card_data.fieldValues.push( { "id": "100211", "value": "Yes" });
                 // DirectMarketing_EM_TXT_SNS_AgreedDate || 글로벌 메일 발송 동의 날짜 || 100200
-				bs_card_data.fieldValues.push( { "id": "100200", "value": utils.today_getOneUnixTime() });
+				bs_card_data.fieldValues.push( { "id": "100200", "value": utils.timeConverter("GET_UNIX" , item.mailingDate) });
                 // Privacy Policy_Agreed || 개인정보 이용 동의 여부 || 100213 
 				bs_card_data.fieldValues.push( { "id": "100213", "value": "Yes" });
                 // Privacy Policy_AgreedDate || 개인정보 이용 동의 날짜 || 100199
-				bs_card_data.fieldValues.push( { "id": "100199", "value": utils.today_getOneUnixTime() });
+				bs_card_data.fieldValues.push( { "id": "100199", "value": utils.timeConverter("GET_UNIX" , item.subscriptionDate) });
                 // TransferOutsideCountry || 개인정보 국외이전 동의 여부 || 100210
 				bs_card_data.fieldValues.push( { "id": "100210", "value": "Yes" });
                 // TransferOutsideCountry_AgreedDate || 개인정보 국외이전 동의 날짜 || 100208
@@ -396,11 +465,11 @@ function Convert_BS_CARD_DATA(body_data) {
 
                 //100196 Subsidiary custom field//"userCode": "LGEVU"
                 // krMkt Y인 경우 Subsidiary를 KR로 찍고 N인 경우 Global 이기에 Country 값을 봐도 되기 떄문에 빈값으로 찍는다.
-                bs_card_data.fieldValues.push( { "id": "100196", "value": "" });
+                bs_card_data.fieldValues.push( { "id": "100196", "value": "" } );
 
 
-				// LBCS_customerProduct || Global customer product || 100366    
-				bs_card_data.fieldValues.push( { "id": "100366", "value": item.customerProduct });
+				// LBCS_customerProduct || Global customer product || 100366
+				bs_card_data.fieldValues.push( { "id": "100366", "value": item.customerProduct } );
                 
             }
 
