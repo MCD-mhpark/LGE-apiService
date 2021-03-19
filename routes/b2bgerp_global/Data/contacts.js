@@ -1189,7 +1189,7 @@ bant_send = async function(business_name , res){
         // fs.writeFile(__dirname ,contact_list );
         // 
         var today = moment().format("YYYY-MM-DD"); 
-        fs.writeFile(__dirname + "/requestEloqua_" + business_name + ".txt", JSON.stringify(contact_list), 'utf8', function(error){ 
+        fs.writeFile(__dirname + "/" + today + "requestEloqua_" + business_name + ".txt", JSON.stringify(contact_list), 'utf8', function(error){ 
             if(error) {
                 console.log(err);
             }else{
@@ -1198,7 +1198,7 @@ bant_send = async function(business_name , res){
             
         });
 
-        fs.writeFile(__dirname + "/requestConvert_" + business_name + ".txt", JSON.stringify(request_data), 'utf8', function(error){ 
+        fs.writeFile(__dirname + "/" + today + "requestEloqua_" + business_name + ".txt", JSON.stringify(request_data), 'utf8', function(error){ 
           if(error) {
               console.log(err);
           }else{
@@ -1231,7 +1231,7 @@ bant_send = async function(business_name , res){
                 //     contact_list[i]
                 // }
 
-                fs.writeFile(__dirname + "/response_" + business_name + ".txt", JSON.stringify(body.resultData), 'utf8', function(error){ 
+                fs.writeFile(__dirname + "/" + today + "/response_" + business_name + ".txt", JSON.stringify(body.resultData), 'utf8', function(error){ 
                     if(error) {
                         console.log(err);
                     }else{

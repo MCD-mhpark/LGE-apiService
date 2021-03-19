@@ -210,8 +210,7 @@ function schedule_Request(){
 	});
 }
 
-console.log(__dirname);
-if(__dirname == "/home/opc/LGE/b2bgerp_global/bin"){
+if(__dirname == "/home/opc/LGE/b2bgerp_global"){
 	console.log("reg gerp");
 	schedule_Request();
 
