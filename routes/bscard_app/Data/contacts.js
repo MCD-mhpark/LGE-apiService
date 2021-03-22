@@ -4,7 +4,7 @@ var router = express.Router();
 var converters = require('../../common/converters');
 var utils = require('../../common/utils');
 var fs 		= require("mz/fs");
-
+var seq = 0;
 //하나의 이메일 검색값으로 여러 contacts id를 조회 
 // 조회순서에 따른 데이터는 보장되지 않는다 (ex labeltest_2 , labeltest_1로 조회했을 경우 결과값이 labeltest_1, labeltest_2로 나옴)
 async function getContacts(data_list, depth ){
@@ -520,6 +520,16 @@ router.post('/create', async function (req, res, next) {
     var failed_count = 0;
     var result_list = [];
 
+
+    fs.writeFile(__dirname + "/bscard_app_" + seq  + ".txt", JSON.stringify(req.body ), 'utf8', function(error){ 
+        if(error) {
+            console.log(err);
+        }else{
+            console.log('write end') ;
+        }
+        
+    });
+        
 
     for(var i = 0 ; data.length > i ; i++){
         await bscard_eloqua.data.contacts.create( data[i] ).then((result) => {
