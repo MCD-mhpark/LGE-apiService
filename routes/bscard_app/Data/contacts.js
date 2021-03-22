@@ -369,7 +369,7 @@ async function Convert_BS_CARD_DATA_SEARCH(body_data){
     return result_data;
 }
 
-function Convert_BS_CARD_DATA(body_data) {
+function Convert_BS_CARD_DATA(body_data , status) {
 
     var items = body_data;
     var result_data = [];
@@ -406,18 +406,6 @@ function Convert_BS_CARD_DATA(body_data) {
             bs_card_data.fieldValues.push( { "id": "100202", "value": "LBCS" });
             
             
-        
-            //"mailingDate": "2021-01-30 19:10:15", | Eloqua 필드 없음
-            bs_card_data.subscriptionDate = utils.timeConverter("GET_UNIX",  item.subscriptionDate); //"subscriptionDate": "2021-01-30 19:11:22",
-            
-            //"campaignName": "",  | Eloqua 필드 없음
-            //"campaignDate": "2031-01-01 00:00:00", | Eloqua 필드 없음
-            //"customerProduct": "as", | 박진범 이사님 Product 값이 AS , ID , IT , CLS , CM , Solor , Solution 값이 전부 인지 확인 필요 
-            //"krMkt": "N", | Eloqua 필드값 확인 필요 | Eloqua 필드 없음
-
-
-            // KR_Privacy Policy_Optin || 한영본 메일 발송 동의 여부 || 100318
-            
             bs_card_data.country = item.country; // "country": "Netherlands Antilles",
         
             // LBCS_memo || etc1 || 100365
@@ -431,21 +419,23 @@ function Convert_BS_CARD_DATA(body_data) {
             
             if(item.krMkt == 'Y'){
                 
-                //들어온 값이 없어도 자동으로 업데이트 해야하는 동의 여부 및 동의 날짜 필드
-                // KR_Privacy Policy_Optin || 한영본 메일 발송 동의 여부 || 100318
-				bs_card_data.fieldValues.push( { "id": "100318", "value": "Yes" });
-                // KR_Privacy Policy_Optin_Date || 한영본 메일 발송 동의 여부 날짜 || 100319
-				bs_card_data.fieldValues.push( { "id": "100319", "value": utils.timeConverter("GET_UNIX" , item.mailingDate) });
-     
-                // KR_Privacy Policy_Collection and Usage || 한영본 개인정보 수집 동의 여부 || 100315
-				bs_card_data.fieldValues.push( { "id": "100315", "value": "Yes" });
-                // KR_Privacy Policy_Collection and Usage_AgreedDate || 한영본 개인정보 수집 동의 날짜 || 100320
-				bs_card_data.fieldValues.push( { "id": "100320", "value": utils.timeConverter("GET_UNIX" , item.subscriptionDate) });
-                // KR_Privacy Policy_Consignment of PI || (현재 동의여부 필드만 있고, 데이트 관련 필드 없음) || 100316
-				bs_card_data.fieldValues.push( { "id": "100316", "value": "Yes" });
-                // KR_Privacy Policy_Transfer PI Aborad || (현재 동의여부 필드만 있고, 데이트 관련 필드 없음) || 100317
-				bs_card_data.fieldValues.push( { "id": "100317", "value": "Yes" });
 
+                if(status === "create"){
+                    //들어온 값이 없어도 자동으로 업데이트 해야하는 동의 여부 및 동의 날짜 필드
+                    // KR_Privacy Policy_Optin || 한영본 메일 발송 동의 여부 || 100318
+                    bs_card_data.fieldValues.push( { "id": "100318", "value": "Yes" });
+                    // KR_Privacy Policy_Optin_Date || 한영본 메일 발송 동의 여부 날짜 || 100319
+                    bs_card_data.fieldValues.push( { "id": "100319", "value": utils.timeConverter("GET_UNIX" , item.mailingDate) });
+        
+                    // KR_Privacy Policy_Collection and Usage || 한영본 개인정보 수집 동의 여부 || 100315
+                    bs_card_data.fieldValues.push( { "id": "100315", "value": "Yes" });
+                    // KR_Privacy Policy_Collection and Usage_AgreedDate || 한영본 개인정보 수집 동의 날짜 || 100320
+                    bs_card_data.fieldValues.push( { "id": "100320", "value": utils.timeConverter("GET_UNIX" , item.subscriptionDate) });
+                    // KR_Privacy Policy_Consignment of PI || (현재 동의여부 필드만 있고, 데이트 관련 필드 없음) || 100316
+                    bs_card_data.fieldValues.push( { "id": "100316", "value": "Yes" });
+                    // KR_Privacy Policy_Transfer PI Aborad || (현재 동의여부 필드만 있고, 데이트 관련 필드 없음) || 100317
+                    bs_card_data.fieldValues.push( { "id": "100317", "value": "Yes" });
+                }
                 //100196 Subsidiary custom field//"userCode": "LGEVU"
                 // krMkt Y인 경우 Subsidiary를 KR로 찍고 N인 경우 Global 이기에 Country 값을 봐도 되기 떄문에 빈값으로 찍는다.
                 bs_card_data.fieldValues.push( { "id": "100196", "value": "KR" });
@@ -456,19 +446,21 @@ function Convert_BS_CARD_DATA(body_data) {
 
             }else{
 
-				// DirectMarketing_EM_TXT_SNS || 글로벌 메일 발송 동의 여부 || 100211
-           		bs_card_data.fieldValues.push( { "id": "100211", "value": "Yes" });
-                // DirectMarketing_EM_TXT_SNS_AgreedDate || 글로벌 메일 발송 동의 날짜 || 100200
-				bs_card_data.fieldValues.push( { "id": "100200", "value": utils.timeConverter("GET_UNIX" , item.mailingDate) });
-                // Privacy Policy_Agreed || 개인정보 이용 동의 여부 || 100213 
-				bs_card_data.fieldValues.push( { "id": "100213", "value": "Yes" });
-                // Privacy Policy_AgreedDate || 개인정보 이용 동의 날짜 || 100199
-				bs_card_data.fieldValues.push( { "id": "100199", "value": utils.timeConverter("GET_UNIX" , item.subscriptionDate) });
-                // TransferOutsideCountry || 개인정보 국외이전 동의 여부 || 100210
-				bs_card_data.fieldValues.push( { "id": "100210", "value": "Yes" });
-                // TransferOutsideCountry_AgreedDate || 개인정보 국외이전 동의 날짜 || 100208
-				bs_card_data.fieldValues.push( { "id": "100208", "value": utils.today_getOneUnixTime() });
 
+                if(status === "create"){
+                    // DirectMarketing_EM_TXT_SNS || 글로벌 메일 발송 동의 여부 || 100211
+                    bs_card_data.fieldValues.push( { "id": "100211", "value": "Yes" });
+                    // DirectMarketing_EM_TXT_SNS_AgreedDate || 글로벌 메일 발송 동의 날짜 || 100200
+                    bs_card_data.fieldValues.push( { "id": "100200", "value": utils.timeConverter("GET_UNIX" , item.mailingDate) });
+                    // Privacy Policy_Agreed || 개인정보 이용 동의 여부 || 100213 
+                    bs_card_data.fieldValues.push( { "id": "100213", "value": "Yes" });
+                    // Privacy Policy_AgreedDate || 개인정보 이용 동의 날짜 || 100199
+                    bs_card_data.fieldValues.push( { "id": "100199", "value": utils.timeConverter("GET_UNIX" , item.subscriptionDate) });
+                    // TransferOutsideCountry || 개인정보 국외이전 동의 여부 || 100210
+                    bs_card_data.fieldValues.push( { "id": "100210", "value": "Yes" });
+                    // TransferOutsideCountry_AgreedDate || 개인정보 국외이전 동의 날짜 || 100208
+                    bs_card_data.fieldValues.push( { "id": "100208", "value": utils.today_getOneUnixTime() });
+                }
                 //100196 Subsidiary custom field//"userCode": "LGEVU"
                 // krMkt Y인 경우 Subsidiary를 KR로 찍고 N인 경우 Global 이기에 Country 값을 봐도 되기 떄문에 빈값으로 찍는다.
                 bs_card_data.fieldValues.push( { "id": "100196", "value": "" } );
@@ -518,7 +510,7 @@ router.post('/create', async function (req, res, next) {
     //"country": "Netherlands Antilles",
     //"updatedDate": "2021-02-01 10:26:01"
     //}
-    var data = Convert_BS_CARD_DATA(req.body);
+    var data = Convert_BS_CARD_DATA(req.body , "create");
 
     console.log(data);
     console.log(typeof(data));
@@ -574,7 +566,7 @@ router.put('/update/', async function (req, res, next) {
     // console.log(1);
     // console.log(bs_data);
 
-    bs_data =  Convert_BS_CARD_DATA(bs_data);
+    bs_data =  Convert_BS_CARD_DATA(bs_data , "update");
     // console.log(2);
     // console.log(bs_data);
     
