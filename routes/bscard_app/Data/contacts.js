@@ -521,15 +521,7 @@ router.post('/create', async function (req, res, next) {
     var result_list = [];
 
 
-    fs.writeFile(__dirname + "/bscard_app_" + seq  + ".txt", JSON.stringify(req.body ), 'utf8', function(error){ 
-        if(error) {
-            console.log(err);
-        }else{
-            console.log('write end') ;
-        }
-        
-    });
-        
+   
 
     for(var i = 0 ; data.length > i ; i++){
         await bscard_eloqua.data.contacts.create( data[i] ).then((result) => {
@@ -563,8 +555,7 @@ router.post('/create', async function (req, res, next) {
     form.result_list = result_list;
  
     res.json(form);
-    
-    
+        
 });
 
 router.put('/update/', async function (req, res, next) {
