@@ -191,7 +191,7 @@ app.use(function(err, req, res, next) {
 function schedule_Request(){
 	let uniqe_jobs_name = "B2B GERP GLOBAL" +  moment().format('YYYYMMDD')
 	let second = "0";
-	let minutes = "5";
+	let minutes = "8";
 	let hours = "12";
 	let dayofmonth = "*";
 	let month = "*";
@@ -210,11 +210,16 @@ function schedule_Request(){
 	});
 }
 
-if(__dirname == "/home/opc/LGE/b2bgerp_global"){
+// if(__dirname == "/home/opc/LGE/b2bgerp_global"){
+// 	console.log("reg gerp");
+// 	schedule_Request();
+// } 
+
+
+
 	console.log("reg gerp");
 	schedule_Request();
-
-} 
+ 
 
 // schedule_Request();
 // schedule_Request("test1", "http://localhost:8001/bscard_app/contacts/test" , "10 * * * * *" , "GET");

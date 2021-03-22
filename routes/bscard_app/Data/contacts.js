@@ -426,7 +426,7 @@ function Convert_BS_CARD_DATA(body_data , status) {
                     bs_card_data.fieldValues.push( { "id": "100318", "value": "Yes" });
                     // KR_Privacy Policy_Optin_Date || 한영본 메일 발송 동의 여부 날짜 || 100319
                     bs_card_data.fieldValues.push( { "id": "100319", "value": utils.timeConverter("GET_UNIX" , item.mailingDate) });
-        
+     
                     // KR_Privacy Policy_Collection and Usage || 한영본 개인정보 수집 동의 여부 || 100315
                     bs_card_data.fieldValues.push( { "id": "100315", "value": "Yes" });
                     // KR_Privacy Policy_Collection and Usage_AgreedDate || 한영본 개인정보 수집 동의 날짜 || 100320
