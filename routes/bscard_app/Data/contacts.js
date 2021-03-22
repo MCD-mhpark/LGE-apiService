@@ -284,6 +284,8 @@ async function Convert_BS_CARD_DATA_SEARCH(body_data){
 
             console.log("Business_Unit : " + Business_Unit);
             console.log("krMkt : " + krMkt);
+
+            dataObject.krMkt = krMkt;
             // console.log(fieldValues.length);
             if(fieldValues){
                 for(var k =0 ; fieldValues.length > k ; k++){
@@ -434,8 +436,7 @@ function Convert_BS_CARD_DATA(body_data) {
 				bs_card_data.fieldValues.push( { "id": "100318", "value": "Yes" });
                 // KR_Privacy Policy_Optin_Date || 한영본 메일 발송 동의 여부 날짜 || 100319
 				bs_card_data.fieldValues.push( { "id": "100319", "value": utils.timeConverter("GET_UNIX" , item.mailingDate) });
-                console.log(utils.timeConverter("GET_UNIX" , item.mailingDate));
-                console.log(utils.timeConverter("GET_UNIX" , item.subscriptionDate));
+     
                 // KR_Privacy Policy_Collection and Usage || 한영본 개인정보 수집 동의 여부 || 100315
 				bs_card_data.fieldValues.push( { "id": "100315", "value": "Yes" });
                 // KR_Privacy Policy_Collection and Usage_AgreedDate || 한영본 개인정보 수집 동의 날짜 || 100320
@@ -623,7 +624,7 @@ router.put('/update/', async function (req, res, next) {
         });
     }
 
-    console.log("total count : " + bs_data.length + "  ::: success_count : " + success_count + "  ::: failed_count : " + success_count );
+    console.log("total count : " + bs_data.length + "  ::: success_count : " + success_count + "  ::: failed_count : " + failed_count );
     form.total = bs_data.length;
     form.success_count = success_count;
     form.failed_count = failed_count;
