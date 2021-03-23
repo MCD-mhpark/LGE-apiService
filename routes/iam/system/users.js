@@ -51,7 +51,7 @@ function IAM_IF_USER_ENTITY() {
 }
 
 function IAM_IF_USER_RESPONSIBILITY_ENTITY() {
-    this.IF_USER_RESPONSIBILITY_ID = 0;            // number pk Interface 사용자 테이블 ID (1000 + Elouqa UserID {0000 4자리})
+    this.IF_USER_RESPONSIBILITY_ID = 0;     // number pk Interface 사용자 테이블 ID (1000 + Elouqa UserID {0000 4자리})
     this.SYSTEM_CODE = "ELOQUA";            //"ELOQUA"
     this.USER_CODE = "";                    //federationId 사번
     this.USER_AFFILIATE_CODE = "";          //"Agency" (룰정보)
@@ -230,9 +230,9 @@ function CONVERT_IAM_USER_DATA(_eloqua_items) {
             data.ATTRIBUTE14 = "";
             data.ATTRIBUTE15 = "";
             data.CREATION_DATE = utils.timeConverter("GET_DATE", item.createdAt);     //createdAt  생성일자
-            data.CREATED_BY_CODE = GetDataValue(item.createdBy);                      //createdBy  생성자코드
+            data.CREATED_BY_CODE = GetDataValue(item.createdBy);                      //createdBy  해당 유저를 생성한 user id
             data.LAST_UPDATE_DATE = utils.timeConverter("GET_DATE", item.updatedAt);  //updatedAt  최종수정일자
-            data.LAST_UPDATED_BY_CODE = GetDataValue(item.updatedBy);                 //updatedBy  최종수정자코드
+            data.LAST_UPDATED_BY_CODE = GetDataValue(item.updatedBy);                 //updatedBy  해당 유저를 수정한 user id
             data.TRANSMISSION_ID = Number(item.id);                                   //id 송신ID "Eloqua ID"
             data.TRANSMISSION_COUNT = items.total;                                    //total; 전체 송신 건수
             data.INTERFACE_TYPE_CODE = "ELOQUA";                                      //고정값 "ELOQUA" 
@@ -245,35 +245,75 @@ function CONVERT_IAM_USER_DATA(_eloqua_items) {
     return result;
 }
 
+// 최초 연계시 Eloqua 에서 전체 유저 조회 후 IAM 측으로 전달
 router.get('/user', function (req, res, next) {
-    var queryString = {}
+    console.log("user call");
+    var queryString = {};
 
     //queryString['search'] = "loginName='Stephanie.An'";
     //   queryString['search'] = "emailAddress='pk.suh@lge.com'emailAddress='jeongjun.kim@lge.com'emailAddress='doyeon0.kim@lge.com'emailAddress='jong.park@lge.com'emailAddress='goeun2.kim@lge.com'";
     queryString['depth'] = "complete"; //["minimal", "partial " ,"complete"]
+    queryString['search'] = "federationId!=''"
     //federationId LG전자 사번 ( 페더레이션 ID )
     //    queryString['count'] = 5;
     //queryString['page'] = 1;
 
-    iam_eloqua.system.users.get(queryString).then((result) => {
+
+    iam_eloqua.system.users.get(queryString).then(async (result) => {
 
         // console.log(result.data);
 
         var return_data = {};
 
+        // res.json(result.data);
+     
         var responsibility_data = CONVERT_IAM_USER_DATA(result.data);
-        res.json(responsibility_data);
-
-
+       
+        
+ 
         if (responsibility_data.length > 0) {
             return_data.ContentList = responsibility_data;
             return_data.page = result.data.page;
             return_data.pageSize = result.data.pageSize;
             return_data.total = result.data.total;
             res.json(return_data);
-
+            return;
             //console.log(request_data);
             //res.json({ ContentList: request_data });
+
+            var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam/api2db/put/SODUSER_SB";
+            var headers = {
+                'Content-Type': "application/json",
+                'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
+            }
+            
+            options = {
+                url : send_url,
+                method: "POST",
+                headers:headers,
+                body : return_data ,
+                json : true
+            };
+            
+            //return res.json(return_data);
+            //최초 연계시 Eloqua 데이터 전체를 IAM 쪽으로 이관
+            var result = await request(options, async function (error, response, body) {
+        
+                // console.log(11);
+                // console.log(response);
+                if(error){
+                    console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
+                    console.log(error);
+                } 
+                if (!error && response.statusCode == 200) {
+                    result = body;
+                    // console.log(11);
+                    console.log(body);
+                    
+                    res.json(body);
+                }
+            });
+
         }
         else {
             return_data.page = result.data.page;
@@ -309,11 +349,15 @@ function CONVERT_IAM_USER_RESPONSIBILITY_DATA(_eloqua_items) {
             for (var j = 0; j < item.securityGroups.length; j++) {
                 var security_data = item.securityGroups[j];
 
+                // 롤정보는 IAM 측에서 필드 max length 가 4자이기때문에 4자로 자르도록 해서 전송
+                // 법인 정보 필드가 IAM 측에서 필드 max length가 8자이기떄문에 9글자가 넘는건 테스트로 제외하고 보내도록 변경
+                if(GetCorporationExtraction(security_data.name).length >= 9) continue;
+
                 var data = new IAM_IF_USER_RESPONSIBILITY_ENTITY();
                 data.IF_USER_RESPONSIBILITY_ID = GetIFNumber("1000", item.id);                // number pk Interface 사용자 테이블 ID  1000 + Eloqua UserID {4자리 0000}
                 data.SYSTEM_CODE = "ELOQUA";                                                 // 고정값 "ELOQUA"
                 data.USER_CODE = GetDataValue(item.federationId);                            // 사번 
-                data.USER_AFFILIATE_CODE = GetRullExtraction(security_data.name);            // 룰정보
+                data.USER_AFFILIATE_CODE = GetRullExtraction(security_data.name).substring(0,4);            // 룰정보
                 data.USER_CORPORATION_CODE = GetCorporationExtraction(security_data.name);   // 법인정보
                 data.RESPONSIBILITY_CODE = security_data.id;                                 // Eloqua Security ID
                 data.RESPONSIBILITY_OPTION_CODE = GetBusinessExtraction(security_data.name); // 사업부정보
@@ -321,10 +365,7 @@ function CONVERT_IAM_USER_RESPONSIBILITY_DATA(_eloqua_items) {
                 data.ATTRIBUTE1 = "";
                 data.ATTRIBUTE2 = "";
                 data.ATTRIBUTE3 = "";
-                data.ATTRIBUTE4 = "";//권한 관리자 사번
-// ID / IT : 서판규 선임 268965
-// Solar / CM / CLS / Solution  김효진 선임 261922
-// AS : 김정준 선임 255147
+                data.ATTRIBUTE4 = "";
 
                 data.ATTRIBUTE5 = "";
                 data.ATTRIBUTE6 = "";
@@ -360,25 +401,65 @@ router.get('/user_responsibility', function (req, res, next) {
     //queryString['search'] = "loginName='Stephanie.An'";
     //   queryString['search'] = "emailAddress='pk.suh@lge.com'emailAddress='jeongjun.kim@lge.com'emailAddress='doyeon0.kim@lge.com'emailAddress='jong.park@lge.com'emailAddress='goeun2.kim@lge.com'";
     queryString['depth'] = "complete"; //["minimal", "partial " ,"complete"]
+    queryString['search'] = "federationId!=''";
     //queryString['count'] = 5;
     //federationId LG전자 사번 ( 페더레이션 ID )
     //queryString['page'] = 1;
-
-    iam_eloqua.system.users.get(queryString).then((result) => {
+    
+    
+    iam_eloqua.system.users.get(queryString).then(async(result) => {
 
         console.log(result.data);
-
+        // res.json(result.data);
+        
         var return_data = {};
 
         var user_responsibility_data = CONVERT_IAM_USER_RESPONSIBILITY_DATA(result.data);
         // console.log(user_responsibility_data);
+
+      
         if (user_responsibility_data.length > 0) {
             return_data.ContentList = user_responsibility_data;
             return_data.total = user_responsibility_data.length;
+            // res.json(return_data);
             res.json(return_data);
-
+            return;
             //console.log(request_data);
             //res.json({ ContentList: request_data });
+
+            var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam/api2db/put/SODUSERRESP_SB";
+            var headers = {
+                'Content-Type': "application/json",
+                'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
+            }
+          
+            options = {
+                url : send_url,
+                method: "POST",
+                headers:headers,
+                body : return_data ,
+                json : true
+            };
+
+            //return res.json(return_data);
+
+            var result = await request(options, async function (error, response, body) {
+      
+                // console.log(11);
+                // console.log(response);
+                if(error){
+                    console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
+                    console.log(error);
+                } 
+                if (!error && response.statusCode == 200) {
+                    result = body;
+                    // console.log(11);
+                    console.log(body);
+                    
+                    res.json(body);
+                }
+            });
+
         }
         else {
             return_data.ContentList = [];
@@ -422,7 +503,32 @@ function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items) {
             data.ATTRIBUTE1 = "";
             data.ATTRIBUTE2 = "";
             data.ATTRIBUTE3 = "";
-            data.ATTRIBUTE4 = "";
+            
+
+            // 사업부별 관리자 사번 전달
+            switch(data.RESPONSIBILITY_OPTION_CODE){
+                case "ID" : 
+                case "IT" :
+                data.ATTRIBUTE4 = "268965" //  // ID / IT : 서판규 선임 268965
+                break;
+
+                case "Solar" : 
+                case "CM" :
+                case "CLS" : 
+                data.ATTRIBUTE4 = "261922" // Solar / CM / CLS / Solution  김효진 선임 261922
+                break;
+
+                case "AS" : 
+                data.ATTRIBUTE4 = "255147" // AS : 김정준 선임 255147
+                break;
+
+                case "KR" : 
+                data.ATTRIBUTE4 = "239827" // KR : 박종명 책임 239827 
+                default :
+                data.ATTRIBUTE4 = "268965" // HQ 서판규 선임 268965
+                break;
+            }
+
             data.ATTRIBUTE5 = "";
             data.ATTRIBUTE6 = GetBusinessExtraction(item.name);
             data.ATTRIBUTE7 = GetCorporationExtraction(item.name);
@@ -471,19 +577,19 @@ router.get('/responsibility', async function (req, res, next) {
             console.log(return_data);
             //res.json(return_data);
          
-	      var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam/api2db/put/SODRESPONSIBILITY_SB";
-          var headers = {
-            'Content-Type': "application/json",
-            'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
-          }
+            var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam/api2db/put/SODRESPONSIBILITY_SB";
+            var headers = {
+                'Content-Type': "application/json",
+                'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
+            }
           
-          options = {
-            url : send_url,
-            method: "POST",
-            headers:headers,
-            body : return_data ,
-            json : true
-          };
+            options = {
+                url : send_url,
+                method: "POST",
+                headers:headers,
+                body : return_data ,
+                json : true
+            };
 
           //return res.json(return_data);
 
@@ -790,7 +896,7 @@ async function securityGroup_Process(user_id, remove_sc_group, add_sc_group) {
 
 //#region (완료) IAM USER Search Endpoint 호출 영역
 router.get('/user/:id', function (req, res, next) {
-
+    console.log("user/id");
     var queryString = {}
 
     queryString['search'] = "id=" + req.params.id;
