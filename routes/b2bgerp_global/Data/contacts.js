@@ -1011,8 +1011,8 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 			result_item.ADDRESS =
 			GetDataValue(contacts_data.elements[i].address1) + " " +
 			GetDataValue(contacts_data.elements[i].address2) + " " +
-			GetDataValue(contacts_data.elements[i].address3) ;							//주소정보 Address1 + Address2 + Address3 // Inquiry To Buy 주소 입력 없음
-			// + "/" +	contacts_data.elements[i].country;				
+			GetDataValue(contacts_data.elements[i].address3) + "/" + contacts_data.elements[i].country;	//주소정보 Address1 + Address2 + Address3 // Inquiry To Buy 주소 입력 없음
+							
 			
 			//result_item.DESCRIPTION = GetDataValue(contacts_data.elements[i].description);//설명 Comments, message, inquiry-to-buy-message 필드 중 하나 (확인필요) //DESCRIPTION
 			result_item.DESCRIPTION = GetCustomFiledValue(FieldValues_data, 100209);      //설명 inquiry-to-buy-message 필드 중 하나 (확인필요)
