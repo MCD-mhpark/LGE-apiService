@@ -1011,7 +1011,9 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 			result_item.ADDRESS =
 			GetDataValue(contacts_data.elements[i].address1) + " " +
 			GetDataValue(contacts_data.elements[i].address2) + " " +
-			GetDataValue(contacts_data.elements[i].address3);                           //주소정보 Address1 + Address2 + Address3 // Inquiry To Buy 주소 입력 없음
+			GetDataValue(contacts_data.elements[i].address3) + "/" + contacts_data.elements[i].country;	//주소정보 Address1 + Address2 + Address3 // Inquiry To Buy 주소 입력 없음
+							
+			
 			//result_item.DESCRIPTION = GetDataValue(contacts_data.elements[i].description);//설명 Comments, message, inquiry-to-buy-message 필드 중 하나 (확인필요) //DESCRIPTION
 			result_item.DESCRIPTION = GetCustomFiledValue(FieldValues_data, 100209);      //설명 inquiry-to-buy-message 필드 중 하나 (확인필요)
 
@@ -1139,6 +1141,8 @@ bant_send = async function(business_name , res){
     let contacts_data = await get_b2bgerp_global_bant_data(business_name );
 
 
+	// console.log(contacts_data);
+
     if (contacts_data != null) {
 
         // contacts_data : Eloqua 에 Bant 업데이트를 하기 위한 필드
@@ -1189,7 +1193,15 @@ bant_send = async function(business_name , res){
         // fs.writeFile(__dirname ,contact_list );
         // 
         var today = moment().format("YYYY-MM-DD"); 
-        fs.writeFile(__dirname + "/" + today + "requestEloqua_" + business_name + ".txt", JSON.stringify(contact_list), 'utf8', function(error){ 
+
+		const makeFolder = (dir) =>{
+			if(fs.existsSync(dir)){
+				fs.mkdirSync(dir)
+			}
+		}
+
+		makeFolder(today);
+        fs.writeFile(__dirname + "/" + today + "/requestEloqua_" + business_name + ".txt", JSON.stringify(contact_list), 'utf8', function(error){ 
             if(error) {
                 console.log(err);
             }else{
@@ -1198,7 +1210,7 @@ bant_send = async function(business_name , res){
             
         });
 
-        fs.writeFile(__dirname + "/" + today + "requestEloqua_" + business_name + ".txt", JSON.stringify(request_data), 'utf8', function(error){ 
+        fs.writeFile(__dirname + "/" + today + "/requestEloqua_" + business_name + ".txt", JSON.stringify(request_data), 'utf8', function(error){ 
           if(error) {
               console.log(err);
           }else{
@@ -1231,7 +1243,7 @@ bant_send = async function(business_name , res){
                 //     contact_list[i]
                 // }
 
-                fs.writeFile(__dirname + "/" + today + "response_" + business_name + ".txt", JSON.stringify(body.resultData), 'utf8', function(error){ 
+                fs.writeFile(__dirname + "/" + today + "/response_" + business_name + ".txt", JSON.stringify(body.resultData), 'utf8', function(error){ 
                     if(error) {
                         console.log(err);
                     }else{

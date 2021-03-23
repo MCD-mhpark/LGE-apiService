@@ -4,7 +4,6 @@ var router = express.Router();
 var converters = require('../../common/converters');
 var utils = require('../../common/utils');
 var fs 		= require("mz/fs");
-var seq = 0;
 //하나의 이메일 검색값으로 여러 contacts id를 조회 
 // 조회순서에 따른 데이터는 보장되지 않는다 (ex labeltest_2 , labeltest_1로 조회했을 경우 결과값이 labeltest_1, labeltest_2로 나옴)
 async function getContacts(data_list, depth ){
