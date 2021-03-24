@@ -1200,8 +1200,7 @@ bant_send = async function(business_name , res){
         // 
 
 		var today = "./" + moment().format("YYYY-MM-DD"); 
-
-		var dirPath = utils.logs_makeDirectory(today + "_" + business_name );
+		var dirPath = utils.logs_makeDirectory(today );
         fs.writeFile(dirPath + "/requestEloqua_" + business_name + ".txt", JSON.stringify(contact_list), 'utf8', function(error){ 
             if(error) {
                 console.log(err);
