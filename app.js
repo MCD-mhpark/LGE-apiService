@@ -9,7 +9,7 @@ var os = require('os');
 
 var moment = require('moment');
 
-const schedule = require('node-schedule');
+const schedule = require('node-schedule-tz');
 // var engine = require('ejs-locals');
 
 
@@ -191,8 +191,8 @@ app.use(function(err, req, res, next) {
 function schedule_Request(){
 	let uniqe_jobs_name = "B2B GERP GLOBAL" +  moment().format('YYYYMMDD');
 	let second = "0";
-	let minutes = "17";
-	let hours = "13";
+	let minutes = "27";
+	let hours = "17";
 	let dayofmonth = "*";
 	let month = "*";
 	let weekindex = "*";
@@ -200,7 +200,7 @@ function schedule_Request(){
 
 	//test data
 
-	Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,async function(){
+	Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,"Asia/Seoul" ,async function(){
 		// let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
 		let bant_list = ["AS" , "CM" , "ID" , "IT" , "Solution"];
 		bant_list.forEach( async BusinessName =>{
@@ -226,7 +226,9 @@ function schedule_Request(){
 // schedule_Request("test2", "http://localhost:8001/bscard_app/contacts/test" , "25 * * * * *" , "GET");
 // schedule_Request("test3", "http://localhost:8001/bscard_app/contacts/test" , "45 * * * * *" , "GET");
 
-console.log(os.type());
+if(os.type().indexOf("Windows") > -1) global.OS_TYPE = "Windows"
+else global.OS_TYPE = "Linux";
+
 
 
 module.exports = app;

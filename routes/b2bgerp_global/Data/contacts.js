@@ -1142,11 +1142,7 @@ bant_send = async function(business_name , res){
 	//LG전자 운영 URL
 	var send_url = "https://apigw-ext.lge.com:7211/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
 
-	var today = "./" + moment().format("YYYY-MM-DD"); 
-
-	mkdirp(today , function(err){
-		if(err) console.error(error);
-	});
+	
 
     let contacts_data = await get_b2bgerp_global_bant_data(business_name );
 
@@ -1203,8 +1199,10 @@ bant_send = async function(business_name , res){
         // fs.writeFile(__dirname ,contact_list );
         // 
 
-       
-        fs.writeFile(__dirname + "/" + today + "requestEloqua_" + business_name + ".txt", JSON.stringify(contact_list), 'utf8', function(error){ 
+		var today = "./" + moment().format("YYYY-MM-DD"); 
+
+		var dirPath = utils.logs_makeDirectory(today + "_" + business_name );
+        fs.writeFile(dirPath + "/requestEloqua_" + business_name + ".txt", JSON.stringify(contact_list), 'utf8', function(error){ 
             if(error) {
                 console.log(err);
             }else{
@@ -1212,7 +1210,7 @@ bant_send = async function(business_name , res){
             } 
         });
 
-        fs.writeFile(__dirname + "/" + today + "requestEloqua_" + business_name + ".txt", JSON.stringify(request_data), 'utf8', function(error){ 
+        fs.writeFile(dirPath +  "/requestEloqua_" + business_name + ".txt", JSON.stringify(request_data), 'utf8', function(error){ 
 			if(error) {
 				console.log(err);
 			}else{
@@ -1221,7 +1219,7 @@ bant_send = async function(business_name , res){
           
       	});
 
-
+		return;
         var result = await request(options, async function (error, response, body) {
 
             // console.log(11);
@@ -1245,7 +1243,7 @@ bant_send = async function(business_name , res){
                 //     contact_list[i]
                 // }
 
-                fs.writeFile(__dirname + "/" + today + "response_" + business_name + ".txt", JSON.stringify(body.resultData), 'utf8', function(error){ 
+                fs.writeFile(dirPath + "/response_" + business_name + ".txt", JSON.stringify(body.resultData), 'utf8', function(error){ 
                     if(error) {
                         console.log(err);
                     }else{

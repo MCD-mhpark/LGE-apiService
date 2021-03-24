@@ -1,9 +1,21 @@
 var moment = require('moment');
 var fs = require('fs');
 
-exports.makeDirectory = function(dirPath){
+exports.logs_makeDirectory = function(dirPath){
+
+    
     const isExists = fs.existsSync(dirPath);
-    if(!isExists) fs.mkdirSync( dirPath , {recursive : true});
+    if(OS_TYPE === 'Windows' && !isExists){
+        dirPath = "C:/LGE_logs/" + dirPath;
+        fs.mkdirSync( dirPath, { recursive: true } );
+    }else if(OS_TYPE === "Linux" ){
+        dirPath = "/home/LGE_logs/" + dirPath;
+        fs.mkdirSync( dirPath, { recursive: true } );
+    }
+    return dirPath;
+
+    
+    
 }
 
 exports.timeConverter = function (status , time){
