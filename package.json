@@ -15,6 +15,7 @@
     "install": "^0.13.0",
     "jade": "~1.11.0",
     "method-override": "^3.0.0",
+    "mkdirp": "^1.0.4",
     "moment": "^2.29.1",
     "morgan": "~1.9.1",
     "mz": "^2.7.0",

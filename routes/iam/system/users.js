@@ -265,8 +265,8 @@ router.get('/user', function (req, res, next) {
 
         var return_data = {};
 
-        // res.json(result.data);
-     
+        res.json(result.data);
+        return;
         var responsibility_data = CONVERT_IAM_USER_DATA(result.data);
        
         

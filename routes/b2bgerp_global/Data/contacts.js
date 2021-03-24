@@ -6,6 +6,7 @@ var httpRequest = require('../../common/httpRequest');
 var utils = require('../../common/utils');
 const { param } = require('../../common/history');
 var schedule = require('node-schedule');
+const mkdirp = require('mkdirp');
 var moment = require('moment');
 var seq_cnt = 2;
 var fs 		= require("mz/fs");
@@ -1197,25 +1198,21 @@ bant_send = async function(business_name , res){
         // res.json(contact_list);
         // fs.writeFile(__dirname ,contact_list );
         // 
-        var today = moment().format("YYYY-MM-DD"); 
 
-		const makeFolder = (dir) =>{
-			if(fs.existsSync(dir)){
-				fs.mkdirSync(dir)
-			}
-		}
+        var today = "./" + moment().format("YYYY-MM-DD"); 
 
-		makeFolder(today);
-        fs.writeFile(__dirname + "/" + today + "/requestEloqua_" + business_name + ".txt", JSON.stringify(contact_list), 'utf8', function(error){ 
+		// mkdirp(todayFolder , function(err){
+		// 	if(err) console.error(error);
+		// });
+        fs.writeFile(__dirname + "/" + today + "requestEloqua_" + business_name + ".txt", JSON.stringify(contact_list), 'utf8', function(error){ 
             if(error) {
                 console.log(err);
             }else{
                 console.log('write end') ;
-            }
-            
+            } 
         });
 
-        fs.writeFile(__dirname + "/" + today + "/requestEloqua_" + business_name + ".txt", JSON.stringify(request_data), 'utf8', function(error){ 
+        fs.writeFile(__dirname + "/" + today + "requestEloqua_" + business_name + ".txt", JSON.stringify(request_data), 'utf8', function(error){ 
 			if(error) {
 				console.log(err);
 			}else{
@@ -1248,7 +1245,7 @@ bant_send = async function(business_name , res){
                 //     contact_list[i]
                 // }
 
-                fs.writeFile(__dirname + "/" + today + "/response_" + business_name + ".txt", JSON.stringify(body.resultData), 'utf8', function(error){ 
+                fs.writeFile(__dirname + "/" + today + "response_" + business_name + ".txt", JSON.stringify(body.resultData), 'utf8', function(error){ 
                     if(error) {
                         console.log(err);
                     }else{
@@ -1289,6 +1286,7 @@ router.get('/search_gerp_data', async function (req, res, next) {
 
 	if(bant_data && getStatus == 'eloqua') res.json(bant_data);
 	else if(bant_data && getStatus == 'convert')res.json(await Convert_B2BGERP_GLOBAL_DATA( bant_data, bsname));
+	else  res.json(false)
 	
 });
 

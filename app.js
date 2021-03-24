@@ -190,9 +190,9 @@ app.use(function(err, req, res, next) {
 
 function schedule_Request(){
 	let uniqe_jobs_name = "B2B GERP GLOBAL" +  moment().format('YYYYMMDD');
-	let second = "";
-	let minutes = "05";
-	let hours = "12";
+	let second = "0";
+	let minutes = "17";
+	let hours = "13";
 	let dayofmonth = "*";
 	let month = "*";
 	let weekindex = "*";
@@ -218,7 +218,7 @@ function schedule_Request(){
 
 
 	console.log("reg gerp");
-	// schedule_Request();
+	schedule_Request();
  
 
 // schedule_Request();
