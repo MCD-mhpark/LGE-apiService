@@ -1,6 +1,8 @@
 var express = require('express');
+const { param } = require('../../common/history');
 var router = express.Router();
 var utils = require('../../common/utils');
+var moment = require('moment');
 
 /* Contacts */
 //BANT 조건 Eloqua 조회 함수
@@ -530,5 +532,183 @@ router.post('/req_data_yn', function (req, res, next) {
 
   console.log(req.body);
 });
+
+router.post('/customObject', function (req, res, next) {
+  var data = req.body;
+  var queryString ="";
+  b2bkr_eloqua.data.customObjects.data.get(queryString).then((result) => {
+    console.log(result);
+    res.json(result);
+  }).catch((err) => {
+    console.error(err.message);
+    res.send(error);
+  });
+});
+
+//커스텀 오브젝트 데이터 조회
+router.post('/customObjectDataSearch', function (req, res, next) {
+  var data = req.body;
+  var queryString ="";
+  b2bkr_eloqua.data.customObjects.data.get(queryString).then((result) => {
+    console.log(result);
+    res.json(result);
+  }).catch((err) => {
+    console.error(err.message);
+    res.send(error);
+  });
+});
+
+
+
+
+
+
+//커스텀 오브젝트 조회
+router.get('/customObjectSearch', function (req, res, next) {
+  var queryString ="";
+  b2bkr_eloqua.assets.customObjects.get(queryString).then((result) => {
+    console.log(result.data);
+    res.json(result.data);
+  }).catch((err) => {
+    console.error(err.message);
+    res.json(false);
+  });
+});
+
+//커스텀 오브젝트 조회 단건
+router.get('/customObjectSearchOne/:id', function (req, res, next) {
+  var id = req.params.id;
+  var queryString ="";
+  b2bkr_eloqua.assets.customObjects.getOne(id,queryString).then((result) => {
+    console.log(result.data);
+    res.json(result.data);
+  }).catch((err) => {
+    console.error(err.message);
+    res.json(false);
+  });
+});
+
+//커스텀 오브젝트 데이터 추가
+router.post('/customObjectDataCreate', async function (req, res, next) {
+  var req_data = req.body;
+  var queryString ="";
+
+  //해당 사용자 데이터 여부 확인
+  var contact_data = await GetContactData(req_data.contactEmailAddr);
+  if(contact_data && contact_data.total > 0)
+  {
+    var customObjectCreateData = ConvertCustomObjectData(contact_data, req_data);
+    var result_data = await SendCreateCustomObjectData(customObjectCreateData);
+    console.log(result_data.data);
+    res.json(result_data.data);
+  }
+  else
+  {
+    //사용자가 없을경우 사용자 추가 필요
+    
+  }
+});
+
+function KR_OBJECT_DATA_ENTITY() {
+  //this.accessedAt = ""; read only
+  //this.accountId = ""; read only
+  this.contactId = "";
+  //this.createdAt = ""; read only
+  //this.createdBy = ""; read only
+  //this.currentStatus = "";
+  //this.customObjectRecordStatus = "";
+  //this.depth = ""; read only
+  //this.description = "";
+
+  this.fieldValues = [];
+
+  //this.folderId = ""; read only
+  //this.id = ""; read only
+  this.isMapped = "Yes";
+  this.name = "TestName";
+  //this.permissions = "";  read only
+  //this.scheduledFor = ""; read only
+  //this.sourceTemplateId = "";
+  this.type = "CustomObjectData";
+  //this.uniqueCode = "";
+  //this.updatedAt = "";  read only
+  //this.updatedBy = "";  read only
+}
+
+function ConvertCustomObjectData(_contact, _req_data)
+{
+  var contact = _contact.elements[0];
+  var convert_data_entity = new KR_OBJECT_DATA_ENTITY();
+  convert_data_entity.contactId = contact.id;
+
+  //LG전자 마케팅 정보 수신 동의 일자 id : 301
+  convert_data_entity.fieldValues.push({ "id" : "301", "value" : moment().unix()}); //LG전자 마케팅 정보 수신 동의 일자	date	text
+  convert_data_entity.fieldValues.push({ "id" : "300", "value" : moment().unix()}); //개인정보 국외 이전 동의 일자	date	text
+  convert_data_entity.fieldValues.push({ "id" : "299", "value" : moment().unix()}); //개인정보 위탁 처리 동의 일자	date	text			
+  convert_data_entity.fieldValues.push({ "id" : "298", "value" : moment().unix()}); //개인정보 수집 및 이용동의 일자	date	text			
+  convert_data_entity.fieldValues.push({ "id" : "297", "value" : _req_data.dtlAddr}); //제품설치지역 시군구	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "296", "value" : _req_data.addr}); //제풍설치지역 도시	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "295", "value" : _req_data.dtlSector}); //상세업종	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "294", "value" : _req_data.sector}); //업종	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "293", "value" : _req_data.unifyId}); //통합회원 유니크 아이디	text	text		
+  convert_data_entity.fieldValues.push({ "id" : "292", "value" : _req_data.mktRecYn == "Y" ? "Yes" : "No"}); //LG전자 마케팅 정보 수신 동의 여부	text	checkbox	Yes	No	No
+  convert_data_entity.fieldValues.push({ "id" : "291", "value" : _req_data.tpiYn == "Y" ? "Yes" : "No"}); //개인정보 국외 이전 동의 여부	text	checkbox	Yes	No	No
+  convert_data_entity.fieldValues.push({ "id" : "290", "value" : _req_data.pcYn == "Y" ? "Yes" : "No"}); //개인정보 위탁 처리 동의 여부	text	checkbox	Yes	No	No
+  convert_data_entity.fieldValues.push({ "id" : "289", "value" : _req_data.ppYn == "Y" ? "Yes" : "No"}); //개인정보 수집 및 이용동의 여부	text	checkbox	Yes	No	No
+  convert_data_entity.fieldValues.push({ "id" : "288", "value" : _req_data.typeName}); //타입 명	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "287", "value" : _req_data.dtlCategoryName}); //상세 카테고리 명	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "286", "value" : _req_data.categoryName}); //카테고리 명	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "285", "value" : _req_data.b2bBillToCode}); //b2b 전문점 코드	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "284", "value" : _req_data.sendCount}); //발송건수(1 하드코딩)	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "283", "value" : _req_data.productDesc}); //제품설명	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "282", "value" : _req_data.custRemark}); //고객요청사항	largeText	textArea			
+  convert_data_entity.fieldValues.push({ "id" : "281", "value" : _req_data.modelCode}); //모델코드	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "280", "value" : _req_data.contactEmailAddr}); //담당자전자우편주소	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "279", "value" : _req_data.contactCellularNo}); //담당자이동전화번호	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "278", "value" : _req_data.contactPhoneNo}); //담당자전화번호	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "277", "value" : _req_data.contactName}); //담당자명	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "276", "value" : _req_data.emailAddr}); //전자우편주소	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "275", "value" : _req_data.phoneNo}); //전화번호	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "274", "value" : _req_data.detailAddr}); //상세주소	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "273", "value" : _req_data.baseAddr}); //기본주소	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "272", "value" : _req_data.postalCode}); //우편번호	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "271", "value" : _req_data.corpRegisterNo}); //법인등록번호	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "270", "value" : _req_data.bizRegisterNo}); //사업자등록번호	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "269", "value" : _req_data.customerName}); //고객명	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "268", "value" : _req_data.estimationSeqNo}); //견적일련번호	text	text			
+  convert_data_entity.fieldValues.push({ "id" : "267", "value" : _req_data.estimationId}); //견적번호	text	text			
+
+  return convert_data_entity;
+}
+
+async function SendCreateCustomObjectData(_customObjectCreateData)
+{
+  var return_data = undefined;
+
+  await b2bkr_eloqua.data.customObjects.data.create(39,_customObjectCreateData).then((result) => {
+    console.log(result);
+    return_data = result;
+  }).catch((err) => {
+    console.error(err);
+    console.error(err.message);
+    return_data = err.message;
+  });
+  return return_data;
+}
+
+async function GetContactData(_email)
+  {
+      var queryString = {};
+      var return_data = undefined;
+      //queryString['search'] = _email;
+      queryString.search = _email ;
+      await bscard_eloqua.data.contacts.get(queryString).then((result) => { 
+        if( result.status == 200 && result.data.total > 0)
+          return_data = result.data;
+      }).catch((err) => {
+        return_data = undefined;
+      });
+      return return_data;
+}
 
 module.exports = router;
