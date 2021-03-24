@@ -1008,12 +1008,17 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 			GetDataValue(contacts_data.elements[i].mobilePhone);                        //Contact Point는 Eloqua 필드 중 -> Customer Name/Email/Phone No. 를 연결 시켜 매핑 필요
 			result_item.CORPORATION = "LGE" + GetCustomFiledValue(FieldValues_data, 100196);  //법인정보 "LGE" + {{Subsidiary}}
 			result_item.OWNER = "";                                                       //(확인필요);
-			result_item.ADDRESS =
-			GetDataValue(contacts_data.elements[i].address1) + " " +
-			GetDataValue(contacts_data.elements[i].address2) + " " +
-			GetDataValue(contacts_data.elements[i].address3) + "/" + contacts_data.elements[i].country;	//주소정보 Address1 + Address2 + Address3 // Inquiry To Buy 주소 입력 없음
-							
 			
+			
+			let address = "";
+			address += GetDataValue(contacts_data.elements[i].address1);
+			if(address != "") address += " " + GetDataValue(contacts_data.elements[i].address2);
+			if(address != "") address += " " + GetDataValue(contacts_data.elements[i].address3);
+			address += "/" + GetDataValue(contacts_data.elements[i].country);	//주소정보 Address1 + Address2 + Address3 // Inquiry To Buy 주소 입력 없음
+
+			console.log("Convert ADDRESS : " + GetDataValue(contacts_data.elements[i].address1) + " " +  GetDataValue(contacts_data.elements[i].address2) + " " + GetDataValue(contacts_data.elements[i].address3 ));
+
+			result_item.ADDRESS = address;
 			//result_item.DESCRIPTION = GetDataValue(contacts_data.elements[i].description);//설명 Comments, message, inquiry-to-buy-message 필드 중 하나 (확인필요) //DESCRIPTION
 			result_item.DESCRIPTION = GetCustomFiledValue(FieldValues_data, 100209);      //설명 inquiry-to-buy-message 필드 중 하나 (확인필요)
 
@@ -1211,13 +1216,13 @@ bant_send = async function(business_name , res){
         });
 
         fs.writeFile(__dirname + "/" + today + "/requestEloqua_" + business_name + ".txt", JSON.stringify(request_data), 'utf8', function(error){ 
-          if(error) {
-              console.log(err);
-          }else{
-              console.log('write end') ;
-          }
+			if(error) {
+				console.log(err);
+			}else{
+				console.log('write end') ;
+			}
           
-      });
+      	});
 
 
         var result = await request(options, async function (error, response, body) {
@@ -1272,73 +1277,19 @@ bant_send = async function(business_name , res){
 	
 }
 
-router.get('/search_gerp_data/:business_name', async function (req, res, next) {
-  
-  let business_name = req.params.business_name;
-  //let bant_list = ["AS", "CLS", "CM", "ID", "IT", "Solar", "Solution"];
-    
-    try {
-      let contacts_data = await get_b2bgerp_global_bant_data(business_name);
-        
-      if (contacts_data != null) {
+router.get('/search_gerp_data', async function (req, res, next) {
+	console.log("search_gerp_data");
+	let bsname = req.query.bsname;
+	let getStatus = req.query.status;
+	console.log(bsname);
+	console.log(getStatus);
+	
+	let bant_data = await get_b2bgerp_global_bant_data(bsname );
 
-        console.log(contacts_data.total);
 
-        var request_data = await Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_name);
-
-        var contact_list = contacts_data.elements.map(row => { 
-          return {
-            id : row.id ,
-            emailAddress : row.emailAddress
-          };
-        });
-
-        console.log(request_data.length);
-        //return res.json(request_data);
-
-        //LG전자 개발 URL
-	    var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
-
-        //LG전자 운영 URL
-        // var send_url = "https://apigw-ext.lge.com:7211/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
-
-        var headers = {
-          'Content-Type': "application/json",
-          'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
-        }
-        
-        options = {
-          url : send_url,
-          method: "POST",
-          headers:headers,
-          body : { ContentList: request_data } ,
-          json : true
-        };
-        
-        var result = await request(options, async function (error, response, body) {
-    
-          // console.log(11);
-          // console.log(response);
-          if(error){
-            console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
-            console.log(error);
-          } 
-          if (!error && response.statusCode == 200) {
-            result = body;
-            // console.log(11);
-            console.log(body);
-            
-            res.json(body);
-            // console.log(response);
-            // BANT 업데이트는 운영에서만 필요함
-            //setBant_Update(contact_list); 
-          }
-        });
-      }
-    }
-    catch (e) {
-      return res.json(false);
-    }
+	if(bant_data && getStatus == 'eloqua') res.json(bant_data);
+	else if(bant_data && getStatus == 'convert')res.json(await Convert_B2BGERP_GLOBAL_DATA( bant_data, bsname));
+	
 });
 
 module.exports = router;
