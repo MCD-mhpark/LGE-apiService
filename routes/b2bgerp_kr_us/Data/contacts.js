@@ -545,48 +545,14 @@ router.post('/customObject', function (req, res, next) {
   });
 });
 
-//커스텀 오브젝트 데이터 조회
-router.post('/customObjectDataSearch', function (req, res, next) {
-  var data = req.body;
-  var queryString ="";
-  b2bkr_eloqua.data.customObjects.data.get(queryString).then((result) => {
-    console.log(result);
-    res.json(result);
-  }).catch((err) => {
-    console.error(err.message);
-    res.send(error);
-  });
-});
 
 
 
 
 
 
-//커스텀 오브젝트 조회
-router.get('/customObjectSearch', function (req, res, next) {
-  var queryString ="";
-  b2bkr_eloqua.assets.customObjects.get(queryString).then((result) => {
-    console.log(result.data);
-    res.json(result.data);
-  }).catch((err) => {
-    console.error(err.message);
-    res.json(false);
-  });
-});
 
-//커스텀 오브젝트 조회 단건
-router.get('/customObjectSearchOne/:id', function (req, res, next) {
-  var id = req.params.id;
-  var queryString ="";
-  b2bkr_eloqua.assets.customObjects.getOne(id,queryString).then((result) => {
-    console.log(result.data);
-    res.json(result.data);
-  }).catch((err) => {
-    console.error(err.message);
-    res.json(false);
-  });
-});
+
 
 //커스텀 오브젝트 데이터 추가
 router.post('/customObjectDataCreate', async function (req, res, next) {
@@ -595,17 +561,38 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 
   //해당 사용자 데이터 여부 확인
   var contact_data = await GetContactData(req_data.contactEmailAddr);
+
   if(contact_data && contact_data.total > 0)
   {
-    var customObjectCreateData = ConvertCustomObjectData(contact_data, req_data);
+    //만약 기존 사용자 정보중 isSubscribed false이면 true로 변경 contact_data.elements[0].isSubscribed
+    if( contact_data.elements[0].isSubscribed === 'false')
+    {
+      contact_data.elements[0].isSubscribed = true;
+      await UpdateContacData(contact_data.elements[0]);
+    }
+
+    var customObjectCreateData = ConvertCustomObjectData(contact_data.elements[0], req_data);
     var result_data = await SendCreateCustomObjectData(customObjectCreateData);
     console.log(result_data.data);
     res.json(result_data.data);
   }
   else
   {
-    //사용자가 없을경우 사용자 추가 필요
-    
+    //사용자가 없을경우 사용자 추가
+    var contact_data = await InsertContactData(req_data);
+
+    //사용자 추가 후 CustomObjectData 추가
+    if(contact_data.data)
+    {
+      var customObjectCreateData = ConvertCustomObjectData(contact_data.data, req_data);
+      var result_data = await SendCreateCustomObjectData(customObjectCreateData);
+      console.log(result_data.data);
+      res.json(result_data.data);
+    }
+    else
+    {
+      res.json({"Error" : "사용자 생성 오류"});
+    }
   }
 });
 
@@ -637,7 +624,7 @@ function KR_OBJECT_DATA_ENTITY() {
 
 function ConvertCustomObjectData(_contact, _req_data)
 {
-  var contact = _contact.elements[0];
+  var contact = _contact;
   var convert_data_entity = new KR_OBJECT_DATA_ENTITY();
   convert_data_entity.contactId = contact.id;
 
@@ -681,10 +668,11 @@ function ConvertCustomObjectData(_contact, _req_data)
   return convert_data_entity;
 }
 
+//CustomObjectData 전송 함수
 async function SendCreateCustomObjectData(_customObjectCreateData)
 {
   var return_data = undefined;
-
+  //LGE KR 사용자정의 객체 / LGEKR(한영본)_대표사이트B2B_온라인문의 id : 39
   await b2bkr_eloqua.data.customObjects.data.create(39,_customObjectCreateData).then((result) => {
     console.log(result);
     return_data = result;
@@ -696,13 +684,15 @@ async function SendCreateCustomObjectData(_customObjectCreateData)
   return return_data;
 }
 
+//연락처 조회 함수
 async function GetContactData(_email)
   {
       var queryString = {};
       var return_data = undefined;
       //queryString['search'] = _email;
       queryString.search = _email ;
-      await bscard_eloqua.data.contacts.get(queryString).then((result) => { 
+      queryString.depth = "partial"; //minimal, partial, complete
+      await b2bkr_eloqua.data.contacts.get(queryString).then((result) => { 
         if( result.status == 200 && result.data.total > 0)
           return_data = result.data;
       }).catch((err) => {
@@ -711,4 +701,89 @@ async function GetContactData(_email)
       return return_data;
 }
 
+//연락처 추가 함수
+async function InsertContactData(_req_data)
+{
+  var contact_data = {};
+  contact_data.accountname = _req_data.customerName;
+  contact_data.address1 = _req_data.baseAddr;
+  contact_data.address2 = _req_data.detailAddr;
+  contact_data.postalCode = _req_data.postalCode;
+  contact_data.businessPhone = _req_data.phoneNo;
+  contact_data.emailAddress = _req_data.contactEmailAddr;
+  contact_data.mobilePhone = _req_data.contactCellularNo;
+  contact_data.firstName = _req_data.contactName.substring(1,_req_data.contactName.length);
+  contact_data.lastName = _req_data.contactName.substring(0,1);
+  
+  await b2bkr_eloqua.data.contacts.create( contact_data, ).then((result) => {
+    console.log(result);
+    return_data = result;
+  }).catch((err) => {
+    console.error(err);
+    console.error(err.message);
+    return_data = err.message;
+  });
+  return return_data;
+}
+
+//연락처 업데이트 함수
+async function UpdateContacData(_contact)
+{
+  var contact = _contact;
+  if(contact.accountName)
+  {
+    contact.accountname = contact.accountName;
+    delete contact.accountName; 
+  }
+
+  await b2bkr_eloqua.data.contacts.update( contact.id, contact ).then((result) => {
+    console.log(result);
+    return_data = result;
+  }).catch((err) => {
+    console.error(err);
+    console.error(err.message);
+    return_data = err.message;
+  });
+  return return_data;
+}
+
+//커스텀 오브젝트 데이터 조회
+router.get('/customObjectDataSearch/:id', function (req, res, next) {
+  var parentId = req.params.id;
+  var queryString = "";
+  //queryString.emailAddress = req.params.email;
+
+  b2bkr_eloqua.data.customObjects.data.get(parentId,queryString).then((result) => {
+    console.log(result.data);
+    res.json(result.data);
+  }).catch((err) => {
+    console.error(err.message);
+    res.send(error);
+  });
+});
+
+//커스텀 오브젝트 조회
+router.get('/customObjectSearch', function (req, res, next) {
+  var queryString ="";
+  b2bkr_eloqua.assets.customObjects.get(queryString).then((result) => {
+    console.log(result.data);
+    res.json(result.data);
+  }).catch((err) => {
+    console.error(err.message);
+    res.json(false);
+  });
+});
+
+//커스텀 오브젝트 조회 단건
+router.get('/customObjectSearchOne/:id', function (req, res, next) {
+  var id = req.params.id;
+  var queryString ="";
+  b2bkr_eloqua.assets.customObjects.getOne(id,queryString).then((result) => {
+    console.log(result.data);
+    res.json(result.data);
+  }).catch((err) => {
+    console.error(err.message);
+    res.json(false);
+  });
+});
 module.exports = router;
