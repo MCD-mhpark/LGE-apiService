@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var methodOverride = require('method-override');
 var EloquaApi = require('./public/modules/eloqua-sdk');
-
+var os = require('os');
 
 var moment = require('moment');
 
@@ -226,7 +226,7 @@ function schedule_Request(){
 // schedule_Request("test2", "http://localhost:8001/bscard_app/contacts/test" , "25 * * * * *" , "GET");
 // schedule_Request("test3", "http://localhost:8001/bscard_app/contacts/test" , "45 * * * * *" , "GET");
 
-
+console.log(os.type());
 
 
 module.exports = app;

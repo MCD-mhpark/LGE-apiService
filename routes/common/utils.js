@@ -1,4 +1,10 @@
 var moment = require('moment');
+var fs = require('fs');
+
+exports.makeDirectory = function(dirPath){
+    const isExists = fs.existsSync(dirPath);
+    if(!isExists) fs.mkdirSync( dirPath , {recursive : true});
+}
 
 exports.timeConverter = function (status , time){
     //ex date = 2019-12-29 19:48:08

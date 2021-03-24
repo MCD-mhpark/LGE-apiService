@@ -1142,7 +1142,11 @@ bant_send = async function(business_name , res){
 	//LG전자 운영 URL
 	var send_url = "https://apigw-ext.lge.com:7211/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
 
-    
+	var today = "./" + moment().format("YYYY-MM-DD"); 
+
+	mkdirp(today , function(err){
+		if(err) console.error(error);
+	});
 
     let contacts_data = await get_b2bgerp_global_bant_data(business_name );
 
@@ -1199,11 +1203,7 @@ bant_send = async function(business_name , res){
         // fs.writeFile(__dirname ,contact_list );
         // 
 
-        var today = "./" + moment().format("YYYY-MM-DD"); 
-
-		// mkdirp(todayFolder , function(err){
-		// 	if(err) console.error(error);
-		// });
+       
         fs.writeFile(__dirname + "/" + today + "requestEloqua_" + business_name + ".txt", JSON.stringify(contact_list), 'utf8', function(error){ 
             if(error) {
                 console.log(err);
