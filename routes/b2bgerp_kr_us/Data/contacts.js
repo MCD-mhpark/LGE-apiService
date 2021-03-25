@@ -554,7 +554,7 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 	var contact_data = await GetContactData(req_data.contactEmailAddr);
 
 	if(contact_data && contact_data.total > 0){
-    //만약 기존 사용자 정보중 isSubscribed false이면 true로 변경 contact_data.elements[0].isSubscribed
+    	//만약 기존 사용자 정보중 isSubscribed false이면 true로 변경 contact_data.elements[0].isSubscribed
 		if( contact_data.elements[0].isSubscribed === 'false'){
 			contact_data.elements[0].isSubscribed = true;
 			await UpdateContacData(contact_data.elements[0]);

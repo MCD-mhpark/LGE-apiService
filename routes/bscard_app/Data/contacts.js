@@ -269,7 +269,9 @@ async function Convert_BS_CARD_DATA_SEARCH(body_data){
             dataObject.addr1 = GetDataValue(body_data.elements[i].address1);
             dataObject.addr2 = GetDataValue(body_data.elements[i].address2);
             dataObject.email = GetDataValue(body_data.elements[i].emailAddress);
-            dataObject.country = GetDataValue(body_data.elements[i].country);
+            let country = GetDataValue(body_data.elements[i].country);
+            if( GetDataValue(body_data.elements[i].country) === 'UAE' ) country = 'U.A.E';
+            dataObject.country = country;
             dataObject.updateDate = GetDataValue(utils.timeConverter("GET_DATE" , body_data.elements[i].updatedAt));
        
  
@@ -399,7 +401,8 @@ function Convert_BS_CARD_DATA(body_data , status) {
             bs_card_data.address1 = item.addr1; //"addr1": "수원시 영통구",
             bs_card_data.address2 = item.addr2; //"addr2": "서초구 양재",
             bs_card_data.emailAddress = item.email; //"email": "jbpark@intellicode.co.kr",
-        
+            
+            if(status == 'update') bs_card_data.isSubscribed = true;
             bs_card_data.fieldValues.push( { "id": "100252", "value": item.homepage });
             bs_card_data.fieldValues.push( { "id": "100292", "value": item.rank });
             bs_card_data.fieldValues.push( { "id": "100202", "value": "LBCS" });
@@ -415,6 +418,7 @@ function Convert_BS_CARD_DATA(body_data , status) {
 
             // product |  Business Unit || 100229
             bs_card_data.fieldValues.push({ "id": "100229", "value": item.product }); 
+            
             
             if(item.krMkt == 'Y'){
                 

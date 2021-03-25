@@ -934,14 +934,15 @@ async function get_b2bgerp_global_bant_data(_business_name, start_date, end_date
 	//var yesterday_Object = utils.today_getDateTime();
 
 	var queryText = "C_DateModified>" + "'" + yesterday_Object.start + " 10:00:00'" + "C_DateModified<" + "'" + yesterday_Object.end + " 11:00:59'" + status_bant + "='MQL'";
-	if(business_name == 'TEST' ) queryText += 'emailAddress=jtlim@goldenplanet.co.kr' 
+	// var queryText = status_bant + "='MQL'";
+	if(business_name == 'TEST' ) queryText += "emailAddress='jtlim@goldenplanet.co.kr'emailAddress='jbpark@intellicode.co.kr'"
     console.log("queryText : " + queryText);
 	queryString['search'] = queryText;
 	queryString['depth'] = "complete";
 	//   queryString['count'] = 1;
 
 	await b2bgerp_eloqua.data.contacts.get(queryString).then((result) => {
-        console.log(result.data.elements.length)
+        console.log("business_name : " + business_name + " result data 건수 : " + result.data.elements.length);
 		if (result.data.total && result.data.total > 0) {
 			contacts_data = result.data;
 		}
@@ -965,19 +966,18 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 
 			//result_item.INTERFACE_ID = "ELOQUA_0003" // this.INTERFACE_ID = "ELOQUA_0003"
 
-      var business_interface_num = 0;
-      switch(business_department)
-      {
-        case "AS": business_interface_num = 1; break;
-        case "CLS": business_interface_num = 2; break;
-        case "CM": business_interface_num = 3; break;
-        case "ID": business_interface_num = 4; break;
-        case "IT": business_interface_num = 5; break;
-        case "Solar": business_interface_num = 6; break;
-        case "Solution": business_interface_num = 7; break;
-        case "TEST": business_interface_num = 1; break;
-        default : business_interface_num = 0; break;
-      }
+			var business_interface_num = 0;
+			switch(business_department){
+				case "AS": business_interface_num = 1; break;
+				case "CLS": business_interface_num = 2; break;
+				case "CM": business_interface_num = 3; break;
+				case "ID": business_interface_num = 4; break;
+				case "IT": business_interface_num = 5; break;
+				case "Solar": business_interface_num = 6; break;
+				case "Solution": business_interface_num = 7; break;
+				case "TEST": business_interface_num = 1; break;
+				default : business_interface_num = 0; break;
+			}
 
 			result_item.INTERFACE_ID = moment().format('YYYYMMDD') + business_interface_num + lpad(seq_cnt, 5, "0");
 			//리드네임 [MQL]Subsidiary_BU_Platform&Activity_Register Date+Hour 값을 조합
@@ -1017,7 +1017,7 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 			if(address != "") address += " " + GetDataValue(contacts_data.elements[i].address3);
 			address += "/" + GetDataValue(contacts_data.elements[i].country);	//주소정보 Address1 + Address2 + Address3 // Inquiry To Buy 주소 입력 없음
 
-			console.log("Convert ADDRESS : " + GetDataValue(contacts_data.elements[i].address1) + " " +  GetDataValue(contacts_data.elements[i].address2) + " " + GetDataValue(contacts_data.elements[i].address3 ));
+
 
 			result_item.ADDRESS = address;
 			//result_item.DESCRIPTION = GetDataValue(contacts_data.elements[i].description);//설명 Comments, message, inquiry-to-buy-message 필드 중 하나 (확인필요) //DESCRIPTION
@@ -1058,12 +1058,30 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 
 			result_item.REGISTER_DATE = moment().format('YYYY-MM-DD hh:mm:ss');    //어떤 날짜 정보인지 확인 필요 //utils.timeConverter("GET_DATE", contacts_data.elements[i].createdAt);
 			result_item.TRANSFER_DATE = moment().format('YYYY-MM-DD hh:mm:ss');    //어떤 날짜 정보인지 확인 필요
-			result_item.TRANSFER_FLAG = "Y";	 //TRANSFER_FLAG N , Y 값의 용도 확인 필요
+			result_item.TRANSFER_FLAG = "Y";	 									//TRANSFER_FLAG N , Y 값의 용도 확인 필요
 			result_item.LAST_UPDATE_DATE = utils.timeConverter("GET_DATE", contacts_data.elements[i].updatedAt);
 
-      if( result_item.CORPORATION != "" && result_item.CORPORATION != "LGE" ) 
-			  result_data.push(result_item);
-		}
+
+
+			let notBant_emailType_List = ["@goldenplanet.co.kr", "@intellicode.co.kr"];
+			// let notBant_emailType_List = ["@goldenplanet.co.kr"];
+			let notBant_email_list  = notBant_emailType_List.filter(function (sentence) { 
+				console.log("result_item.ATTRIBUTE_4 : " + result_item.ATTRIBUTE_4);
+				console.log(result_item.ATTRIBUTE_4.indexOf( sentence ))
+				
+				return result_item.ATTRIBUTE_4.indexOf( sentence ) > -1 ? sentence : null ; });
+
+				// for(let k = 0 ; notBant_emailType_List.length > k ; k++){
+				// 	let notBant_item = notBant_emailType_List[k];
+				// 	notBant_item
+				// }
+			console.log("BANT Convert EMAIL : " + result_item.ATTRIBUTE_4);
+			console.log(notBant_email_list);
+			
+			if( result_item.CORPORATION != "" && result_item.CORPORATION != "LGE" && notBant_email_list.length < 1 ) 
+				result_data.push(result_item);
+			}
+		
 		catch (e) {
 			console.log(e);
 		}
@@ -1146,7 +1164,7 @@ bant_send = async function(business_name , res){
 
     let contacts_data = await get_b2bgerp_global_bant_data(business_name );
 
-
+	console.log(contacts_data.length);
 	// console.log(contacts_data);
 
     if (contacts_data != null) {
@@ -1168,36 +1186,8 @@ bant_send = async function(business_name , res){
             json : true
         };
 
-        var contact_list = contacts_data.elements;
-
-        //BANT 업데이트 데이터 구성 테스트 코드
-        // console.log(contacts_data)
-        // contact_list = contacts_data.elements;
-        // bu_bant_id_list = [ '100264', '100265', '100266', '100338' ];
-        // for(let i = 0; contact_list.length > i ; i++){
-        //     contact_list[i]['accountname'] = contact_list[i].accountName;
-        //     delete contact_list[i].accountName;
-    
-        //     for(let j = 0 ; contact_list[i].fieldValues.length > j ; j++){
-        //         var FieldValues_item = contact_list[i].fieldValues[j];
-        //         if(bu_bant_id_list.indexOf(FieldValues_item.id) > -1){
-        //             contact_list[i].fieldValues[j].value = "";
-        //         }
-        //     }
-        // }
-        // res.json(contact_list);
-        // console.log(contact_list);
-        
-        // return;
-
-        // BANT 업데이트 데이터 구성 테스트 코드 끝
-        
-        // console.log(contact_list);
-        // console.log(contact_list.length);
-
-        // res.json(contact_list);
-        // fs.writeFile(__dirname ,contact_list );
-        // 
+       
+		return;
 
 		var today = "./" + moment().format("YYYY-MM-DD"); 
 		var dirPath = utils.logs_makeDirectory(today );
@@ -1217,7 +1207,7 @@ bant_send = async function(business_name , res){
 			}
           
       	});
-
+		  
         var result = await request(options, async function (error, response, body) {
 
             // console.log(11);
@@ -1272,6 +1262,7 @@ bant_send = async function(business_name , res){
 
 router.get('/search_gerp_data', async function (req, res, next) {
 	console.log("search_gerp_data");
+
 	let bsname = req.query.bsname;
 	let getStatus = req.query.status;
 	console.log(bsname);
