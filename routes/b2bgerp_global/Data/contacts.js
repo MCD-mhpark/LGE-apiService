@@ -1186,8 +1186,6 @@ bant_send = async function(business_name , res){
             json : true
         };
 
-       
-		return;
 
 		var today = "./" + moment().format("YYYY-MM-DD"); 
 		var dirPath = utils.logs_makeDirectory(today );
