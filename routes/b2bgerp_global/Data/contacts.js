@@ -956,7 +956,7 @@ async function get_b2bgerp_global_bant_data(_business_name, start_date, end_date
 //Eloqua Data B2B GERP Global Mapping 데이터 생성
 function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
   	var result_data = [];
-
+	if(!contacts_data)  return;
   	for (var i = 0; i < contacts_data.elements.length; i++) {
 
 		try {
@@ -1066,16 +1066,12 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 			let notBant_emailType_List = ["@goldenplanet.co.kr", "@intellicode.co.kr"];
 			// let notBant_emailType_List = ["@goldenplanet.co.kr"];
 			let notBant_email_list  = notBant_emailType_List.filter(function (sentence) { 
-				console.log("result_item.ATTRIBUTE_4 : " + result_item.ATTRIBUTE_4);
-				console.log(result_item.ATTRIBUTE_4.indexOf( sentence ))
-				
-				return result_item.ATTRIBUTE_4.indexOf( sentence ) > -1 ? sentence : null ; });
+				return result_item.ATTRIBUTE_4.indexOf( sentence ) > -1 ? result_item.ATTRIBUTE_4 : null ; });
 
 				// for(let k = 0 ; notBant_emailType_List.length > k ; k++){
 				// 	let notBant_item = notBant_emailType_List[k];
 				// 	notBant_item
 				// }
-			console.log("BANT Convert EMAIL : " + result_item.ATTRIBUTE_4);
 			console.log(notBant_email_list);
 			
 			if( result_item.CORPORATION != "" && result_item.CORPORATION != "LGE" && notBant_email_list.length < 1 ) 
@@ -1186,25 +1182,34 @@ bant_send = async function(business_name , res){
             json : true
         };
 
+		// 요청에 대한 로그를 쌓기 위함
+		let total_logs = {
+			bsname : bsname ,
+			search_time : utils.todayDetail_getDateTime(),
+			eloqua_total : contact_list && contact_list.total ? contact_list.total : 0,
+			convert_total : request_data.length
+		}
 
-		var today = "./" + moment().format("YYYY-MM-DD"); 
-		var dirPath = utils.logs_makeDirectory(today );
-        fs.writeFile(dirPath + "/request_" + business_name + ".txt", JSON.stringify(contact_list), 'utf8', function(error){ 
-            if(error) {
-                console.log(err);
-            }else{
-                console.log('write end') ;
-            } 
-        });
+		req_res_logs("reqEloqua" , business_name , contact_list );
+		req_res_logs("reqConvert" , business_name , request_data );
+		req_res_logs("reqTotal" , business_name , total_logs );
 
-        fs.writeFile(dirPath +  "/reqConvert_" + business_name + ".txt", JSON.stringify(request_data), 'utf8', function(error){ 
-			if(error) {
-				console.log(err);
-			}else{
-				console.log('write end') ;
-			}
+        // fs.writeFile(dirPath + "/request_" + business_name + ".txt", JSON.stringify(contact_list), 'utf8', function(error){ 
+        //     if(error) {
+        //         console.log(err);
+        //     }else{
+        //         console.log('write end') ;
+        //     } 
+        // });
+
+        // fs.writeFile(dirPath +  "/reqConvert_" + business_name + ".txt", JSON.stringify(request_data), 'utf8', function(error){ 
+		// 	if(error) {
+		// 		console.log(err);
+		// 	}else{
+		// 		console.log('write end') ;
+		// 	}
           
-      	});
+      	// });
 		  
         var result = await request(options, async function (error, response, body) {
 
@@ -1216,27 +1221,18 @@ bant_send = async function(business_name , res){
             } 
             if (!error && response.statusCode == 200) {
              
-                // console.log(11);
                 console.log(body.resultData);
-                // contacts_list = contacts_data.elements.map(row => { 
-                //     // 이미 전송한 데이터를 bant_update 해야 하기 때문에 변경
-                //     //if(row.code != 'E') return row.id;
-                   
-                // });
-                // res.json(contacts_list);
-
-                // for(let i = 0 ; contact_list.length > i ; i++ ){
-                //     contact_list[i]
-                // }
-
-                fs.writeFile(dirPath + "/response_" + business_name + ".txt", JSON.stringify(body.resultData), 'utf8', function(error){ 
-                    if(error) {
-                        console.log(err);
-                    }else{
-                        console.log('write end') ;
-                    }
+				req_res_logs("response" , business_name , body.resultData );
+				total_logs.resultTotal = body.resultData.length;
+				req_res_logs("resTotal" , business_name , total_logs );
+                // fs.writeFile(dirPath + "/response_" + business_name + ".txt", JSON.stringify(body.resultData), 'utf8', function(error){ 
+                //     if(error) {
+                //         console.log(err);
+                //     }else{
+                //         console.log('write end') ;
+                //     }
                     
-                });
+                // });
 
                 console.log(contact_list.length);
                 if(contact_list.length > 0 ) {
@@ -1267,13 +1263,44 @@ router.get('/search_gerp_data', async function (req, res, next) {
 	console.log(getStatus);
 	
 	let bant_data = await get_b2bgerp_global_bant_data(bsname );
+	let convert_data = await Convert_B2BGERP_GLOBAL_DATA( bant_data, bsname)
 
 
 	if(bant_data && getStatus == 'eloqua') res.json(bant_data);
-	else if(bant_data && getStatus == 'convert')res.json(await Convert_B2BGERP_GLOBAL_DATA( bant_data, bsname));
+	else if(bant_data && getStatus == 'convert')res.json(convert_data);
 	else  res.json(false)
+
+	// 요청에 대한 로그를 쌓기 위함
+	let total_logs = {
+		bsname : bsname ,
+		search_time : utils.todayDetail_getDateTime(),
+		eloqua_total : bant_data && bant_data.total ? bant_data.total : 0,
+		convert_total : convert_data.length
+	}
+
+	req_res_logs("reqEloqua" , bsname , bant_data );
+	req_res_logs("reqConvert" , bsname , convert_data );
+	req_res_logs("reqTotal" , bsname , total_logs );
+
 	
 });
+
+function req_res_logs(status , business_name , data){
+	// status : request , response
+
+	var today = moment().format("YYYY-MM-DD"); 
+	var dirPath = utils.logs_makeDirectory(today );
+	console.log("fileWrite Path : " + dirPath);
+
+	fs.writeFile(dirPath + status + "_" + business_name + ".txt", JSON.stringify(data), 'utf8', function(error){ 
+		if(error) {
+			console.log(err);
+		}else{
+			console.log('write end') ;
+		}
+		
+	});
+}
 
 module.exports = router;
 module.exports.bant_send = bant_send;

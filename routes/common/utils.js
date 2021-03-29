@@ -6,16 +6,14 @@ exports.logs_makeDirectory = function(dirPath){
     
     const isExists = fs.existsSync(dirPath);
     if(OS_TYPE === 'Windows' && !isExists){
-        dirPath = "C:/LGE_logs/" + dirPath;
+        dirPath = "C:/LGE_logs/" + dirPath + "/";
         fs.mkdirSync( dirPath, { recursive: true } );
     }else if(OS_TYPE === "Linux" ){
-        dirPath = "/home/LGE_logs/" + dirPath;
+        dirPath = "/home/LGE_logs/" + dirPath + "/";
         fs.mkdirSync( dirPath, { recursive: true } );
     }
     return dirPath;
 
-    
-    
 }
 
 exports.timeConverter = function (status , time){
@@ -123,6 +121,17 @@ exports.today_getDateTime = function (){
         start : start , 
         end : end
     }
+}
+
+
+
+exports.todayDetail_getDateTime = function (){
+    //ex date = 2019-12-29 19:48:08
+    //ex unix =  1577616544 
+
+    // var today = moment().format("YYYY-MM-DD");
+    return moment().format("YYYY-MM-DD HH:mm:ss"); 
+
 }
 
 
