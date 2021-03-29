@@ -1183,7 +1183,7 @@ bant_send = async function(business_name , res){
 
 		// 요청에 대한 로그를 쌓기 위함
 		let total_logs = {
-			bsname : bsname ,
+			bsname : business_name ,
 			search_time : utils.todayDetail_getDateTime(),
 			eloqua_total : contact_list && contact_list.total ? contact_list.total : 0,
 			convert_total : request_data.length
@@ -1291,8 +1291,6 @@ function req_res_logs(status , business_name , data){
 	var dirPath = utils.logs_makeDirectory(today );
 	console.log("fileWrite Path : " + dirPath);
 
-
-	return;
 	fs.writeFile(dirPath + status + "_" + business_name + ".txt", JSON.stringify(data), 'utf8', function(error){ 
 		if(error) {
 			console.log(err);
