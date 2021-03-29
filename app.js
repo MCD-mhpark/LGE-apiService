@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var methodOverride = require('method-override');
 var EloquaApi = require('./public/modules/eloqua-sdk');
+require('log-timestamp');
 var os = require('os');
 
 var moment = require('moment');

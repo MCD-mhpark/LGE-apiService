@@ -1,4 +1,4 @@
-var moment = require('moment');
+var moment = require('moment-timezone');
 var utils = require('../../common/utils');
 var express = require('express');
 var request = require('request');
@@ -237,7 +237,7 @@ function CONVERT_IAM_USER_DATA(_eloqua_items) {
             data.TRANSMISSION_COUNT = items.total;                                    //total; 전체 송신 건수
             data.INTERFACE_TYPE_CODE = "ELOQUA";                                      //고정값 "ELOQUA" 
             data.TRANSFER_FLAG = "N";                                                 //고정값 "N"
-            data.TRANSFER_DATE = moment().format('YYYY-MM-DD hh:mm:ss');              //전송일자
+            data.TRANSFER_DATE = moment().tz('Asia/Seoul').format('YYYY-MM-DD hh:mm:ss');              //전송일자
 
             result.push(data);
         }
@@ -386,7 +386,7 @@ function CONVERT_IAM_USER_RESPONSIBILITY_DATA(_eloqua_items) {
                 data.TRANSMISSION_COUNT = items.total;                                    //total; 전체 송신 건수
                 data.INTERFACE_TYPE_CODE = "ELOQUA";                                      //고정값 "ELOQUA" 
                 data.TRANSFER_FLAG = "N";                                                 //고정값 "N"
-                data.TRANSFER_DATE = moment().format('YYYY-MM-DD hh:mm:ss');              //전송일자
+                data.TRANSFER_DATE = moment().tz('Asia/Seoul').format('YYYY-MM-DD hh:mm:ss');              //전송일자
                 result.push(data);
             }
         }
@@ -548,7 +548,7 @@ function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items) {
             data.TRANSMISSION_COUNT = items.total;  //total; 전체 송신 건수
             data.INTERFACE_TYPE_CODE = "ELOQUA";    //고정값 "ELOQUA" 
             data.TRANSFER_FLAG = "N";               //고정값 "N"
-            data.TRANSFER_DATE = moment().format('YYYY-MM-DD hh:mm:ss');                //전송일자
+            data.TRANSFER_DATE = moment().tz('Asia/Seoul').format('YYYY-MM-DD hh:mm:ss');                //전송일자
 
             result.push(data);
         }

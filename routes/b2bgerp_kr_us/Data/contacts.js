@@ -2,7 +2,7 @@ var express = require('express');
 const { param } = require('../../common/history');
 var router = express.Router();
 var utils = require('../../common/utils');
-var moment = require('moment');
+var moment = require('moment-timezone');
 
 /* Contacts */
 //BANT 조건 Eloqua 조회 함수
@@ -613,10 +613,10 @@ function ConvertCustomObjectData(_contact, _req_data){
 	convert_data_entity.contactId = contact.id;
 
 	//LG전자 마케팅 정보 수신 동의 일자 id : 301
-	convert_data_entity.fieldValues.push({ "id" : "301", "value" : moment().unix()}); //LG전자 마케팅 정보 수신 동의 일자	date	text
-	convert_data_entity.fieldValues.push({ "id" : "300", "value" : moment().unix()}); //개인정보 국외 이전 동의 일자	date	text
-	convert_data_entity.fieldValues.push({ "id" : "299", "value" : moment().unix()}); //개인정보 위탁 처리 동의 일자	date	text			
-	convert_data_entity.fieldValues.push({ "id" : "298", "value" : moment().unix()}); //개인정보 수집 및 이용동의 일자	date	text			
+	convert_data_entity.fieldValues.push({ "id" : "301", "value" : moment().tz('Asia/Seoul').unix()}); //LG전자 마케팅 정보 수신 동의 일자	date	text
+	convert_data_entity.fieldValues.push({ "id" : "300", "value" : moment().tz('Asia/Seoul').unix()}); //개인정보 국외 이전 동의 일자	date	text
+	convert_data_entity.fieldValues.push({ "id" : "299", "value" : moment().tz('Asia/Seoul').unix()}); //개인정보 위탁 처리 동의 일자	date	text			
+	convert_data_entity.fieldValues.push({ "id" : "298", "value" : moment().tz('Asia/Seoul').unix()}); //개인정보 수집 및 이용동의 일자	date	text			
 	convert_data_entity.fieldValues.push({ "id" : "297", "value" : _req_data.dtlAddr}); //제품설치지역 시군구	text	text			
 	convert_data_entity.fieldValues.push({ "id" : "296", "value" : _req_data.addr}); //제풍설치지역 도시	text	text			
 	convert_data_entity.fieldValues.push({ "id" : "295", "value" : _req_data.dtlSector}); //상세업종	text	text			
