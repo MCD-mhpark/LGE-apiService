@@ -232,7 +232,6 @@ if(__dirname == "/home/opc/LGE/b2bgerp_global"){
 if(os.type().indexOf("Windows") > -1) global.OS_TYPE = "Windows"
 else global.OS_TYPE = "Linux";
 
-console.log("hello world");
 
 
 

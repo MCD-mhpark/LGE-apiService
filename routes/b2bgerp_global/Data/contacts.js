@@ -1220,10 +1220,8 @@ bant_send = async function(business_name , res){
             } 
             if (!error && response.statusCode == 200) {
              
-                console.log(body.resultData);
 				req_res_logs("response" , business_name , body.resultData );
-				total_logs.resultTotal = body.resultData.length;
-				req_res_logs("resTotal" , business_name , total_logs );
+
                 // fs.writeFile(dirPath + "/response_" + business_name + ".txt", JSON.stringify(body.resultData), 'utf8', function(error){ 
                 //     if(error) {
                 //         console.log(err);
