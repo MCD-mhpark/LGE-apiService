@@ -213,7 +213,7 @@ function schedule_Request(){
 
 if(__dirname == "/home/opc/LGE/b2bgerp_global"){
 	console.log("reg gerp");
-	schedule_Request();
+	// schedule_Request();
 } 
 
 
