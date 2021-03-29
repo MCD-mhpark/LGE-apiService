@@ -1158,16 +1158,16 @@ bant_send = async function(business_name , res){
 
 	
 
-    let contacts_data = await get_b2bgerp_global_bant_data(business_name );
+    let contact_list = await get_b2bgerp_global_bant_data(business_name );
 
-	console.log(contacts_data.length);
+	console.log(contact_list.length);
 	// console.log(contacts_data);
 
-    if (contacts_data != null) {
+    if (contact_list != null) {
 
         // contacts_data : Eloqua 에 Bant 업데이트를 하기 위한 필드
         // request_data : B2B GERP 에 전송할 데이터
-        var request_data = await Convert_B2BGERP_GLOBAL_DATA( contacts_data, business_name);
+        var request_data = await Convert_B2BGERP_GLOBAL_DATA( contact_list, business_name);
         
         var headers = {
             'Content-Type': "application/json",
