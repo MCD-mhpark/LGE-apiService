@@ -5,7 +5,11 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var methodOverride = require('method-override');
 var EloquaApi = require('./public/modules/eloqua-sdk');
-require('log-timestamp');
+require('console-stamp')(console, {
+    formatter: function() {
+        return moment().tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss');
+    }
+});
 var os = require('os');
 
 var moment = require('moment');
@@ -211,10 +215,10 @@ function schedule_Request(){
 	});
 }
 
-if(__dirname == "/home/opc/LGE/b2bgerp_global"){
-	console.log("reg gerp");
-	// schedule_Request();
-} 
+// if(__dirname == "/home/opc/LGE/b2bgerp_global"){
+// 	console.log("reg gerp");
+// 	schedule_Request();
+// } 
 
 
 
@@ -227,6 +231,8 @@ if(__dirname == "/home/opc/LGE/b2bgerp_global"){
 
 if(os.type().indexOf("Windows") > -1) global.OS_TYPE = "Windows"
 else global.OS_TYPE = "Linux";
+
+console.log("hello world");
 
 
 

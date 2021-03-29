@@ -6,6 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "console-stamp": "^0.2.9",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "ejs-locals": "^1.0.2",
@@ -14,7 +15,6 @@
     "http-errors": "~1.6.3",
     "install": "^0.13.0",
     "jade": "~1.11.0",
-    "log-timestamp": "^0.3.0",
     "method-override": "^3.0.0",
     "mkdirp": "^1.0.4",
     "moment": "^2.29.1",
