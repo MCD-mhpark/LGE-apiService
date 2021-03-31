@@ -554,11 +554,8 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 	var contact_data = await GetContactData(req_data.contactEmailAddr);
 
 	if(contact_data && contact_data.total > 0){
-    	//만약 기존 사용자 정보중 isSubscribed false이면 true로 변경 contact_data.elements[0].isSubscribed
-		if( contact_data.elements[0].isSubscribed === 'false'){
-			contact_data.elements[0].isSubscribed = true;
-			await UpdateContacData(contact_data.elements[0]);
-		}
+    //기존사용자 정보 업데이트
+		await UpdateContacData(contact_data.elements[0] , req_data);
 
 		var customObjectCreateData = ConvertCustomObjectData(contact_data.elements[0], req_data);
 		var result_data = await SendCreateCustomObjectData(customObjectCreateData);
@@ -686,16 +683,53 @@ async function GetContactData(_email){
 //연락처 추가 함수
 async function InsertContactData(_req_data){
 	var contact_data = {};
-	contact_data.accountname = _req_data.customerName;
-	contact_data.address1 = _req_data.baseAddr;
-	contact_data.address2 = _req_data.detailAddr;
-	contact_data.postalCode = _req_data.postalCode;
-	contact_data.businessPhone = _req_data.phoneNo;
-	contact_data.emailAddress = _req_data.contactEmailAddr;
-	contact_data.mobilePhone = _req_data.contactCellularNo;
-	contact_data.firstName = _req_data.contactName.substring(1,_req_data.contactName.length);
-	contact_data.lastName = _req_data.contactName.substring(0,1);
+  contact_data.fieldValues = [];
   
+	contact_data.accountname = _req_data.customerName;
+  //zip
+  contact_data.postalCode = _req_data.postalCode;
+  //address1
+	contact_data.address1 = _req_data.baseAddr;
+  //address2 / Address3
+	contact_data.address2 = _req_data.detailAddr;
+  //Business Phone
+	contact_data.businessPhone = _req_data.phoneNo;
+  //FirstName / LastName
+  contact_data.firstName = _req_data.contactName.substring(1,_req_data.contactName.length);
+	contact_data.lastName = _req_data.contactName.substring(0,1);
+
+  //Mobile Phone
+  contact_data.mobilePhone = _req_data.contactCellularNo;
+  //Email Address
+	contact_data.emailAddress = _req_data.contactEmailAddr;
+
+  //inqurity to by message 100209
+  contact_data.fieldValues.push( { "id": "100209", "value": _req_data.custRemark });
+  //KR_Privacy Policy_Collection and Usage
+  contact_data.fieldValues.push( { "id": "100315", "value": _req_data.ppYn == "Y" ? "YES" : "NO" });
+  //KR_Privacy Policy_Collection and Usage_AgreedDate
+  contact_data.fieldValues.push( { "id": "100320", "value": moment().tz('Asia/Seoul').unix() });
+  //KR_Privacy Policy_Consignment of PI
+  contact_data.fieldValues.push( { "id": "100316", "value": _req_data.pcYn == "Y" ? "YES" : "NO" });
+  //KR_Privacy Policy_Transfer PI Aborad
+  contact_data.fieldValues.push( { "id": "100317", "value": _req_data.tpiYn == "Y" ? "YES" : "NO" });
+  //KR_Privacy Policy_Optin
+  contact_data.fieldValues.push( { "id": "100318", "value": _req_data.mktRecYn == "Y" ? "YES" : "NO" });
+  //KR_Privacy Policy_Optin_Date
+  contact_data.fieldValues.push( { "id": "100319", "value": moment().tz('Asia/Seoul').unix() });
+
+  //통합회원 유니크 아이디	신규	unifyId	STRING	생성 필요 (※ 필드가 아직 생성되지 않음 )
+
+  //업종	신규	sector	STRING	Industry
+  contact_data.fieldValues.push( { "id": "100046", "value": _req_data.sector });
+  //Platform&Activity GetCustomFiledValue(FieldValues_data, 100202);
+  contact_data.fieldValues.push( { "id": "100202", "value": "LGE.co.kr" });
+  //Marketing Event GetCustomFiledValue(FieldValues_data, 100203);
+  contact_data.fieldValues.push( { "id": "100203", "value": "KR_LGE.co.kr_OnlineInquiry" });
+  //Subsidiary GetCustomFiledValue(FieldValues_data, 100196);
+  contact_data.fieldValues.push( { "id": "100196", "value": "KR" });
+
+
 	await b2bkr_eloqua.data.contacts.create( contact_data, ).then((result) => {
 		console.log(result);
 		return_data = result;
@@ -708,12 +742,60 @@ async function InsertContactData(_req_data){
 }
 
 //연락처 업데이트 함수
-async function UpdateContacData(_contact){
+async function UpdateContacData(_contact, _req_data){
 	var contact = _contact;
-	if(contact.accountName){
-		contact.accountname = contact.accountName;
-		delete contact.accountName; 
-	}
+
+  //만약 기존 사용자 정보중 isSubscribed false이면 true로 변경 contact_data.elements[0].isSubscribed
+  if( _contact.isSubscribed === 'false'){
+    _contact.isSubscribed = true;
+  }
+
+	// if(contact.accountName){
+	// 	contact.accountname = _req_data;
+	// 	delete contact.accountName;
+	// }
+
+  _contact.accountname = _req_data.customerName;
+  //zip
+	_contact.postalCode = _req_data.postalCode;
+  //address1
+	_contact.address1 = _req_data.baseAddr;
+  //address2 / Address3
+	_contact.address2 = _req_data.detailAddr;
+  //Business Phone
+	_contact.businessPhone = _req_data.phoneNo;
+  //FirstName / LastName
+  _contact.firstName = _req_data.contactName.substring(1,_req_data.contactName.length);
+	_contact.lastName = _req_data.contactName.substring(0,1);
+  //Mobile Phone
+  _contact.mobilePhone = _req_data.contactCellularNo;
+  //Email Address
+	_contact.emailAddress = _req_data.contactEmailAddr;
+  //inqurity to by message 100209
+  _contact.fieldValues.push( { "id": "100209", "value": _req_data.custRemark });
+  //KR_Privacy Policy_Collection and Usage
+  _contact.fieldValues.push( { "id": "100315", "value": _req_data.ppYn == "Y" ? "YES" : "NO" });
+  //KR_Privacy Policy_Collection and Usage_AgreedDate
+  _contact.fieldValues.push( { "id": "100320", "value": moment().tz('Asia/Seoul').unix() });
+  //KR_Privacy Policy_Consignment of PI
+  _contact.fieldValues.push( { "id": "100316", "value": _req_data.pcYn == "Y" ? "YES" : "NO" });
+  //KR_Privacy Policy_Transfer PI Aborad
+  _contact.fieldValues.push( { "id": "100317", "value": _req_data.tpiYn == "Y" ? "YES" : "NO" });
+  //KR_Privacy Policy_Optin
+  _contact.fieldValues.push( { "id": "100318", "value": _req_data.mktRecYn == "Y" ? "YES" : "NO" });
+  //KR_Privacy Policy_Optin_Date
+  _contact.fieldValues.push( { "id": "100319", "value": moment().tz('Asia/Seoul').unix() });
+
+  //통합회원 유니크 아이디	신규	unifyId	STRING	생성 필요 (※ 필드가 아직 생성되지 않음 )
+
+  //업종	신규	sector	STRING	Industry
+  _contact.fieldValues.push( { "id": "100046", "value": _req_data.sector });
+  //Platform&Activity GetCustomFiledValue(FieldValues_data, 100202);
+  _contact.fieldValues.push( { "id": "100202", "value": "LGE.co.kr" });
+  //Marketing Event GetCustomFiledValue(FieldValues_data, 100203);
+  _contact.fieldValues.push( { "id": "100203", "value": "KR_LGE.co.kr_OnlineInquiry" });
+  //Subsidiary GetCustomFiledValue(FieldValues_data, 100196);
+  _contact.fieldValues.push( { "id": "100196", "value": "KR" });
 
 	await b2bkr_eloqua.data.contacts.update( contact.id, contact ).then((result) => {
 		console.log(result);
