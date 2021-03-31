@@ -1253,11 +1253,11 @@ router.get('/search_gerp_data', async function (req, res, next) {
 		convert_total : convert_data ? convert_data.length : null
 	}
 
-	if(bant_data){
-		req_res_logs("reqEloqua" , bsname , bant_data );
-		req_res_logs("reqConvert" , bsname , convert_data );
-		req_res_logs("reqTotal" , bsname , total_logs );
-	}
+	// if(bant_data){
+	// 	req_res_logs("reqEloqua" , bsname , bant_data );
+	// 	req_res_logs("reqConvert" , bsname , convert_data );
+	// 	req_res_logs("reqTotal" , bsname , total_logs );
+	// }
 	
 });
 
