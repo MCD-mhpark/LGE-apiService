@@ -1260,13 +1260,14 @@ router.get('/search_gerp_data', async function (req, res, next) {
 		bsname : bsname ,
 		search_time : utils.todayDetail_getDateTime(),
 		eloqua_total : bant_data && bant_data.total ? bant_data.total : 0,
-		convert_total : convert_data.length
+		convert_total : convert_data ? convert_data.length : null
 	}
 
-	req_res_logs("reqEloqua" , bsname , bant_data );
-	req_res_logs("reqConvert" , bsname , convert_data );
-	req_res_logs("reqTotal" , bsname , total_logs );
-
+	if(bant_data){
+		req_res_logs("reqEloqua" , bsname , bant_data );
+		req_res_logs("reqConvert" , bsname , convert_data );
+		req_res_logs("reqTotal" , bsname , total_logs );
+	}
 	
 });
 

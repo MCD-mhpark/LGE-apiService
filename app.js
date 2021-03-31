@@ -221,9 +221,6 @@ function schedule_Request(){
 // } 
 
 
-
- 
-
 // schedule_Request();
 // schedule_Request("test1", "http://localhost:8001/bscard_app/contacts/test" , "10 * * * * *" , "GET");
 // schedule_Request("test2", "http://localhost:8001/bscard_app/contacts/test" , "25 * * * * *" , "GET");
@@ -231,8 +228,5 @@ function schedule_Request(){
 
 if(os.type().indexOf("Windows") > -1) global.OS_TYPE = "Windows"
 else global.OS_TYPE = "Linux";
-
-
-
 
 module.exports = app;
