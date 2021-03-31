@@ -1202,16 +1202,6 @@ bant_send = async function(business_name , res){
 		req_res_logs("reqEloqua" , business_name , contact_list );
 		req_res_logs("reqConvert" , business_name , request_data );
 		req_res_logs("reqTotal" , business_name , total_logs );
-
-
-
-		if(contact_list && contact_list.total) {
-			var bant_result_list = await setBant_Update( business_name , bant_update_list );
-			req_res_logs("bantResult" , business_name , bant_result_list );
-			res.json(bant_result_list);
-		}     
-		
-		return;
 		
         var result = await request(options, async function (error, response, body) {
 
@@ -1224,10 +1214,10 @@ bant_send = async function(business_name , res){
             if (!error && response.statusCode == 200) {
              
 				req_res_logs("response" , business_name , body.resultData );
-                if(contact_list.length > 0 ) {
-                    console.log(contact_list);
-                    setBant_Update( business_name , bant_update_list);
-                }            
+				if(contact_list && contact_list.total) {
+					var bant_result_list = await setBant_Update( business_name , bant_update_list );
+					req_res_logs("bantResult" , business_name , bant_result_list );
+				}     
             }
         });
         
