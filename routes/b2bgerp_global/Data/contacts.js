@@ -1087,7 +1087,7 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 				// 	let notBant_item = notBant_emailType_List[k];
 				// 	notBant_item
 				// }
-			console.log(notBant_email_list.length);
+			// console.log(notBant_email_list.length);
 			
 			if( result_item.CORPORATION != "" && result_item.CORPORATION != "LGE" && notBant_email_list.length < 1 ) 
 				result_data.push(result_item);
@@ -1166,8 +1166,6 @@ bant_send = async function(business_name , res){
 	//LG전자 운영 URL
 	var send_url = "https://apigw-ext.lge.com:7211/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
 
-	
-
     let contact_list = await get_b2bgerp_global_bant_data( business_name );
 
 	// console.log(contacts_data);
@@ -1191,7 +1189,7 @@ bant_send = async function(business_name , res){
             json : true
         };
 
-		// 요청에 대한 로그를 쌓기 위함
+		// 사업부별 Eloqua Data 건수 및 실제 전송 건수 로그를 쌓기 위함 (이메일 필터링에 의해 Eloqua Data 건수와 실제 전송 건수 는 다를 수 있음)
 		let total_logs = {
 			bsname : business_name ,
 			search_time : utils.todayDetail_getDateTime(),
@@ -1199,6 +1197,7 @@ bant_send = async function(business_name , res){
 			convert_total : request_data.length
 		}
 
+		// reqEloqua : Eloqua Data List , reqConvert : 실제 전송 list , reqTotal : Eloqua Data 건수 및 실제 전송 건수 기록
 		req_res_logs("reqEloqua" , business_name , contact_list );
 		req_res_logs("reqConvert" , business_name , request_data );
 		req_res_logs("reqTotal" , business_name , total_logs );
@@ -1225,15 +1224,15 @@ bant_send = async function(business_name , res){
     else {
 
     }
-
-	
 }
 
 router.get('/search_gerp_data', async function (req, res, next) {
-	console.log("search_gerp_data");
-
+	let Business_Unit_List = [];
 	let bsname = req.query.bsname;
 	let getStatus = req.query.status;
+	console.log("search_gerp_data");
+
+	
 	console.log(bsname);
 	console.log(getStatus);
 	
@@ -1253,11 +1252,11 @@ router.get('/search_gerp_data', async function (req, res, next) {
 		convert_total : convert_data ? convert_data.length : null
 	}
 
-	// if(bant_data){
-	// 	req_res_logs("reqEloqua" , bsname , bant_data );
-	// 	req_res_logs("reqConvert" , bsname , convert_data );
-	// 	req_res_logs("reqTotal" , bsname , total_logs );
-	// }
+	if(bant_data){
+		req_res_logs("reqEloqua" , bsname , bant_data );
+		req_res_logs("reqConvert" , bsname , convert_data );
+		req_res_logs("reqTotal" , bsname , total_logs );
+	}
 	
 });
 
