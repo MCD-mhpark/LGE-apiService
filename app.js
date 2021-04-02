@@ -215,10 +215,10 @@ function schedule_Request(){
 	});
 }
 
-if(__dirname == "/home/opc/LGE/b2bgerp_global"){
-	console.log("reg gerp");
-	schedule_Request();
-} 
+// if(__dirname == "/home/opc/LGE/b2bgerp_global"){
+// 	console.log("reg gerp");
+// 	schedule_Request();
+// } 
 
 // schedule_Request();
 // schedule_Request("test1", "http://localhost:8001/bscard_app/contacts/test" , "10 * * * * *" , "GET");

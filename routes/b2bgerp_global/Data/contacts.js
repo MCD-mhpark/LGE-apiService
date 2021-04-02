@@ -4,7 +4,7 @@ var request = require('request');
 var httpRequest = require('../../common/httpRequest');
 var utils = require('../../common/utils');
 var moment = require('moment');
-var seq_cnt = 2;
+var seq_cnt = 0;
 var fs 		= require("mz/fs");
 /* Contacts */
 
@@ -1036,7 +1036,8 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 
 			result_item.ADDRESS = address;
 			//result_item.DESCRIPTION = GetDataValue(contacts_data.elements[i].description);//설명 Comments, message, inquiry-to-buy-message 필드 중 하나 (확인필요) //DESCRIPTION
-			result_item.DESCRIPTION = GetCustomFiledValue(FieldValues_data, 100209);      //설명 inquiry-to-buy-message 필드 중 하나 (확인필요)
+			let description = GetCustomFiledValue(FieldValues_data, 100209);
+			result_item.DESCRIPTION = description.length >= 1500 ? description.substring(0,1675) : description ;      //설명 inquiry-to-buy-message 필드
 
 			result_item.ATTRIBUTE_1 = GetDataValue(contacts_data.elements[i].id);         //Eloqua Contact ID
 			result_item.ATTRIBUTE_2 = GetBusiness_Department_data(FieldValues_data, business_department, "Budget"); //PRODUCT LV1의 BU 별 
@@ -1152,7 +1153,7 @@ router.get('/bant_test/', async function (req, res, next) {
   	await httpRequest.sender("http://localhost:8010/restfulApi/eloqua", "GET", {});
 });
 
-// 가상의 LG API GATEWAY의 
+// 스케줄러로 BANT DATA 전송을 전체를 하는게 아닌 특정 사업부만 하기위해서 만듬
 router.get('/sender', async function (req, res, next) {
   	bant_send(req.query.bsname , res);
 });
