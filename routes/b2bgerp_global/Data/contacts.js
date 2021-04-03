@@ -1210,6 +1210,7 @@ bant_send = async function(business_name , res){
             if(error){
                 console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
                 console.log(error);
+				req_res_logs("bantsend_error" , business_name , bant_result_list );
             } 
             if (!error && response.statusCode == 200) {
              
