@@ -196,15 +196,14 @@ app.use(function(err, req, res, next) {
 function schedule_Request(){
 	let uniqe_jobs_name = "B2B GERP GLOBAL" +  moment().format('YYYYMMDD');
 	let second = "0";
-	let minutes = "30";
-	let hours = "11";
+	let minutes = "06";
+	let hours = "17";
 	let dayofmonth = "*";
 	let month = "*";
 	let weekindex = "*";
 	var schedate = second + ' ' + minutes + ' ' + hours + ' ' + dayofmonth + ' ' + month + ' ' + weekindex;
 
 	//test data
-
 	Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,"Asia/Seoul" ,async function(){
 		// let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
 		let bant_list = ["AS" , "CM" , "ID" , "IT" , "Solution"];
@@ -215,10 +214,10 @@ function schedule_Request(){
 	});
 }
 
-// if(__dirname == "/home/opc/LGE/b2bgerp_global"){
-// 	console.log("reg gerp");
-// 	schedule_Request();
-// } 
+if(__dirname == "/home/opc/LGE/b2bgerp_global"){
+	console.log("reg gerp");
+	schedule_Request();
+} 
 
 if(os.type().indexOf("Windows") > -1) global.OS_TYPE = "Windows"
 else global.OS_TYPE = "Linux";

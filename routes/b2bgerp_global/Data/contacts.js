@@ -1093,7 +1093,6 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 			if( result_item.CORPORATION != "" && result_item.CORPORATION != "LGE" && notBant_email_list.length < 1 ) 
 				result_data.push(result_item);
 			}
-		
 		catch (e) {
 			console.log(e);
 		}
