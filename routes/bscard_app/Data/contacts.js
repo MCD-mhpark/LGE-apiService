@@ -77,6 +77,44 @@ async function mappedContacts(bs_data, depth){
     return bs_data;
 }
 
+
+async function origin_mappedContacts(bs_data, depth){
+    
+    var queryString = {};
+    var emailString = "?";
+    for(var i = 0 ; bs_data.length > i ; i++ ){
+        if(bs_data.length > 1 ) emailString += "emailAddress='" + bs_data[i].emailAddress + "'";
+        else emailString += "emailAddress=" + bs_data[i].email + "";
+    }
+    
+
+    queryString['search'] = emailString;
+    queryString['depth'] = depth ? depth : "";
+    console.log(queryString);
+
+    await bscard_eloqua.data.contacts.get(queryString).then((result) => { 
+        // console.log(result.data);
+        // console.log(result.data.total);
+        
+        if(result.data.total && result.data.total > 0 ){
+            var result = result.data.elements;
+            for(var i = 0 ; bs_data.length > i ; i++){
+                for(var j = 0 ; result.length > j ; j++){ 
+                    if(bs_data[i].email == result[j].emailAddress){
+                        bs_data[i].id = result[j].id;
+                    }
+                }
+            }
+        }
+
+    }).catch((err) => {
+        console.error(err);
+        
+    });
+    // console.log(bs_data);
+    return bs_data;
+}
+
 function GetDataValue(contacts_fieldvalue) {
     try {
       if (contacts_fieldvalue != undefined) {
@@ -386,9 +424,6 @@ function Convert_BS_CARD_DATA(body_data , status) {
             bs_card_data.salesPerson = item.userId; //"userId": "jbpark",
     
      		
-        
-			
-            
             bs_card_data.firstName = item.firstName; //"firstName": "진범",
             bs_card_data.lastName = item.lastName; //"lastName": "박",
             bs_card_data.accountname = item.company; //"company": "인텔리코드",
@@ -576,6 +611,75 @@ router.put('/update/', async function (req, res, next) {
     
   
 
+
+    var form = {};
+    var success_count = 0;
+    var failed_count = 0;
+    var result_list = [];
+    
+    // console.log("bs_data.length");
+    // console.log(bs_data.length);
+    for(var i = 0 ; bs_data.length > i ; i++){
+        console.log(bs_data[i].id)
+        var id = bs_data[i].id;
+        
+        await bscard_eloqua.data.contacts.update( id, bs_data[i] ).then((result) => {
+            console.log(result.data);
+            // res.json(result.data);
+            result_list.push({
+                email : bs_data[i].emailAddress,
+                status : 200 ,
+                message : "success"
+            });
+
+            success_count++;
+        }).catch((err) => {
+            console.log(err.response.status);
+            console.log(err.response.statusText);
+            if(bs_data[i].id){
+                result_list.push({
+                    email : bs_data[i].emailAddress,
+                    status : err.response.status ? err.response.status : "ETC Error",
+                    message : err.response.statusText ? err.response.statusText : "Unknown Error"
+                });
+            }else{
+                result_list.push({
+                    email : bs_data[i].emailAddress,
+                    status : "500" ,
+                    message : "Not Found Eloqua Data for Update "
+                });
+            }
+
+            failed_count++;
+           
+        });
+    }
+
+    console.log("total count : " + bs_data.length + "  ::: success_count : " + success_count + "  ::: failed_count : " + failed_count );
+    form.total = bs_data.length;
+    form.success_count = success_count;
+    form.failed_count = failed_count;
+    form.result_list = result_list;
+ 
+    res.json(form);
+
+});
+
+
+router.post('/origin_update/', async function (req, res, next) {
+
+  
+    console.log("origin_update_call");
+    // console.log(req.body);
+    var bs_data = req.body;
+    // console.log(1);
+    // console.log(bs_data);
+
+    // console.log(2);
+    // console.log(bs_data);
+    
+  
+    
 
     var form = {};
     var success_count = 0;

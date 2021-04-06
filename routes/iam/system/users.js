@@ -3,6 +3,7 @@ var utils = require('../../common/utils');
 var express = require('express');
 var request = require('request');
 var router = express.Router();
+var fs 		= require("mz/fs");
 
 //=====================================================================================================================================================================================================
 // Last Update Date : 2021-02-10
@@ -265,19 +266,19 @@ router.get('/user', function (req, res, next) {
 
         var return_data = {};
 
-        res.json(result.data);
-        return;
-        var responsibility_data = CONVERT_IAM_USER_DATA(result.data);
        
         
+        var responsibility_data = CONVERT_IAM_USER_DATA(result.data);
+       
+        req_res_logs("user_eloqua" , result.data);
+        req_res_logs("user_convert" , responsibility_data);
  
         if (responsibility_data.length > 0) {
             return_data.ContentList = responsibility_data;
             return_data.page = result.data.page;
             return_data.pageSize = result.data.pageSize;
             return_data.total = result.data.total;
-            res.json(return_data);
-            return;
+          
             //console.log(request_data);
             //res.json({ ContentList: request_data });
 
@@ -311,9 +312,9 @@ router.get('/user', function (req, res, next) {
                     console.log(body);
                     
                     res.json(body);
+                    req_res_logs("user_response" , body);
                 }
             });
-
         }
         else {
             return_data.page = result.data.page;
@@ -357,7 +358,10 @@ function CONVERT_IAM_USER_RESPONSIBILITY_DATA(_eloqua_items) {
                 data.IF_USER_RESPONSIBILITY_ID = GetIFNumber("1000", item.id);                // number pk Interface 사용자 테이블 ID  1000 + Eloqua UserID {4자리 0000}
                 data.SYSTEM_CODE = "ELOQUA";                                                 // 고정값 "ELOQUA"
                 data.USER_CODE = GetDataValue(item.federationId);                            // 사번 
+
+                // data.USER_AFFILIATE_CODE = GetRullExtraction(security_data.name);            // 룰정보
                 data.USER_AFFILIATE_CODE = GetRullExtraction(security_data.name).substring(0,4);            // 룰정보
+
                 data.USER_CORPORATION_CODE = GetCorporationExtraction(security_data.name);   // 법인정보
                 data.RESPONSIBILITY_CODE = security_data.id;                                 // Eloqua Security ID
                 data.RESPONSIBILITY_OPTION_CODE = GetBusinessExtraction(security_data.name); // 사업부정보
@@ -417,13 +421,14 @@ router.get('/user_responsibility', function (req, res, next) {
         var user_responsibility_data = CONVERT_IAM_USER_RESPONSIBILITY_DATA(result.data);
         // console.log(user_responsibility_data);
 
-      
+        req_res_logs("user_responsibility_eloqua" , result.data);
+        req_res_logs("user_responsibility_convert" , user_responsibility_data);
+        
         if (user_responsibility_data.length > 0) {
             return_data.ContentList = user_responsibility_data;
             return_data.total = user_responsibility_data.length;
             // res.json(return_data);
-            res.json(return_data);
-            return;
+        
             //console.log(request_data);
             //res.json({ ContentList: request_data });
 
@@ -457,6 +462,7 @@ router.get('/user_responsibility', function (req, res, next) {
                     console.log(body);
                     
                     res.json(body);
+                    req_res_logs("user_responsibility_response" , body);
                 }
             });
 
@@ -566,6 +572,10 @@ router.get('/responsibility', async function (req, res, next) {
     iam_eloqua.system.users.security_groups(queryString).then(async(result) => {
       var return_data = {};
         var responsibility_data = CONVERT_IAM_RESPONSIBILITY_DATA(result.data);
+
+        req_res_logs("responsibility_eloqua" , result.data);
+        req_res_logs("responsibility_convert" , responsibility_data);
+
         if (responsibility_data.length > 0) {
             
             //console.log(responsibility_data);
@@ -593,22 +603,23 @@ router.get('/responsibility', async function (req, res, next) {
 
           //return res.json(return_data);
 
-          var result = await request(options, async function (error, response, body) {
+            var result = await request(options, async function (error, response, body) {
       
-            // console.log(11);
-            // console.log(response);
-            if(error){
-              console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
-              console.log(error);
-            } 
-            if (!error && response.statusCode == 200) {
-              result = body;
-              // console.log(11);
-              console.log(body);
-              
-              res.json(body);
-            }
-          });
+                // console.log(11);
+                // console.log(response);
+                if(error){
+                    console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
+                    console.log(error);
+                } 
+                if (!error && response.statusCode == 200) {
+                    result = body;
+                    // console.log(11);
+                    console.log(body);
+                    
+                    res.json(body);
+                    req_res_logs("responsibility_response" , body);
+                }
+            });
             //console.log(request_data);
             //res.json({ ContentList: request_data });
         }
@@ -1016,5 +1027,23 @@ router.get('/all_securityGroups', function (req, res, next) {
         res.json(false);
     });
 });
+
+
+function req_res_logs(filename , data){
+	// filename : request , response 
+	// business_name : 사업부별 name
+	// data : log 저장할 데이터
+
+	var dirPath = utils.logs_makeDirectory("IAM_SYSTEM");
+	console.log("fileWrite Path : " + dirPath);
+
+	fs.writeFile(dirPath + filename  + ".txt", JSON.stringify(data), 'utf8', function(error){ 
+		if(error) {
+			console.log(err);
+		}else{
+			console.log('write end') ;
+		}
+	});
+}
 
 module.exports = router;

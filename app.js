@@ -196,15 +196,14 @@ app.use(function(err, req, res, next) {
 function schedule_Request(){
 	let uniqe_jobs_name = "B2B GERP GLOBAL" +  moment().format('YYYYMMDD');
 	let second = "0";
-	let minutes = "09";
-	let hours = "13";
+	let minutes = "34";
+	let hours = "17";
 	let dayofmonth = "*";
 	let month = "*";
 	let weekindex = "*";
 	var schedate = second + ' ' + minutes + ' ' + hours + ' ' + dayofmonth + ' ' + month + ' ' + weekindex;
 
 	//test data
-
 	Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,"Asia/Seoul" ,async function(){
 		// let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
 		let bant_list = ["AS" , "CM" , "ID" , "IT" , "Solution"];
@@ -219,12 +218,6 @@ function schedule_Request(){
 // 	console.log("reg gerp");
 // 	schedule_Request();
 // } 
-
-
-// schedule_Request();
-// schedule_Request("test1", "http://localhost:8001/bscard_app/contacts/test" , "10 * * * * *" , "GET");
-// schedule_Request("test2", "http://localhost:8001/bscard_app/contacts/test" , "25 * * * * *" , "GET");
-// schedule_Request("test3", "http://localhost:8001/bscard_app/contacts/test" , "45 * * * * *" , "GET");
 
 if(os.type().indexOf("Windows") > -1) global.OS_TYPE = "Windows"
 else global.OS_TYPE = "Linux";
