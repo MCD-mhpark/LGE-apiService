@@ -77,9 +77,10 @@ router.post('/update/' , function (req,res,next) {
 
 // contact bulk data 가져오기 정의 업데이트 , 현재 contact 데이터에 대해서 100 , 1000 , 10000건의 데이터 업로드를 TEST
 router.post('/uploadData/:id' , function (req,res,next) {
-
+   
     var id = 305;
     // 현재 bulk 가져오기 정의 id는 305 이나 , 명함앱에 미정의된 필드가 있어서 추후에 벌크 가져오기 정의를 업데이트 해줘야한다.
+     // 매우중요 : 명함앱에서 필드가 2021/04/06 일에 봤을땐 미정의된 필드를 다시 정의하였기에 BULK 로 쏘는 데이터는 전부 Eloqua 에 들어가는 것이 아니라 새로 정의된 필드는 안들어갈 가능성이 높다. 따라서 BULK 는 추가 공수를 받아야한다.
     console.log(11);
     console.log(req.body);
     var data = req.body;

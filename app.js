@@ -196,7 +196,7 @@ app.use(function(err, req, res, next) {
 function schedule_Request(){
 	let uniqe_jobs_name = "B2B GERP GLOBAL" +  moment().format('YYYYMMDD');
 	let second = "0";
-	let minutes = "06";
+	let minutes = "34";
 	let hours = "17";
 	let dayofmonth = "*";
 	let month = "*";
@@ -214,10 +214,10 @@ function schedule_Request(){
 	});
 }
 
-// if(__dirname == "/home/opc/LGE/b2bgerp_global"){
-// 	console.log("reg gerp");
-// 	schedule_Request();
-// } 
+if(__dirname == "/home/opc/LGE/b2bgerp_global"){
+	console.log("reg gerp");
+	schedule_Request();
+} 
 
 if(os.type().indexOf("Windows") > -1) global.OS_TYPE = "Windows"
 else global.OS_TYPE = "Linux";
