@@ -214,10 +214,10 @@ function schedule_Request(){
 	});
 }
 
-if(__dirname == "/home/opc/LGE/b2bgerp_global"){
-	console.log("reg gerp");
-	schedule_Request();
-} 
+// if(__dirname == "/home/opc/LGE/b2bgerp_global"){
+// 	console.log("reg gerp");
+// 	schedule_Request();
+// } 
 
 if(os.type().indexOf("Windows") > -1) global.OS_TYPE = "Windows"
 else global.OS_TYPE = "Linux";
