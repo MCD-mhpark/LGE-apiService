@@ -24,17 +24,16 @@ async function get_INTEGRATION_DB_Data() {
 	console.log("queryText : " + queryText);
 	queryString['search'] = queryText;
 	queryString['depth'] = "complete";
-	queryString['count'] = 10;
+	queryString['count'] = 100;
 	queryString['page'] = 1;
 
  	await csintergration_eloqua.data.contacts.get(queryString).then((result) => {
-		console.log(result.data);
-
-		console.log("true");
+		//console.log(result.data);
+		//console.log("true");
 
 		if (result.data.total && result.data.total > 0) {
 		contacts_data = result.data;
-		console.log(contacts_data);
+		//console.log(contacts_data);
 		}
   	}).catch((err) => {
     	console.error(err.message);
@@ -476,6 +475,98 @@ function INTEGRATION_DB_ENTITY(){
   this.SALESFORCE_ID = "";              //?	 ex) 00Q0I00012QbogUAC
 }
 
+function INTEGRATION_DB_ENTITY_V2(){
+  this.INTERFACE_ID = "";                     //VARCHAR2(20)
+  this.PROSPECT_ID = 0;                       //NUMBER
+  this.FIRST_NAME = "";                       //VARCHAR2(40)
+  this.LAST_NAME = "";                        //VARCHAR2(80)
+  this.EMAIL = "";                            //VARCHAR2(240)
+  this.ACCOUNT = "";                          //VARCHAR2(770)
+  this.LAST_ACTIVITY_AT = "";                 //DATE
+  this.CAMPAIGN = "";                         //VARCHAR2(255)
+  this.NOTES = "";                            //VARCHAR2(2000)
+  this.SCORE = "";                            //NUMBER
+  this.GRADE = "";                            //VARCHAR2(10)
+  this.WEBSITE = "";                          //VARCHAR2(255)
+  this.JOB_TITLE = "";                        //VARCHAR2(128)
+  this.FUNCTION = "";                         //VARCHAR2(255)
+  this.COUNTRY = "";                          //VARCHAR2(240)
+  this.ADDRESS_ONE = "";                      //VARCHAR2(770)
+  this.ADDRESS_TWO = "";                      //VARCHAR2(255)
+  this.CITY = "";                             //VARCHAR2(120)
+  this.STATE = "";                            //VARCHAR2(240)
+  this.TERRITORY = "";                        //VARCHAR2(255)
+  this.ZIP = "";                              //VARCHAR2(60)
+  this.PHONE = "";                            //VARCHAR2(120)
+  this.FAX = "";                              //VARCHAR2(120)
+  this.SOURCE = "";                           //VARCHAR2(120)
+  this.ANNUAL_REVENUE = "";                   //VARCHAR2(18)
+  this.EMPLOYEES = "";                        //VARCHAR2(8)
+  this.INDUSTRY = "";                         //VARCHAR2(255)
+  this.DO_NOT_EMAIL = "";                     //VARCHAR2(10)
+  this.DO_NOT_CALL = "";                      //VARCHAR2(10)
+  this.YEARS_IN_BUSINESS = "";                //VARCHAR2(255)
+  this.COMMENTS = "";                         //VARCHAR2(2000)
+  this.SALUTATION = "";                       //VARCHAR2(255)
+  this.OPTED_OUT = "";                        //VARCHAR2(10)
+  this.REFERRER = "";                         //VARCHAR2(2000)
+  this.CREATED_DATE = "";                     //DATE
+  this.UPDATED_DATE = "";                     //DATE
+  this.USERS = "";                            //VARCHAR2(255)
+  this.FIRST_ASSIGNED = "";                   //DATE
+  this.CRM_CONTACT_FID = "";                  //VARCHAR2(255)
+  this.CRM_LEAD_FID = "";                     //VARCHAR2(255)
+  this.LISTS = "";                            //VARCHAR2(255)
+  this.ACCOUNT_TYPE = "";                     //VARCHAR2(255)
+  this.ATTENDANCE_RESPONSE = "";              //VARCHAR2(255)
+  this.B2BNEWSLETTER = "";                    //VARCHAR2(255)
+  this.B2BNEWSLETTER_BU = "";                 //VARCHAR2(255)
+  this.B2BNEWSLTTER_TEAM = "";                //VARCHAR2(255)
+  this.BIC_VISIT = "";                        //VARCHAR2(255)
+  this.BUDGET = "";                           //VARCHAR2(255)
+  this.BUSINESS_UNIT_1 = "";                  //VARCHAR2(255)
+  this.BUSINESS_UNIT_2 = "";                  //VARCHAR2(255)
+  this.COMPANY_TYPE = "";                     //VARCHAR2(255)
+  this.DB_ACQUISITION_DATE = "";              //VARCHAR2(255)
+  this.EMAIL_SUBSCRIPTION = "";               //VARCHAR2(255)
+  this.EMAIL_SUBSCRIPTION_DATE = "";          //VARCHAR2(255)
+  this.ES_ID_TRANSPORTATION = "";             //VARCHAR2(255)
+  this.INDUSTRIES = "";                       //VARCHAR2(255)
+  this.INQUIRY_TYPE = "";                     //VARCHAR2(255)
+  this.LANGUAGE = "";                         //VARCHAR2(255)
+  this.MESSAGE = "";                          //VARCHAR2(2000)
+  this.MOBILE = "";                           //VARCHAR2(255)
+  this.PP_MODIFY_REASON = "";                 //VARCHAR2(255)
+  this.PP_MODIFY_TYPE = "";                   //VARCHAR2(255)
+  this.PP_SUBSCRIPTION = "";                  //VARCHAR2(255)
+  this.PP_SUBSCRIPTION_DATE = "";             //VARCHAR2(255)
+  this.PRODUCT_SOLUTION = "";                 //VARCHAR2(300)
+  this.PRODUCTS = "";                         //VARCHAR2(255)
+  this.PROSPECT_SOURCE = "";                  //VARCHAR2(255)
+  this.REGION = "";                           //VARCHAR2(255)
+  this.SALESPERSON_EMAIL = "";                //VARCHAR2(255)
+  this.SALESPERSON_NAME = "";                 //VARCHAR2(255)
+  this.STORYSET_DOWNLOAD = "";                //VARCHAR2(255)
+  this.STORYSET_EDUCATION = "";               //VARCHAR2(255)
+  this.STORYSET_FEEDBACK_EXPERIENCE = "";     //VARCHAR2(2000)
+  this.STORYSET_FEEDBACK_SUGGESTION = "";     //VARCHAR2(2000)
+  this.SUBSCRIPTION = "";                     //VARCHAR2(255)
+  this.SUBSIDIARY = "";                       //VARCHAR2(255)
+  this.TIMELINE = "";                         //VARCHAR2(255)
+  this.UK_AS_TSHIRTS_SIZE = "";               //VARCHAR2(255)
+  this.HQ_B2BMKT_SCORING_CATEGORY = "";       //VARCHAR2(300)
+  this.APPLIED_FLAG = "";                     //VARCHAR2(10)
+  this.APPLIED_DATE = "";                     //DATE
+  this.TRANSFER_FLAG = "";                    //VARCHAR2(10)
+  this.TRANSFERRED_DATE = "";                 //DATE
+  this.BACK_TRANSFER_FLAG = "";               //VARCHAR2(10)
+  this.BACK_TRANSFERRED_DATE = "";            //DATE
+  this.SALESFORCE_ID = "";                    //VARCHAR2(18)
+  this.B2B_INT_ACCOUNT_CODE = "";             //VARCHAR2(255)
+  this.B2B_CONTACT_PERSON_CODE = "";          //VARCHAR2(255)
+  this.APPLIED_MSG = "";                      //VARCHAR2(2000)
+}
+
 var seq_cnt = 0;
 //Eloqua Data B2B GERP Global Mapping 데이터 생성
 function Convert_INTEGRATION_DB_DATA(contacts_data, business_department) {
@@ -609,46 +700,37 @@ router.get('/', async function (req, res, next) {
 		json : true
     };
 
-
-    fs.writeFile(__dirname + "/request_cs_integration.txt", JSON.stringify(request_data), 'utf8', function(error){ 
-		if(error) {
-			console.log(err);
-		}else{
-			console.log('request write end') ;
-		}
-		
-	});
+    fs.writeFile(__dirname + "/request_cs_integration.txt", JSON.stringify(request_data), 'utf8', function (error) {
+      if (error) {
+        console.log(err);
+      } else {
+        console.log('request write end');
+      }
+    });
 
     var result = await request(options, async function (error, response, body) {
 
-		// console.log(11);
-		// console.log(response);
-		if(error){
-			console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
-			console.log(error);
-		} 
-		if (!error && response.statusCode == 200) {
-			result = body;
-			// console.log(11);
-			console.log(body);
-			
-			
+      // console.log(11);
+      // console.log(response);
+      if (error) {
+        console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
+        console.log(error);
+      }
+      if (!error && response.statusCode == 200) {
+        result = body;
+        // console.log(11);
+        console.log(body);
 
-			res.json(body);
+        res.json(body);
 
-			fs.writeFile(__dirname + "/reponse_cs_integration.txt", JSON.stringify(body), 'utf8', function(error){ 
-				if(error) {
-					console.log(err);
-				}else{
-					console.log('response write end') ;
-				}
-				
-			});
-		
-			// console.log(response);
-			// BANT 업데이트는 운영에서만 필요함
-			//setBant_Update(contact_list); 
-		}
+        fs.writeFile(__dirname + "/reponse_cs_integration.txt", JSON.stringify(body), 'utf8', function (error) {
+          if (error) {
+            console.log(err);
+          } else {
+            console.log('response write end');
+          }
+        });
+      }
     });
 
   }
@@ -678,6 +760,146 @@ router.post('/req_data_yn', function (req, res, next) {
   console.log("call req_data_yn");
 
   console.log(req.body);
+});
+
+
+
+//Eloqua Data B2B GERP Global Mapping 데이터 생성
+function CONVERT_INTEGRATION_DB_DATA(contacts_data) {
+  var result_data = [];
+
+  for (var i = 0; i < contacts_data.elements.length; i++) {
+    try {
+      var result_item = new INTEGRATION_DB_ENTITY_V2();
+      var item = contacts_data.elements[i];
+      var FieldValues_data = contacts_data.elements[i].fieldValues;
+
+      result_item.INTERFACE_ID = moment().format('YYYYMMDD') + lpad(seq_cnt, 6, "0");
+      seq_cnt = seq_cnt + 1;
+
+      result_item.PROSPECT_ID = GetDataValue(item.id);        //apc14000350967, ilc14000349979 ( Eloqua Contact ID )
+      result_item.FIRST_NAME = GetDataValue(item.firstName);  //firstName 이름
+      result_item.LAST_NAME = GetDataValue(item.lastName);    //lastName 성
+      result_item.EMAIL = GetDataValue(item.emailAddress);    //emailAddress 이메일
+      result_item.ACCOUNT = GetDataValue(item.accountName);   //accountName 회사명
+      result_item.LAST_ACTIVITY_AT = "";                      //Date			( date type )  ( 참여 활동 날짜 Eloqua 확인 ) 
+      result_item.CAMPAIGN = "";                              //result_item.ATTRIBUTE_15 = GetCustomFiledValue(FieldValues_data, 100203); //Marketing Eventdf //100203	Marketing Event
+      result_item.NOTES = "";                                 //필드확인필요 ( ex ) therma V, accustorahe )
+      result_item.SCORE = "";                                 //100250	Source //숫자 MAT SCORE 계산 로직 (MAT 로직)
+      result_item.GRADE = "";                                 //필드확인필요 A+, F, C+, C, C-, B- (MAT확인) 
+      result_item.WEBSITE = GetCustomFiledValue(FieldValues_data, 100252);    //100252	Website 웹사이트
+      result_item.JOB_TITLE = GetCustomFiledValue(FieldValues_data, 100292);  //100292	Job Title
+      result_item.FUNCTION = "";
+      result_item.COUNTRY = GetDataValue(item.country);         //country
+      result_item.ADDRESS_ONE = GetDataValue(item.address1);    //address1
+      result_item.ADDRESS_TWO = GetDataValue(item.address2);    //address2
+      result_item.CITY = GetDataValue(item.city);               //city
+      result_item.STATE = GetDataValue(item.province);          //GetCustomFiledValue(FieldValues_data, 100307); //100307 State(Pardot) // 100010	State or Province api name : province
+      result_item.TERRITORY = "";                               //GetCustomFiledValue(FieldValues_data, 100187);  //100187 territory
+      result_item.ZIP = GetDataValue(item.postalCode);          //postalCode
+      result_item.PHONE = GetDataValue(item.mobilePhone);       //mobilePhone
+      result_item.FAX = GetDataValue(item.fax);                 //fax
+      result_item.SOURCE = "";                                  //GetCustomFiledValue(FieldValues_data, 100250);  //플랫폼 AND 액티비티 인지 확인필요  // 100250	Source
+      result_item.ANNUAL_REVENUE = "";                          //GetCustomFiledValue(FieldValues_data, 100047);  //100047	Annual Revenue
+      result_item.EMPLOYEES = "";                               //GetCustomFiledValue(FieldValues_data, 100184);   //100184	Employees
+      result_item.INDUSTRY = "";                                //GetCustomFiledValue(FieldValues_data, 100046);    //100046	Industry         
+      result_item.DO_NOT_EMAIL = "";
+      result_item.DO_NOT_CALL = "";
+      result_item.YEARS_IN_BUSINESS ="";                        //GetCustomFiledValue(FieldValues_data, 100253);          //100253	Years In Business
+      result_item.COMMENTS = "";                                //매핑정보 존재 여부 확인필요
+      result_item.SALUTATION = "";                              //GetCustomFiledValue(FieldValues_data, 100017);                 //100017	Salutation
+      result_item.OPTED_OUT = "";                               //GetCustomFiledValue(FieldValues_data, 100246);       //100246	Opted Out       
+      result_item.REFERRER = "";                                //매핑정보 존재 여부 확인필요 유입경로 URL ( Eloqua Referrer ) 
+      result_item.CREATED_DATE = utils.timeConverter("GET_DATE", item.createdAt); //고객정보 생성일자 ( Contacts 생성일자 )
+      result_item.UPDATED_DATE = utils.timeConverter("GET_DATE", item.updatedAt); //고객정보 수정일자 ( Contacts 수정일자 )
+
+      result_item.APPLIED_FLAG = "";               //x 큐리온 적용 여부
+      result_item.APPLIED_DATE = "";               //x 큐리온
+
+      result_item.TRANSFER_FLAG = "N";             //Default N
+      result_item.TRANSFERRED_DATE = moment().format('YYYY/MM/DD HH:mm:ss');    //어떤 날짜 정보인지 확인 필요
+
+      result_item.BACK_TRANSFER_FLAG = "";         //Null
+      result_item.BACK_TRANSFERRED_DATE = "";		   //Null
+      result_item.SALESFORCE_ID = "";              //?	 ex) 00Q0I00012QbogUAC
+
+      result_data.push(result_item);
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
+  return result_data;
+}
+
+//2021-04-13 조회 테스트
+router.get('/test', async function(req,res,next)
+{
+  var contacts_data = await get_INTEGRATION_DB_Data();
+
+  if( contacts_data != null )
+  {
+    //Eloqua Contacts 조회
+    var request_data = CONVERT_INTEGRATION_DB_DATA(contacts_data);
+    //res.json(request_data);
+
+    /*======================================================================================================== */
+    var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/customer/api2api/eloqua/eloquaPardot.lge";
+
+    var headers = {
+      'Content-Type': "application/json",
+      'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
+    }
+        
+    options = {
+		url : send_url,
+		method: "POST",
+		headers:headers,
+		//body : { ContentList: request_data } ,
+		body : { elements : request_data } ,
+		json : true
+    };
+
+    fs.writeFile(__dirname + "/request_cs_integration.txt", JSON.stringify(request_data), 'utf8', function (error) {
+      if (error) {
+        console.log(err);
+      } else {
+        console.log('request write end');
+      }
+    });
+
+    var result = await request(options, async function (error, response, body) {
+
+      // console.log(11);
+      // console.log(response);
+      if (error) {
+        console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
+        console.log(error);
+      }
+      if (!error && response.statusCode == 200) {
+        result = body;
+        // console.log(11);
+        console.log(body);
+
+        res.json(body);
+
+        fs.writeFile(__dirname + "/reponse_cs_integration.txt", JSON.stringify(body), 'utf8', function (error) {
+          if (error) {
+            console.log(err);
+          } else {
+            console.log('response write end');
+          }
+        });
+      }
+    });
+
+    /*======================================================================================================== */
+  }
+  else
+  {
+    res.json(false);
+  }
 });
 
 module.exports = router;
