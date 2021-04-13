@@ -1079,7 +1079,7 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 
 
 
-			let notBant_emailType_List = ["@lge.com" , "@goldenplanet.co.kr" , "@test.com" , "@cnspartner.com", "@intellicode.co.kr" , "@hsad.co.kr" , "@test.co.kr", "@test.test"];
+			let notBant_emailType_List = ["@lg.com", "@lge.com" , "@goldenplanet.co.kr" , "@test.com" , "@cnspartner.com", "@intellicode.co.kr" , "@hsad.co.kr" , "@test.co.kr", "@test.test"];
 			// let notBant_emailType_List = ["@goldenplanet.co.kr"];
 			let notBant_email_list  = notBant_emailType_List.filter(function (sentence) { 
 				return result_item.ATTRIBUTE_4.indexOf( sentence ) > -1 ? result_item.ATTRIBUTE_4 : null ; });
