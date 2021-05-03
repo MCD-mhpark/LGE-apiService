@@ -1030,7 +1030,7 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 			address += GetDataValue(contacts_data.elements[i].address1);
 			if(address != "") address += " " + GetDataValue(contacts_data.elements[i].address2);
 			if(address != "") address += " " + GetDataValue(contacts_data.elements[i].address3);
-			address += "/" + GetDataValue(contacts_data.elements[i].country);	//주소정보 Address1 + Address2 + Address3 // Inquiry To Buy 주소 입력 없음
+			address += "/" + GetDataValue(contacts_data.elements[i].city) + "/"  + GetDataValue(contacts_data.elements[i].country);	//주소정보 Address1 + Address2 + Address3 // Inquiry To Buy 주소 입력 없음
 
 
 

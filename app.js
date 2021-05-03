@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var methodOverride = require('method-override');
 var EloquaApi = require('./public/modules/eloqua-sdk');
+var moment = require('moment');
 require('console-stamp')(console, {
     formatter: function() {
         return moment().tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss');
@@ -12,7 +13,7 @@ require('console-stamp')(console, {
 });
 var os = require('os');
 
-var moment = require('moment');
+
 
 const schedule = require('node-schedule-tz');
 // var engine = require('ejs-locals');

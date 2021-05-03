@@ -359,8 +359,7 @@ function CONVERT_IAM_USER_RESPONSIBILITY_DATA(_eloqua_items) {
                 data.SYSTEM_CODE = "ELOQUA";                                                 // 고정값 "ELOQUA"
                 data.USER_CODE = GetDataValue(item.federationId);                            // 사번 
 
-                // data.USER_AFFILIATE_CODE = GetRullExtraction(security_data.name);            // 룰정보
-                data.USER_AFFILIATE_CODE = GetRullExtraction(security_data.name).substring(0,4);            // 룰정보
+                data.USER_AFFILIATE_CODE = GetRullExtraction(security_data.name).substring(0,4);            // 롤정보
 
                 data.USER_CORPORATION_CODE = GetCorporationExtraction(security_data.name);   // 법인정보
                 data.RESPONSIBILITY_CODE = security_data.id;                                 // Eloqua Security ID

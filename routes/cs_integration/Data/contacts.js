@@ -16,29 +16,87 @@ async function get_INTEGRATION_DB_Data() {
 	//start_date ? yesterday_Object.start = start_date : null;
 	//end_date ? yesterday_Object.end = end_date : null;
 
-  	yesterday_Object.start = "2021-03-05";
+  	// yesterday_Object.start = "2021-03-05";
 
 	//var yesterday_Object = utils.today_getDateTime();
-	var queryText = "C_DateModified>" + "'" + yesterday_Object.start + " 10:00:00'" + "C_DateModified<" + "'" + yesterday_Object.end + " 11:00:59'";
+	// var queryText = "C_DateModified>" + "'" + yesterday_Object.start + " 10:00:00'" + "C_DateModified<" + "'" + yesterday_Object.end + " 11:00:59'";
 	//yesterday_getUnixTime
-	console.log("queryText : " + queryText);
-	queryString['search'] = queryText;
+	// console.log("queryText : " + queryText);
+	// queryString['search'] = queryText;
+	let next = true;
+	let page_index = 1;
+	var total_data = [] ; 
 	queryString['depth'] = "complete";
-	queryString['count'] = 100;
-	queryString['page'] = 1;
+	queryString['pageSize'] = 100;
+	queryString['page'] = page_index;
 
- 	await csintergration_eloqua.data.contacts.get(queryString).then((result) => {
+	await csintergration_eloqua.data.contacts.get(queryString).then((result) => {
 		//console.log(result.data);
 		//console.log("true");
 
 		if (result.data.total && result.data.total > 0) {
-		contacts_data = result.data;
-		//console.log(contacts_data);
+			contacts_data = result.data;
+			total_data.push(result.data);
+			//console.log(contacts_data);
+			req_res_logs("testdata_" + page_index , contacts_data);
+			page_index++;
 		}
-  	}).catch((err) => {
-    	console.error(err.message);
-    	return null;
+	}).catch((err) => {
+		console.error(err.message);
+		next = false;
 	});
+
+
+	return contacts_data;
+}
+
+async function get_INTEGRATION_DB_ALL_Data() {
+  
+	var contacts_data;
+	var queryString = {}
+  
+  	var yesterday_Object = utils.yesterday_getDateTime();
+	//start_date ? yesterday_Object.start = start_date : null;
+	//end_date ? yesterday_Object.end = end_date : null;
+
+  	// yesterday_Object.start = "2021-03-05";
+
+	//var yesterday_Object = utils.today_getDateTime();
+	// var queryText = "C_DateModified>" + "'" + yesterday_Object.start + " 10:00:00'" + "C_DateModified<" + "'" + yesterday_Object.end + " 11:00:59'";
+	//yesterday_getUnixTime
+	// console.log("queryText : " + queryText);
+	// queryString['search'] = queryText;
+	let next = true;
+	let page_index = 1;
+	var total_data = [] ; 
+ 	while(next){
+		queryString['depth'] = "complete";
+		queryString['page'] = page_index;
+
+		await csintergration_eloqua.data.contacts.get(queryString).then((result) => {
+			//console.log(result.data);
+			//console.log("true");
+
+			if (result.data.elements && result.data.elements.length > 0) {
+				contacts_data = result.data;
+				total_data.push(result.data);
+				//console.log(contacts_data);
+				req_res_logs("testdata_" + page_index , contacts_data);
+				page_index++;
+			}else{
+				next = false;
+			}
+		}).catch((err) => {
+			console.error(err.message);
+			next = false;
+		});
+		console.log("page_index : " + page_index + "  page_index % 5 : " + page_index % 5 );
+		if(page_index % 5 == 0){
+			req_res_logs("totaldata_" + page_index , total_data);
+			total_data.length = 0;
+		}
+
+	}
 	return contacts_data;
 }
 
@@ -569,7 +627,7 @@ function INTEGRATION_DB_ENTITY_V2(){
 
 var seq_cnt = 0;
 //Eloqua Data B2B GERP Global Mapping 데이터 생성
-function Convert_INTEGRATION_DB_DATA(contacts_data, business_department) {
+function CONVERT_INTEGRATION_DB_DATA_V1(contacts_data, business_department) {
   var result_data = [];
 
   for (var i = 0; i < contacts_data.elements.length; i++) {
@@ -582,7 +640,7 @@ function Convert_INTEGRATION_DB_DATA(contacts_data, business_department) {
       result_item.INTERFACE_ID = moment().format('YYYYMMDD') + lpad(seq_cnt, 6, "6");
       seq_cnt = seq_cnt + 1;
 
-      this.PROSPECT_ID = GetDataValue(item.id);               //apc14000350967, ilc14000349979 ( Eloqua Contact ID )
+      result_item.PROSPECT_ID = GetCustomFiledValue(FieldValues_data, 100032);          //apc14000350967, ilc14000349979 ( Eloqua Contact ID )
       result_item.FIRST_NAME = GetDataValue(item.firstName);  //firstName 이름
       result_item.LAST_NAME = GetDataValue(item.lastName);    //lastName 성
       result_item.EMAIL = GetDataValue(item.emailAddress);    //emailAddress 이메일
@@ -680,7 +738,7 @@ router.get('/', async function (req, res, next) {
   if( contacts_data != null )
   {
     //Eloqua Contacts 조회
-    var request_data = Convert_INTEGRATION_DB_DATA(contacts_data, "AS");
+    var request_data = CONVERT_INTEGRATION_DB_DATA_V2(contacts_data);
     
     //res.json({ContentList:request_data});;
 
@@ -765,7 +823,7 @@ router.post('/req_data_yn', function (req, res, next) {
 
 
 //Eloqua Data B2B GERP Global Mapping 데이터 생성
-function CONVERT_INTEGRATION_DB_DATA(contacts_data) {
+function CONVERT_INTEGRATION_DB_DATA_V2(contacts_data) {
   var result_data = [];
 
   for (var i = 0; i < contacts_data.elements.length; i++) {
@@ -777,7 +835,7 @@ function CONVERT_INTEGRATION_DB_DATA(contacts_data) {
       result_item.INTERFACE_ID = moment().format('YYYYMMDD') + lpad(seq_cnt, 6, "0");
       seq_cnt = seq_cnt + 1;
 
-      result_item.PROSPECT_ID = GetDataValue(item.id);        //apc14000350967, ilc14000349979 ( Eloqua Contact ID )
+      result_item.PROSPECT_ID = GetCustomFiledValue(FieldValues_data, 100032);       //apc14000350967, ilc14000349979 ( Eloqua Contact ID )
       result_item.FIRST_NAME = GetDataValue(item.firstName);  //firstName 이름
       result_item.LAST_NAME = GetDataValue(item.lastName);    //lastName 성
       result_item.EMAIL = GetDataValue(item.emailAddress);    //emailAddress 이메일
@@ -834,72 +892,90 @@ function CONVERT_INTEGRATION_DB_DATA(contacts_data) {
 }
 
 //2021-04-13 조회 테스트
-router.get('/test', async function(req,res,next)
-{
-  var contacts_data = await get_INTEGRATION_DB_Data();
+router.get('/test', async function(req,res,next){
+	var contacts_data = await get_INTEGRATION_DB_Data();
 
-  if( contacts_data != null )
-  {
-    //Eloqua Contacts 조회
-    var request_data = CONVERT_INTEGRATION_DB_DATA(contacts_data);
-    //res.json(request_data);
+	
+	if( contacts_data != null ){
+		//Eloqua Contacts 조회
+		var request_data = CONVERT_INTEGRATION_DB_DATA_V1(contacts_data);
+		res.json(request_data);
 
-    /*======================================================================================================== */
-    var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/customer/api2api/eloqua/eloquaPardot.lge";
+		return;
+		
+		/*======================================================================================================== */
+		var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/customer/api2api/eloqua/eloquaPardot.lge";
 
-    var headers = {
-      'Content-Type': "application/json",
-      'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
-    }
-        
-    options = {
-		url : send_url,
-		method: "POST",
-		headers:headers,
-		//body : { ContentList: request_data } ,
-		body : { elements : request_data } ,
-		json : true
-    };
+		var headers = {
+			'Content-Type': "application/json",
+			'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
+		}
+			
+		options = {
+			url : send_url,
+			method: "POST",
+			headers:headers,
+			//body : { ContentList: request_data } ,
+			body : { elements : request_data } ,
+			json : true
+		};
 
-    fs.writeFile(__dirname + "/request_cs_integration.txt", JSON.stringify(request_data), 'utf8', function (error) {
-      if (error) {
-        console.log(err);
-      } else {
-        console.log('request write end');
-      }
-    });
+		fs.writeFile(__dirname + "/request_cs_integration.txt", JSON.stringify(request_data), 'utf8', function (error) {
+			if (error) {
+				console.log(err);
+			} else {
+				console.log('request write end');
+			}
+		});
 
-    var result = await request(options, async function (error, response, body) {
+		var result = await request(options, async function (error, response, body) {
 
-      // console.log(11);
-      // console.log(response);
-      if (error) {
-        console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
-        console.log(error);
-      }
-      if (!error && response.statusCode == 200) {
-        result = body;
-        // console.log(11);
-        console.log(body);
+			// console.log(11);
+			console.log(response.statusCode);
+			if (error) {
+				console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
+				console.log(error);
+			}
+			if (!error && response.statusCode == 200) {
+				result = body;
+				// console.log(11);
+				console.log(body);
 
-        res.json(body);
+				res.json(body);
 
-        fs.writeFile(__dirname + "/reponse_cs_integration.txt", JSON.stringify(body), 'utf8', function (error) {
-          if (error) {
-            console.log(err);
-          } else {
-            console.log('response write end');
-          }
-        });
-      }
-    });
-
-    /*======================================================================================================== */
-  }
-  else
-  {
-    res.json(false);
-  }
+				fs.writeFile(__dirname + "/reponse_cs_integration.txt", JSON.stringify(body), 'utf8', function (error) {
+					if (error) {
+						console.log(err);
+					} else {
+						console.log('response write end');
+					}
+				});
+			}
+		});
+		/*======================================================================================================== */
+	}
+	else
+	{
+		res.json(false);
+	}
 });
+
+function req_res_logs(filename , data){
+	// filename : request , response 
+	// business_name : 사업부별 name
+	// data : log 저장할 데이터
+
+	var today = moment().format("YYYY-MM-DD"); 
+	var dirPath = utils.logs_makeDirectory(today +"_" + "cs_integration" );
+	console.log("fileWrite Path : " + dirPath);
+
+	fs.writeFile(dirPath + filename + ".txt", JSON.stringify(data), 'utf8', function(error){ 
+		if(error) {
+			console.log(err);
+		}else{
+			console.log('write end') ;
+		}
+	});
+}
 
 module.exports = router;
