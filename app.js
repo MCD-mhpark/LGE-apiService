@@ -72,7 +72,7 @@ var bscard_eloqua_config = {
 var b2bgerp_eloqua_config = {
 	sitename: 'LGElectronics',
 	username: 'Lg_api.B2b_global',
-	password: 'QWer1234!@'
+	password: 'QWert1234!@'
 };
 var b2bkr_eloqua_config = {
 	sitename: 'LGElectronics',
