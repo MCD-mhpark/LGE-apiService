@@ -209,7 +209,7 @@ function schedule_Request(){
 		// let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
 		let bant_list = ["AS" , "CM" , "ID" , "IT" , "Solution"];
 		bant_list.forEach( async BusinessName =>{
-			await b2bgerp_global_data_contacts.bant_send(BusinessName);
+			await b2bgerp_global_data_contacts.bant_send(BusinessName , "2021-05-05" , "2021-05-06");
 		})
 			
 	});

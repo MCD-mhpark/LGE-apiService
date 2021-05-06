@@ -1079,7 +1079,7 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 
 
 
-			let notBant_emailType_List = ["@lg.com", "@lge.com" , "@goldenplanet.co.kr" , "@test.com" , "@cnspartner.com", "@intellicode.co.kr" , "@hsad.co.kr" , "@test.co.kr", "@test.test"];
+			let notBant_emailType_List = ["@lg.com", "@lge.com" , "@goldenplanet.co.kr" , "@test.com" , "@cnspartner.com", "@intellicode.co.kr" , "@hsad.co.kr" , "@test.co.kr", "@test.test", "@testtest.com"];
 			// let notBant_emailType_List = ["@goldenplanet.co.kr"];
 			let notBant_email_list  = notBant_emailType_List.filter(function (sentence) { 
 				return result_item.ATTRIBUTE_4.indexOf( sentence ) > -1 ? result_item.ATTRIBUTE_4 : null ; });
@@ -1154,11 +1154,13 @@ router.get('/bant_test/', async function (req, res, next) {
 
 // 스케줄러로 BANT DATA 전송을 전체를 하는게 아닌 특정 사업부만 하기위해서 만듬
 router.get('/sender', async function (req, res, next) {
-  	bant_send(req.query.bsname , res);
+	let start_date = req.query.state_date;
+	let end_date = req.query.end_date;
+  	bant_send(req.query.bsname , start_date , end_date);
 });
 
 //# region Bant 조건 사업부별 contact 데이터 전송을 하는 함수
-bant_send = async function(business_name , res){
+bant_send = async function(business_name , state_date , end_date ){
 	console.log("bant send function BS NAME : " + business_name);
   	//LG전자 개발 URL
 	// var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
@@ -1166,7 +1168,7 @@ bant_send = async function(business_name , res){
 	//LG전자 운영 URL
 	var send_url = "https://apigw-ext.lge.com:7211/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
 
-    let contact_list = await get_b2bgerp_global_bant_data( business_name );
+    let contact_list = await get_b2bgerp_global_bant_data( business_name , state_date , end_date);
 
 	// console.log(contacts_data);
 
@@ -1231,13 +1233,15 @@ router.get('/search_gerp_data', async function (req, res, next) {
 	let Business_Unit_List = [];
 	let bsname = req.query.bsname;
 	let getStatus = req.query.status;
+	let start_date = req.query.state_date;
+	let end_date = req.query.end_date;
 	console.log("search_gerp_data");
 
 	
 	console.log(bsname);
 	console.log(getStatus);
 	
-	let bant_data = await get_b2bgerp_global_bant_data(bsname );
+	let bant_data = await get_b2bgerp_global_bant_data(bsname , start_date , end_date);
 	let convert_data = await Convert_B2BGERP_GLOBAL_DATA( bant_data, bsname)
 
 
