@@ -197,8 +197,8 @@ app.use(function(err, req, res, next) {
 function schedule_Request(){
 	let uniqe_jobs_name = "B2B GERP GLOBAL" +  moment().format('YYYYMMDD');
 	let second = "0";
-	let minutes = "5";
-	let hours = "12";
+	let minutes = "15";
+	let hours = "16";
 	let dayofmonth = "*";
 	let month = "*";
 	let weekindex = "*";
