@@ -197,8 +197,8 @@ app.use(function(err, req, res, next) {
 function schedule_Request(){
 	let uniqe_jobs_name = "B2B GERP GLOBAL" +  moment().format('YYYYMMDD');
 	let second = "0";
-	let minutes = "15";
-	let hours = "16";
+	let minutes = "05";
+	let hours = "12";
 	let dayofmonth = "*";
 	let month = "*";
 	let weekindex = "*";
@@ -209,14 +209,14 @@ function schedule_Request(){
 		// let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
 		let bant_list = ["AS" , "CM" , "ID" , "IT" , "Solution"];
 		bant_list.forEach( async BusinessName =>{
-			await b2bgerp_global_data_contacts.bant_send(BusinessName , "2021-05-05" , "2021-05-06");
+			await b2bgerp_global_data_contacts.bant_send(BusinessName);
 		})
 			
 	});
 }
 
 if(__dirname == "/home/opc/LGE/b2bgerp_global"){
-	console.log("reg gerp");
+	console.log("B2B GERP GLOBAL SCHEDULER REG");
 	schedule_Request();
 } 
 
