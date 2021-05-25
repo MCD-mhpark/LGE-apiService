@@ -792,14 +792,14 @@ router.post('/user/securityGroup', async function (req, res, next) {
         var result_list = await securityGroup_Process(user_id, remove_sc_list, add_sc_list);
         console.log(result_list);
         res.json(result_list);
-        return;
-        iam_eloqua.system.users.security_groups_add_remove(body_id, body_user_data).then((result) => {
-            console.log(result.data);
-            res.json(result.data);
-        }).catch((err) => {
-            console.error(err);
-            res.json(err);
-        });
+        // return;
+        // iam_eloqua.system.users.security_groups_add_remove(body_id, body_user_data).then((result) => {
+        //     console.log(result.data);
+        //     res.json(result.data);
+        // }).catch((err) => {
+        //     console.error(err);
+        //     res.json(err);
+        // });
     };
 
 async function get_user_securityGroup(user_id, res) {
