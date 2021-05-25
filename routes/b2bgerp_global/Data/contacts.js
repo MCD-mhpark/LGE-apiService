@@ -948,7 +948,7 @@ async function get_b2bgerp_global_bant_data(_business_name, start_date, end_date
 	//var yesterday_Object = utils.today_getDateTime();
 
 	var queryText = "C_DateModified>" + "'" + yesterday_Object.start + " 10:00:00'" + "C_DateModified<" + "'" + yesterday_Object.end + " 11:00:59'" + status_bant + "='MQL'";
-	
+
 	if(business_name == 'TEST' ) queryText += "emailAddress='jtlim@goldenplanet.co.kr'";
 	// "emailAddress='jtlim@lge.com'emailAddress='jtlim@goldenplanet.co.kr'emailAddress='jtlim@test.com'emailAddress='jtlim@cnspartner.com'emailAddress='jtlim@intellicode.co.kr'emailAddress='jtlim@hsad.co.kr'emailAddress='jtlim@test.co.kr'emailAddress='jtlim@naver.com'emailAddress='jtlim@gmail.com'"
     console.log("queryText : " + queryText);
@@ -1154,7 +1154,7 @@ router.get('/bant_test/', async function (req, res, next) {
 
 // 스케줄러로 BANT DATA 전송을 전체를 하는게 아닌 특정 사업부만 하기위해서 만듬
 router.get('/sender', async function (req, res, next) {
-	let start_date = req.query.state_date;
+	let start_date = req.query.start_date;
 	let end_date = req.query.end_date;
   	bant_send(req.query.bsname , start_date , end_date);
 });
@@ -1211,7 +1211,7 @@ bant_send = async function(business_name , state_date , end_date ){
             if(error){
                 console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
                 console.log(error);
-				req_res_logs("bantsend_error" , business_name , bant_result_list );
+				req_res_logs("bantsend_error" , business_name , [] );
             } 
             if (!error && response.statusCode == 200) {
              
@@ -1233,7 +1233,7 @@ router.get('/search_gerp_data', async function (req, res, next) {
 	let Business_Unit_List = [];
 	let bsname = req.query.bsname;
 	let getStatus = req.query.status;
-	let start_date = req.query.state_date;
+	let start_date = req.query.start_date;
 	let end_date = req.query.end_date;
 	console.log("search_gerp_data");
 

@@ -704,7 +704,58 @@ router.post('/user/create', function (req, res, next) {
 
     console.log(body_data);
 
-    iam_eloqua.system.users.create(body_data).then((result) => {
+    iam_eloqua.system.users.create(body_data).then(async (result) => {
+        console.log(result.data);
+        let result_list = await securityGroup_Modify(result.data.id , req.body.add_sc_list , res);
+        res.json(result_list);
+    }).catch((err) => {
+        console.error(err);
+        res.json(err);
+    });
+});
+
+router.post('/user/test_create', async function (req, res, next) {
+    console.log("user/test_create")
+    //예시 Request body 참고 URL : https://docs.oracle.com/en/cloud/saas/marketing/eloqua-rest-api/op-api-rest-2.0-system-user-post.html
+    // {
+    //   "name": "API User",
+    //   "emailAddress": "api.user@oracle.com", 
+    //   "loginName": "api.user",
+    //   "firstName": "API",
+    //   "lastName": "User"
+    // }
+
+    // var body_data = Convert_IAM_TO_ELOQUA_DATA(req.body);
+
+    // console.log(body_data);
+    let add_sc_list = req.body.securityGroups;
+    delete req.body.securityGroups;
+    await iam_eloqua.system.users.create(req.body).then(async (result) => {
+        console.log(result.data.id);
+        if(result.data.id) await securityGroup_Modify(result.data.id , add_sc_list , res);
+    }).catch((err) => {
+        console.error(err);
+        res.json(err);
+    });
+});
+
+
+router.get('/user/test_getOne/:id', function (req, res, next) {
+
+    //예시 Request body 참고 URL : https://docs.oracle.com/en/cloud/saas/marketing/eloqua-rest-api/op-api-rest-2.0-system-user-post.html
+    // {
+    //   "name": "API User",
+    //   "emailAddress": "api.user@oracle.com", 
+    //   "loginName": "api.user",
+    //   "firstName": "API",
+    //   "lastName": "User"
+    // }
+
+    // var body_data = Convert_IAM_TO_ELOQUA_DATA(req.body);
+
+    // console.log(body_data);
+
+    iam_eloqua.system.users.getOne(req.params.id).then((result) => {
         console.log(result.data);
         res.json(result.data);
     }).catch((err) => {
@@ -713,7 +764,10 @@ router.post('/user/create', function (req, res, next) {
     });
 });
 
+
 router.post('/user/securityGroup', async function (req, res, next) {
+    await securityGroup_Modify(req.body.id , req.body.add_sg_list , res);
+});
 
     //예시 Request body 참고 URL : https://docs.oracle.com/en/cloud/saas/marketing/eloqua-rest-api/op-api-rest-2.0-system-security-group-id-users-patch.html
     // {
@@ -730,38 +784,47 @@ router.post('/user/securityGroup', async function (req, res, next) {
     // 	  "user_id" : 248 ,
     // 	  "security_groupID" : 67 
     //   }
-    console.log(req.body);
-
-    var user_id = req.body.user_id;
-    var add_sc_list = req.body.security_groupID;
-
-    var remove_sc_list = [];
-    remove_sc_list = await get_user_securityGroup(user_id, res);
-    console.log(remove_sc_list);
-    var result_list = await securityGroup_Process(user_id, remove_sc_list, add_sc_list);
-    console.log(result_list);
-    // res.json(result_list);
-    return;
-    iam_eloqua.system.users.security_groups_add_remove(body_id, body_user_data).then((result) => {
-        console.log(result.data);
-        res.json(result.data);
-    }).catch((err) => {
-        console.error(err);
-        res.json(err);
-    });
-});
+    async function securityGroup_Modify(user_id , add_sc_list , res ){
+      
+        var remove_sc_list = [];
+        remove_sc_list = await get_user_securityGroup(user_id, res);
+        console.log(remove_sc_list);
+        var result_list = await securityGroup_Process(user_id, remove_sc_list, add_sc_list);
+        console.log(result_list);
+        res.json(result_list);
+        return;
+        iam_eloqua.system.users.security_groups_add_remove(body_id, body_user_data).then((result) => {
+            console.log(result.data);
+            res.json(result.data);
+        }).catch((err) => {
+            console.error(err);
+            res.json(err);
+        });
+    };
 
 async function get_user_securityGroup(user_id, res) {
 
     var queryString = {};
     queryString['depth'] = "complete";
     var return_list = [];
-    await iam_eloqua.system.users.getOne(user_id, queryString).then(async (result) => {
-        if (!result.data.securityGroups) console.log(process, " not data list");
-        if (result.data.securityGroups) {
+    console.log("get_user_securityGroup user_id : " + user_id);
 
-            return_list = result.data.securityGroups.map(row => { return row.id; });
-            // console.log(user_securityGroups);
+    // iam_eloqua.system.users.getOne(req.params.id).then((result) => {
+    //     console.log(result.data);
+    //     res.json(result.data);
+    // }).catch((err) => {
+    //     console.error(err);
+    //     res.json(err);
+    // });
+
+    await iam_eloqua.system.users.getOne(user_id, queryString).then( async (result) => {
+        if (!result.data.securityGroups){
+            return_list = [];
+            console.log(" not data list");
+        }
+        
+        if (result.data.securityGroups) {
+            return_list = await result.data.securityGroups.filter(row => { if( row.id && row.id !== '1' )   return row.id } );
         }
     }).catch((err) => {
         console.log(err);
@@ -781,6 +844,9 @@ async function securityGroup_Process(user_id, remove_sc_group, add_sc_group) {
     // process : add 와 remove 만 가능
     // data : Eloqua 사용자 정보 조회 return 값
 
+    // console.log(user_id);
+    // console.log(remove_sc_group);
+    // console.log(add_sc_group);
 
     let result_list = [];
 
@@ -793,8 +859,8 @@ async function securityGroup_Process(user_id, remove_sc_group, add_sc_group) {
 
 
     let all_list = remove_sc_group.concat(add_sc_group);
+    console.log(1234)
     console.log(all_list);
-    console.log(all_list.length);
     for (var i = 0; all_list.length > i; i++) {
 
         let id = all_list[i];
@@ -805,12 +871,9 @@ async function securityGroup_Process(user_id, remove_sc_group, add_sc_group) {
             patch.patchMethod = "add";
         }
 
-        console.log("id : " + id);
-        console.log("patch.patchMethod : " + patch.patchMethod);
-
         await iam_eloqua.system.users.security_groups_add_remove(id, patch).then((result) => {
             // console.log(process+ " done");
-            console.log("after : remove  , id : " + id);
+            // console.log("after : remove  , id : " + id);
             result_list.push({
                 id: user_id,
                 method: patch.patchMethod,
@@ -828,51 +891,6 @@ async function securityGroup_Process(user_id, remove_sc_group, add_sc_group) {
         })
     }
 
-    // await remove_sc_group.forEach(async id => {
-    // 	console.log("before : remove  , id : " +  id);
-    // 	patch.patchMethod = "remove";
-    // 	await iam_eloqua.system.users.security_groups_add_remove( id , patch ).then((result) =>{
-    // 		// console.log(process+ " done");
-    // 		console.log("after : remove  , id : " +  id);
-    // 		result_list.push({
-    // 			id : user_id , 
-    // 			method : "remove",
-    // 			status : 200,
-    // 			message : "success"
-    // 		})
-    // 	}).catch((err) => {
-    // 		console.log(err.message);
-    // 		result_list.push({
-    // 			id : user_id , 
-    // 			method : "remove",
-    // 			status : err.response.status,
-    // 			message : err.message
-    // 		})
-    // 	})
-    // });
-
-    // await add_sc_group.forEach(async id => {
-    // 	console.log("before : add  , id : " +  id);
-    // 	patch.patchMethod = "add";
-    // 	await iam_eloqua.system.users.security_groups_add_remove( id , patch ).then((result) =>{
-    // 		// console.log(process+ " done");
-    // 		console.log("after : add  , id : " +  id);
-    // 		result_list.push({
-    // 			id : user_id , 
-    // 			method : "add",
-    // 			status : 200,
-    // 			message : "success"
-    // 		})
-    // 	}).catch((err) => {
-    // 		console.log(err.message);
-    // 		result_list.push({
-    // 			id : user_id , 
-    // 			method : "add",
-    // 			status : err.response.status,
-    // 			message : err.message
-    // 		})
-    // 	})
-    // });
 
     return result_list;
 }
@@ -880,16 +898,16 @@ async function securityGroup_Process(user_id, remove_sc_group, add_sc_group) {
 //#endregion
 
 //#region (진행중) IAM USER Update Endpoint 호출 영역
-// router.put('/update/:id', function (req, res, next) {
+router.post('/update/:id', function (req, res, next) {
 
-//     iam_eloqua.system.users.update(req.params.id, req.body ).then((result) => {
-//         console.log(result.data);
-//         res.json(result.data);
-//       }).catch((err) => {
-//         console.error(err);
-//       });
-// });
-//#endregion
+    iam_eloqua.system.users.update(req.params.id, req.body ).then((result) => {
+        console.log(result.data);
+        res.json(result.data);
+      }).catch((err) => {
+        console.error(err);
+      });
+});
+// #endregion
 
 //#region 위험!! (완료) IAM USER Delete Endpoint 호출 영역
 
@@ -911,7 +929,7 @@ router.get('/user/:id', function (req, res, next) {
 
     queryString['search'] = "id=" + req.params.id;
     //queryString['search'] = "loginName='Stephanie.An'";
-    queryString['depth'] = "partial"; //["minimal", "partial " ,"complete"]
+    queryString['depth'] = "complete"; //["minimal", "partial " ,"complete"]
     //federationId LG전자 사번 ( 페더레이션 ID )
     //queryString['count'] = 10;
     //queryString['page'] = 1;

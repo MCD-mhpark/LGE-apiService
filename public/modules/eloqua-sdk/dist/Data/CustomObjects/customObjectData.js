@@ -1,7 +1,7 @@
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+	value: true
 });
 exports.default = void 0;
 
@@ -12,71 +12,72 @@ var id = 0;
 function _classPrivateFieldLooseKey(name) { return "__private_" + id++ + "_" + name; }
 
 class CustomObjectData {
-  constructor(options) {
-    Object.defineProperty(this, _parent, {
-      writable: true,
-      value: void 0
-    });
-    _classPrivateFieldLooseBase(this, _parent)[_parent] = options;
-  }
+	constructor(options) {
+		Object.defineProperty(this, _parent, {
+			writable: true,
+			value: void 0
+		});
+		_classPrivateFieldLooseBase(this, _parent)[_parent] = options;
+	}
 
-  get(parentId, querystring, cb) {
-    let qs = {};
 
-    if (querystring) {
-      qs = _classPrivateFieldLooseBase(this, _parent)[_parent]._validate(['count', 'depth', 'lastUpdatedAt', 'orderBy', 'page', 'search'], querystring);
-    }
+	get(parentId, querystring, cb) {
+		let qs = {};
 
-    return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
-      api: 'REST',
-      uri: `/data/customObject/${parentId}/instances`,
-      qs: qs
-    }, cb);
-  }
+		if (querystring) {
+			qs = _classPrivateFieldLooseBase(this, _parent)[_parent]._validate(['count', 'depth', 'lastUpdatedAt', 'orderBy', 'page', 'search', '?search'], querystring);
+		}
 
-  getOne(parentId, id, querystring, cb) {
-    let qs = {};
+		return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
+			api: 'REST',
+			uri: `/data/customObject/${parentId}/instances`,
+			qs: qs
+		}, cb);
+	}
 
-    if (querystring) {
-      qs = _classPrivateFieldLooseBase(this, _parent)[_parent]._validate(['depth'], querystring);
-    }
+	getOne(parentId, id, querystring, cb) {
+		let qs = {};
 
-    return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
-      api: 'REST',
-      uri: `/data/customObject/${parentId}/instance/${id}`,
-      qs: qs
-    }, cb);
-  }
+		if (querystring) {
+			qs = _classPrivateFieldLooseBase(this, _parent)[_parent]._validate(['depth'], querystring);
+		}
 
-  create(parentId, customObjectData, cb) {
-    const data = _classPrivateFieldLooseBase(this, _parent)[_parent]._validate(['accessedAt', 'accountId', 'contactId', 'createdAt', 'createdBy', 'currentStatus', 'customObjectRecordStatus', 'depth', 'description', 'fieldValues', 'folderId', 'id', 'name', 'permissions', 'scheduledFor', 'sourceTemplateId', 'type', 'uniqueCode', 'updatedAt', 'updatedBy'], customObjectData);
+		return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
+			api: 'REST',
+			uri: `/data/customObject/${parentId}/instance/${id}`,
+			qs: qs
+		}, cb);
+	}
 
-    return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
-      api: 'REST',
-      uri: `/data/customObject/${parentId}/instance`,
-      method: 'post',
-      data: data
-    }, cb);
-  }
+	create(parentId, customObjectData, cb) {
+		const data = _classPrivateFieldLooseBase(this, _parent)[_parent]._validate(['accessedAt', 'accountId', 'contactId', 'createdAt', 'createdBy', 'currentStatus', 'customObjectRecordStatus', 'depth', 'description', 'fieldValues', 'folderId', 'id', 'name', 'permissions', 'scheduledFor', 'sourceTemplateId', 'type', 'uniqueCode', 'updatedAt', 'updatedBy'], customObjectData);
 
-  update(parentId, id, customObjectData, cb) {
-    const data = _classPrivateFieldLooseBase(this, _parent)[_parent]._validate(['accessedAt', 'accountId', 'contactId', 'createdAt', 'createdBy', 'currentStatus', 'customObjectRecordStatus', 'depth', 'description', 'fieldValues', 'folderId', 'id', 'name', 'permissions', 'scheduledFor', 'sourceTemplateId', 'type', 'uniqueCode', 'updatedAt', 'updatedBy'], customObjectData);
+		return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
+			api: 'REST',
+			uri: `/data/customObject/${parentId}/instance`,
+			method: 'post',
+			data: data
+		}, cb);
+	}
 
-    return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
-      api: 'REST',
-      uri: `/data/customObject/${parentId}/instance/${id}`,
-      method: 'put',
-      data: data
-    }, cb);
-  }
+	update(parentId, id, customObjectData, cb) {
+		const data = _classPrivateFieldLooseBase(this, _parent)[_parent]._validate(['accessedAt', 'accountId', 'contactId', 'createdAt', 'createdBy', 'currentStatus', 'customObjectRecordStatus', 'depth', 'description', 'fieldValues', 'folderId', 'id', 'name', 'permissions', 'scheduledFor', 'sourceTemplateId', 'type', 'uniqueCode', 'updatedAt', 'updatedBy'], customObjectData);
 
-  delete(parentId, id, cb) {
-    return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
-      api: 'REST',
-      uri: `/data/customObject/${parentId}/instance/${id}`,
-      method: 'delete'
-    }, cb);
-  }
+		return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
+			api: 'REST',
+			uri: `/data/customObject/${parentId}/instance/${id}`,
+			method: 'put',
+			data: data
+		}, cb);
+	}
+
+	delete(parentId, id, cb) {
+		return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
+			api: 'REST',
+			uri: `/data/customObject/${parentId}/instance/${id}`,
+			method: 'delete'
+		}, cb);
+	}
 
 }
 

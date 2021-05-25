@@ -6,6 +6,8 @@ var router = express.Router();
 var utils = require('../../common/utils');
 var moment = require('moment-timezone');
 const { response, request } = require('express');
+//const request =  require('request'); 
+var request_promise = require('request-promise');
 
 var dirPath = "KR_TEST";
 
@@ -194,8 +196,7 @@ async function GetKR_CustomDataSearch(_start_date, _end_date, _parentId) {
 
 	var queryString = "?search=" + "CreatedAt<'" + end_date + "'CreatedAt>'" + start_date + "'";
 
-	//const request =  require('request'); 
-	var request = require('request-promise');
+
 
 	// Get 요청하기 http://www.google.com 
 	const options = {
@@ -205,8 +206,8 @@ async function GetKR_CustomDataSearch(_start_date, _end_date, _parentId) {
 		}
 	};
 
-	await request.get(options, function (error, response, body) {
-		return_data = body;
+	await request_promise.get(options, function (error, response, body) {
+		return_data = JSON.parse(body);
 	});
 
 	return return_data;
@@ -220,19 +221,19 @@ router.post('/sender', async function (req, res, next) {
 
 	var parentId = 39;  // 한국영업본부 커스텀 오브젝트 ID
 
-	var start_date = '2021-04-27 09:00:01';
-	var end_date = '2021-04-27 23:59:59';
+	var start_date = '2021-05-17 09:00:01';
+	var end_date = '2021-05-17 23:59:59';
 
 	var COD_list = await GetKR_CustomDataSearch(start_date, end_date, parentId);
 
-	var cod_json = JSON.parse(COD_list);
 
-	var B2B_GERP_KR_DATA = Convert_B2BGERP_KR_DATA(cod_json);
+	var B2B_GERP_KR_DATA = Convert_B2BGERP_KR_DATA(COD_list);
 
 	var send_data = {
 		elements: B2B_GERP_KR_DATA,
 		total: B2B_GERP_KR_DATA.length
 	}
+	console.log(send_data.total);
 
 	res.json(send_data);
 
@@ -843,6 +844,29 @@ router.get('/customObjectDataSearch/:id', function (req, res, next) {
 	});
 });
 
+//커스텀 오브젝트 데이터 검색
+router.get('/customQuerySearch/:id', async function (req, res, next) {
+	console.log("customQuerySearch");
+
+	// queryString['depth'] = "complete";
+
+	// var queryText =  "lastUpdatedAt>2021-05-10";
+	let parent_id = req.params.id;
+	let response_data = await GetKR_CustomDataSearch("2021-05-17" , "2021-05-18" , parent_id );
+
+	var B2B_GERP_KR_DATA = Convert_B2BGERP_KR_DATA(cod_json);
+
+	var send_data = {
+		elements: B2B_GERP_KR_DATA,
+		total: B2B_GERP_KR_DATA.length
+	}
+
+	res.json(send_data);
+
+	console.log(response_data.elements.length);
+	res.json(response_data);
+});
+
 //커스텀 오브젝트 조회
 router.get('/customObjectSearch', function (req, res, next) {
 	var queryString = "";
@@ -858,7 +882,8 @@ router.get('/customObjectSearch', function (req, res, next) {
 //커스텀 오브젝트 조회 단건
 router.get('/customObjectSearchOne/:id', function (req, res, next) {
 	var id = req.params.id;
-	var queryString = "";
+	var queryString = {};
+	queryString["depth"] = "complete";
 	b2bkr_eloqua.assets.customObjects.getOne(id, queryString).then((result) => {
 		console.log(result.data);
 		res.json(result.data);

@@ -249,6 +249,7 @@ class Eloqua {
       path = '/API/Bulk/' + this.bulkVersion + uri;
     }
 
+
     return path;
   }
 
