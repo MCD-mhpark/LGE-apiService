@@ -540,10 +540,18 @@ function ConvertCustomObjectData(_contact, _req_data) {
 		"id": "278",
 		"value": _req_data.contactPhoneNo
 	}); //담당자전화번호	text	text			
+	// convert_data_entity.fieldValues.push({
+	// 	"id": "277",
+	// 	"value": _req_data.contactName
+	// }); //담당자명	text	text
 	convert_data_entity.fieldValues.push({
-		"id": "277",
-		"value": _req_data.contactName
-	}); //담당자명	text	text			
+		"id": "395",
+		"value": _req_data.contactFirstName
+	}); //담당자명 이름(리뉴얼 후)	text	text
+	convert_data_entity.fieldValues.push({
+		"id": "396",
+		"value": _req_data.contactLastName
+	}); //담당자명 성(리뉴얼 후)	text	text			
 	convert_data_entity.fieldValues.push({
 		"id": "276",
 		"value": _req_data.emailAddr
@@ -647,8 +655,10 @@ async function InsertContactData(_req_data) {
 	//Business Phone
 	contact_data.businessPhone = _req_data.phoneNo;
 	//FirstName / LastName
-	contact_data.firstName = _req_data.contactName.substring(1, _req_data.contactName.length);
-	contact_data.lastName = _req_data.contactName.substring(0, 1);
+	// contact_data.firstName = _req_data.contactName.substring(1, _req_data.contactName.length);
+	// contact_data.lastName = _req_data.contactName.substring(0, 1);
+	contact_data.firstName = _req_data.contactFirstName;
+	contact_data.lastName = _req_data.contactLastName;
 
 	//Mobile Phone
 	contact_data.mobilePhone = _req_data.contactCellularNo;
@@ -754,8 +764,10 @@ async function UpdateContacData(_contact, _req_data) {
 	//Business Phone
 	_contact.businessPhone = _req_data.phoneNo;
 	//FirstName / LastName
-	_contact.firstName = _req_data.contactName.substring(1, _req_data.contactName.length);
-	_contact.lastName = _req_data.contactName.substring(0, 1);
+	// _contact.firstName = _req_data.contactName.substring(1, _req_data.contactName.length);
+	// _contact.lastName = _req_data.contactName.substring(0, 1);
+	_contact.firstName = _req_data.contactFirstName;
+	_contact.lastName = _req_data.contactLastName;
 	//Mobile Phone
 	_contact.mobilePhone = _req_data.contactCellularNo;
 	//Email Address
