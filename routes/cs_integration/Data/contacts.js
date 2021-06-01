@@ -955,7 +955,7 @@ router.get('/test', async function (req, res, next) {
 					// page_index++;
 				}
 			});
-
+			await sleep(3000);
 			page_index ++;
 		} else {
 			nextSearch = false;
@@ -981,6 +981,12 @@ function req_res_logs(filename, data) {
 			console.log('write end');
 		}
 	});
+}
+
+const sleep = (ms) => {
+	return new Promise(resolve=>{
+		setTimeout(resolve,ms)
+	})
 }
 
 module.exports = router;
