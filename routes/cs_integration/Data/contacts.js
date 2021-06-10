@@ -24,7 +24,7 @@ async function get_INTEGRATION_DB_Data(page_index) {
 	// console.log("queryText : " + queryText);
 	// queryString['search'] = queryText;
 	queryString['depth'] = "complete";
-	queryString['pageSize'] = 500;
+	queryString['pageSize'] = 1000;
 	queryString['page'] = page_index;
 	
 	await csintergration_eloqua.data.contacts.get(queryString).then((result) => {
@@ -884,6 +884,8 @@ function CONVERT_INTEGRATION_DB_DATA_V2(contacts_data) {
 
 //2021-04-13 조회 테스트
 router.get('/test', async function (req, res, next) {
+
+	
 	// 전체 데이터를 조회하기 위해서 (Eloqua Select 는 한번에 최대 천건만 가능 ) index 를 늘려가며 계속 호출함
 	let page_index = 1;
 	let nextSearch = true;
@@ -903,8 +905,8 @@ router.get('/test', async function (req, res, next) {
 			
 
 			let request_data = await CONVERT_INTEGRATION_DB_DATA_V2(contacts_data);
-			req_res_logs("cs_elq_edata_" + page_index, contacts_data);
-			req_res_logs("cs_req_edata_" + page_index, request_data);
+			req_res_logs("cs_elq_data_" + page_index, contacts_data);
+			req_res_logs("cs_req_data_" + page_index, request_data);
 			// res.json(request_data);
 			// nextSearch = false;
 

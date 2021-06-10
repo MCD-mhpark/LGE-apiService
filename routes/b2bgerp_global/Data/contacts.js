@@ -1290,5 +1290,168 @@ function req_res_logs(filename , business_name , data){
 	});
 }
 
+
+
+//전 사업부별(AS , ID , CM ...)  MQL 리스트를 사업부별로 조회하는 function - 확인용
+router.get('/search_gerp_data', async function (req, res, next) {
+	let Business_Unit_List = [];
+	let bsname = req.query.bsname;
+	let getStatus = req.query.status;
+	let start_date = req.query.start_date;
+	let end_date = req.query.end_date;
+	console.log("search_gerp_data");
+
+	
+	console.log(bsname);
+	console.log(getStatus);
+	
+	let bant_data = await get_b2bgerp_global_bant_data(bsname , start_date , end_date);
+	let convert_data = await Convert_B2BGERP_GLOBAL_DATA( bant_data, bsname)
+
+
+	if(bant_data && getStatus == 'eloqua') res.json(bant_data);
+	else if(bant_data && getStatus == 'convert')res.json(convert_data);
+	else  res.json(false)
+
+	// 요청에 대한 로그를 쌓기 위함
+	let total_logs = {
+		bsname : bsname ,
+		search_time : utils.todayDetail_getDateTime(),
+		eloqua_total : bant_data && bant_data.total ? bant_data.total : 0,
+		convert_total : convert_data ? convert_data.length : null
+	}
+
+	if(bant_data){
+		req_res_logs("reqEloqua" , bsname , bant_data );
+		req_res_logs("reqConvert" , bsname , convert_data );
+		req_res_logs("reqTotal" , bsname , total_logs );
+	}
+	
+});
+
+// 만약 Eloqua Contact 의 기본 정보 (standard field 정보를 안넣고 업데이트 하면 정보가 날라간다.)를 
+// 다시 업데이트 하기 위해 에전에 조회된 Eloqua 데이터를 바탕으로 업데이트 하는 펑션
+router.put('/menual_bant_update', async function (req, res, next) {
+	console.log("menual_bant_update");
+	
+	req_res_logs("reqEloqua" , req.body.bsname  , req.body.elements );
+	
+});
+
+
+// router.post('/leadNumberAPI', async function (req, res, next) {
+// 	let lead_list = req.body;
+// 	let CustomObject_lead_id = 46 
+// 	for(let i = 0 ; i < lead_list.length ; i ++){
+// 		await b2bkr_eloqua.data.customObjects.data.create(CustomObject_lead_id, _customObjectCreateData).then((result) => {
+// 			console.log(result);
+// 			return_data = result;
+// 		}).catch((err) => {
+// 			console.error(err);
+// 			console.error(err.message);
+// 			return_data = err.message;
+// 		});
+// 		return return_data;
+// 	}
+// });
+
+
+router.post('/leadNumberAPI', async function (req, res, next) {
+	console.log("leadNumberAPI");
+	// console.log(req.body);
+
+	let CustomObject_lead_id = 46;
+
+	// 넘어온 id값을 바탕으로 Eloqua 에서 조회해서 넣어줌
+	let data_list = await getEloquaContactEmail(req.body);
+	console.log(data_list);
+
+
+	// 생성된 데이터를 customobject 에 적재함
+	let convert_data_list = ConvertCustomObjectData(data_list);
+	console.log(convert_data_list[0].fieldValues);
+
+	return;
+	for(let i = 0 ; i < convert_data_list.length ; i++){
+		await b2bgerp_eloqua.data.customObjects.data.create(CustomObject_lead_id, convert_data_list[i]).then((result) => {
+			console.log(result);
+			return_data = result;
+		}).catch((err) => {
+			console.error(err);
+			console.error(err.message);
+			return_data = err.message;
+		});
+		
+	}
+
+	res.json(return_data);
+	
+});
+
+async function getEloquaContactEmail(data_list){
+	if(data_list.length > 1){
+		for(let i = 0 ; i < data_list.length ; i ++ ){
+
+			await b2bgerp_eloqua.data.contacts.getOne(data_list[i].Eloqua_id).then((result) => { 
+				// console.log(result.data);
+				// console.log(result.data.total);
+
+				// Eloqua Create 할때는 상관없지만 
+				console.log(result.data);
+				if(result.data ){
+					data_list[i].emailAddress = result.data.emailAddress;
+					// console.log(contacts_data);
+				}else{
+					data_list[i].emailAddress = 'Email Not Found'
+				}
+			}).catch((err) => {
+				console.error(err.message);
+			});	
+		}
+	}
+
+	return data_list;
+}
+
+
+//커스텀 오브젝트 데이터 형태로 변경 함수
+function ConvertCustomObjectData( data_list) {
+
+	let convert_list = [];
+
+	
+	for(let i = 0 ; i < data_list.length ; i ++ ){
+		let this_data = {};
+
+		this_data.fieldValues = [];
+		this_data.isMapped = "Yes";
+		this_data.type = "CustomObjectData";
+
+		this_data.fieldValues.push({
+			"id": "361",
+			"value": data_list[i].emailAddress
+		}); // EmailAddress
+		this_data.fieldValues.push({
+			"id": "360",
+			"value": data_list[i].Eloqua_id
+		}); // Eloqua Contact ID			
+		this_data.fieldValues.push({
+			"id": "362",
+			"value": data_list[i].LeadNumber
+		}); // Leadnumber
+		this_data.fieldValues.push({
+			"id": "363",
+			"value": utils.timeConverter( "GET_UNIX" , data_list[i].LeadCreateDate)
+		}); //Leadnumber 생성일
+		this_data.fieldValues.push({
+			"id": "394",
+			"value": data_list[i].Interface_id
+		}); // Interface ID
+
+		convert_list.push(this_data);
+	}
+	return convert_list;
+}
+
 module.exports = router;
 module.exports.bant_send = bant_send;

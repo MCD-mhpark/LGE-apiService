@@ -314,9 +314,10 @@ router.post('/sender', async function (req, res, next) {
 
 //커스텀 오브젝트 데이터 추가
 router.post('/customObjectDataCreate', async function (req, res, next) {
+	console.log(1234);
 	var req_data = req.body;
 	var queryString = "";
-
+	let parent_id = 39;
 	try {
 		if (validateEmail(req_data.contactEmailAddr)) {
 			//해당 사용자 데이터 여부 확인
@@ -329,7 +330,7 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 				if (update_result) {
 					var customObjectCreateData = ConvertCustomObjectData(contact_data.elements[0], req_data);
 					//커스텀 오브젝트 데이터 전송
-					var customObject_result = await SendCreateCustomObjectData(customObjectCreateData);
+					var customObject_result = await SendCreateCustomObjectData(parent_id , customObjectCreateData);
 
 					if (customObject_result) {
 						console.log(customObject_result);
@@ -399,6 +400,8 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 		);
 	}
 });
+
+
 
 function KR_OBJECT_DATA_ENTITY() {
 	//this.accessedAt = ""; read only
@@ -599,11 +602,93 @@ function ConvertCustomObjectData(_contact, _req_data) {
 	return convert_data_entity;
 }
 
+
+//커스텀 오브젝트 데이터 형태로 변경 함수
+function ConvertCustomObjectData_newsLetter(_contact, _req_data) {
+	var contact = _contact;
+	var convert_data_entity = new KR_OBJECT_DATA_ENTITY();
+	
+	convert_data_entity.contactId = contact.id;
+
+	convert_data_entity.fieldValues.push({
+		"id": "351",
+		"value": moment().tz('Asia/Seoul').unix()
+	}); //LG전자 마케팅 정보 수신 동의 일자		
+
+	convert_data_entity.fieldValues.push({
+		"id": "350",
+		"value": moment().tz('Asia/Seoul').unix()
+	}); // 개인정보 국외 이전 동의 일자
+
+	convert_data_entity.fieldValues.push({
+		"id": "349",
+		"value": moment().tz('Asia/Seoul').unix()
+	}); // 개인정보 위탁 처리 동의 일자
+
+	convert_data_entity.fieldValues.push({
+		"id": "348",
+		"value": moment().tz('Asia/Seoul').unix()
+	}); // 개인정보 수집 및 이용동의 일자
+
+
+	convert_data_entity.fieldValues.push({
+		"id": "347",
+		"value": "Yes"
+	}); // LG전자 마케팅 정보 수신 동의 여부
+
+	convert_data_entity.fieldValues.push({
+		"id": "346",
+		"value": "Yes"
+	}); // 개인정보 국외 이전 동의 여부
+
+	convert_data_entity.fieldValues.push({
+		"id": "345",
+		"value": "Yes"
+	}); // 개인정보 위탁 처리 동의 여부
+
+	convert_data_entity.fieldValues.push({
+		"id": "344",
+		"value": "Yes"
+	}); // 개인정보 수집 및 이용동의 여부
+
+
+
+
+
+	convert_data_entity.fieldValues.push({
+		"id": "341",
+		"value" : _req_data.cCode
+	}); // 업종
+
+
+	convert_data_entity.fieldValues.push({
+		"id": "339",
+		"value" : _req_data.cPart
+	}); // PART
+
+	convert_data_entity.fieldValues.push({
+		"id": "352",
+		"value" : "KR_LGE.co.kr_B2BNewsletter"
+	}); // Marketing Event
+
+	convert_data_entity.fieldValues.push({
+		"id": "353",
+		"value" : "LGE.co.kr"
+	}); // Paltform_Activity
+
+	convert_data_entity.fieldValues.push({
+		"id": "341",
+		"value" : "KR"
+	}); // Subsidiary
+
+	return convert_data_entity;
+}
+
 //CustomObjectData 전송 함수
-async function SendCreateCustomObjectData(_customObjectCreateData) {
+async function SendCreateCustomObjectData(parent_id , _customObjectCreateData) {
 	var return_data = undefined;
 	//LGE KR 사용자정의 객체 / LGEKR(한영본)_대표사이트B2B_온라인문의 id : 39
-	await b2bkr_eloqua.data.customObjects.data.create(39, _customObjectCreateData).then((result) => {
+	await b2bkr_eloqua.data.customObjects.data.create(parent_id, _customObjectCreateData).then((result) => {
 		console.log(result);
 		return_data = result;
 	}).catch((err) => {
@@ -740,7 +825,108 @@ async function InsertContactData(_req_data) {
 	return return_data;
 }
 
-//연락처 업데이트 함수
+
+//연락처 추가 함수
+async function InsertContactData_newsLetter(_req_data) {
+	var contact_data = {};
+	contact_data.fieldValues = [];
+
+	// contact_data.accountname = _req_data.customerName;
+	// //zip
+	// contact_data.postalCode = _req_data.postalCode;
+	// //address1
+	// contact_data.address1 = _req_data.baseAddr;
+	// //address2 / Address3
+	// contact_data.address2 = _req_data.detailAddr;
+	// //Business Phone
+	// contact_data.businessPhone = _req_data.phoneNo;
+	//FirstName / LastName
+	// contact_data.firstName = _req_data.contactName.substring(1, _req_data.contactName.length);
+	// contact_data.lastName = _req_data.contactName.substring(0, 1);
+	// contact_data.firstName = _req_data.contactFirstName;
+	// contact_data.lastName = _req_data.contactLastName;
+
+	//Mobile Phone
+	// contact_data.mobilePhone = _req_data.contactCellularNo;
+	//Email Address
+	contact_data.emailAddress = _req_data.contactEmailAddr;
+
+	//inqurity to by message 100209
+	// contact_data.fieldValues.push({
+	// 	"id": "100209",
+	// 	"value": _req_data.custRemark
+	// });
+	//KR_Privacy Policy_Collection and Usage
+	contact_data.fieldValues.push({
+		"id": "100315",
+		"value": _req_data.ppYn == "Y" ? "Yes" : "No"
+	});
+	//KR_Privacy Policy_Collection and Usage_AgreedDate
+	contact_data.fieldValues.push({
+		"id": "100320",
+		"value": moment().tz('Asia/Seoul').unix()
+	});
+	//KR_Privacy Policy_Consignment of PI
+	contact_data.fieldValues.push({
+		"id": "100316",
+		"value": _req_data.pcYn == "Y" ? "Yes" : "No"
+	});
+	//KR_Privacy Policy_Transfer PI Aborad
+	contact_data.fieldValues.push({
+		"id": "100317",
+		"value": _req_data.tpiYn == "Y" ? "Yes" : "No"
+	});
+	//KR_Privacy Policy_Optin
+	contact_data.fieldValues.push({
+		"id": "100318",
+		"value": _req_data.mktRecYn == "Y" ? "Yes" : "No"
+	});
+	//KR_Privacy Policy_Optin_Date
+	contact_data.fieldValues.push({
+		"id": "100319",
+		"value": moment().tz('Asia/Seoul').unix()
+	});
+
+	//통합회원 유니크 아이디
+	// contact_data.fieldValues.push({
+	// 	"id": "100368",
+	// 	"value": _req_data.unifyId
+	// });
+
+	//업종	신규	sector	STRING	Industry
+	contact_data.fieldValues.push({
+		"id": "100046",
+		"value": _req_data.sector
+	});
+	//Platform&Activity GetCustomFiledValue(FieldValues_data, 100202);
+	contact_data.fieldValues.push({
+		"id": "100202",
+		"value": "LGE.co.kr"
+	});
+	//Marketing Event GetCustomFiledValue(FieldValues_data, 100203);
+	contact_data.fieldValues.push({
+		"id": "100203",
+		"value": "KR_LGE.co.kr_B2BNewsletter"
+	});
+	//Subsidiary GetCustomFiledValue(FieldValues_data, 100196);
+	contact_data.fieldValues.push({
+		"id": "100196",
+		"value": "KR"
+	});
+
+
+	await b2bkr_eloqua.data.contacts.create(contact_data,).then((result) => {
+		console.log(result);
+		return_data = result;
+	}).catch((err) => {
+		console.error(err);
+		console.error(err.message);
+		return_data = err;
+	});
+	return return_data;
+}
+
+//co.kr 온라인 견적문의 연락처 업데이트 함수
 async function UpdateContacData(_contact, _req_data) {
 	var contact = _contact;
 
@@ -831,6 +1017,99 @@ async function UpdateContacData(_contact, _req_data) {
 	return return_data;
 }
 
+
+//co.kr 소식지 연락처 업데이트 함수
+async function UpdateContacData_newsLetter(_contact, _req_data) {
+	var contact = _contact;
+
+	//만약 기존 사용자 정보중 isSubscribed false이면 true로 변경 contact_data.elements[0].isSubscribed
+	if (_contact.isSubscribed === 'false') {
+		_contact.isSubscribed = true;
+	}
+
+	// if(contact.accountName){
+	// 	contact.accountname = _req_data;
+	// 	delete contact.accountName;
+	// }
+
+	// 소식지에서는 사용자 기본정보를 전송하는 게 없다.
+	// _contact.accountname = _req_data.customerName;
+	//zip
+	// _contact.postalCode = _req_data.postalCode;
+	//address1
+	// _contact.address1 = _req_data.baseAddr;
+	//address2 / Address3
+	// _contact.address2 = _req_data.detailAddr;
+	//Business Phone
+	// _contact.businessPhone = _req_data.phoneNo;
+	//FirstName / LastName
+	// _contact.firstName = _req_data.contactName.substring(1, _req_data.contactName.length);
+	// _contact.lastName = _req_data.contactName.substring(0, 1);
+	// _contact.firstName = _req_data.contactFirstName;
+	// _contact.lastName = _req_data.contactLastName;
+	//Mobile Phone
+	// _contact.mobilePhone = _req_data.contactCellularNo;
+	//Email Address
+	_contact.emailAddress = _req_data.cEmail;
+
+	//inqurity to by message 100209
+	// SetFieldValue(_contact.fieldValues, "100209", _req_data.custRemark);
+
+	//KR_Privacy Policy_Collection and Usage
+	//_contact.fieldValues.push( { "id": "100315", "value": _req_data.ppYn == "Y" ? "YES" : "NO" });
+	SetFieldValue(_contact.fieldValues, "100315", _req_data.ppYn == "Y" ? "Yes" : "No");
+
+	//KR_Privacy Policy_Collection and Usage_AgreedDate
+	//_contact.fieldValues.push( { "id": "100320", "value": moment().tz('Asia/Seoul').unix() });
+	SetFieldValue(_contact.fieldValues, "100320", moment().tz('Asia/Seoul').unix());
+
+	//KR_Privacy Policy_Consignment of PI
+	//_contact.fieldValues.push( { "id": "100316", "value": _req_data.pcYn == "Y" ? "YES" : "NO" });
+	SetFieldValue(_contact.fieldValues, "100316", _req_data.pcYn == "Y" ? "Yes" : "No");
+
+	//KR_Privacy Policy_Transfer PI Aborad
+	//_contact.fieldValues.push( { "id": "100317", "value": _req_data.tpiYn == "Y" ? "YES" : "NO" });
+	SetFieldValue(_contact.fieldValues, "100317", _req_data.tpiYn == "Y" ? "Yes" : "No");
+
+	//KR_Privacy Policy_Optin
+	//_contact.fieldValues.push( { "id": "100318", "value": _req_data.mktRecYn == "Y" ? "YES" : "NO" });
+	SetFieldValue(_contact.fieldValues, "100318", _req_data.mktRecYn == "Y" ? "Yes" : "No");
+
+	//KR_Privacy Policy_Optin_Date
+	//_contact.fieldValues.push( { "id": "100319", "value": moment().tz('Asia/Seoul').unix() });
+	SetFieldValue(_contact.fieldValues, "100319", moment().tz('Asia/Seoul').unix());
+
+	//통합회원 유니크 아이디	신규	unifyId	STRING	생성 필요
+	//_contact.fieldValues.push({"id": "100368", "value": _req_data.unifyId});
+	SetFieldValue(_contact.fieldValues, "100368", _req_data.unifyId);
+
+	//업종	신규	sector	STRING	Industry
+	//_contact.fieldValues.push( { "id": "100046", "value": _req_data.sector });
+	SetFieldValue(_contact.fieldValues, "100046", _req_data.cCode);
+
+	//Platform&Activity GetCustomFiledValue(FieldValues_data, 100202);
+	//_contact.fieldValues.push( { "id": "100202", "value": "LGE.co.kr" });
+	SetFieldValue(_contact.fieldValues, "100202", "LGE.co.kr");
+
+	//Marketing Event GetCustomFiledValue(FieldValues_data, 100203);
+	//_contact.fieldValues.push( { "id": "100203", "value": "KR_LGE.co.kr_OnlineInquiry" });
+	SetFieldValue(_contact.fieldValues, "100203", "KR_LGE.co.kr_B2BNewsletter");
+
+	//Subsidiary GetCustomFiledValue(FieldValues_data, 100196);
+	//_contact.fieldValues.push( { "id": "100196", "value": "KR" });
+	SetFieldValue(_contact.fieldValues, "100196", "KR");
+
+	await b2bkr_eloqua.data.contacts.update(contact.id, contact).then((result) => {
+		console.log(result);
+		return_data = result;
+	}).catch((err) => {
+		console.error(err);
+		console.error(err.message);
+		return_data = err;
+	});
+	return return_data;
+}
+
 //커스텀 필드 값 수정 함수
 function SetFieldValue(_fieldValues, _id, _value) {
 	for (i = 0; i < _fieldValues.length; i++) {
@@ -864,7 +1143,7 @@ router.get('/customQuerySearch/:id', async function (req, res, next) {
 
 	// var queryText =  "lastUpdatedAt>2021-05-10";
 	let parent_id = req.params.id;
-	let response_data = await GetKR_CustomDataSearch("2021-05-17" , "2021-05-18" , parent_id );
+	let response_data = await GetKR_CustomDataSearch("2021-05-17", "2021-05-18", parent_id);
 
 	var B2B_GERP_KR_DATA = Convert_B2BGERP_KR_DATA(cod_json);
 
@@ -904,4 +1183,110 @@ router.get('/customObjectSearchOne/:id', function (req, res, next) {
 		res.json(false);
 	});
 });
+
+//소식지 연계 데이터 받기 newsletter
+//커스텀 오브젝트 데이터 추가
+router.post('/newsLetterAPI', async function (req, res, next) {
+	console.log(1234);
+	let req_data = req.body;
+	let queryString = "";
+	let parent_id = 46;
+	try {
+		if (validateEmail(req_data.contactEmailAddr)) {
+			//해당 사용자 데이터 여부 확인
+			var contact_data = await GetContactData(req_data.cEmail);
+
+			// 기존에 사용자가 있을 경우 update 함
+			if (contact_data && contact_data.total > 0) {
+				//기존사용자 정보 업데이트
+				var update_result = await UpdateContacData_newsLetter(contact_data.elements[0], req_data);
+
+				if (update_result) {
+					var customObjectCreateData = ConvertCustomObjectData_newsLetter(contact_data.elements[0], req_data);
+					//커스텀 오브젝트 데이터 전송
+					var customObject_result = await SendCreateCustomObjectData(parent_id , customObjectCreateData);
+
+					if (customObject_result) {
+						console.log(customObject_result);
+						res.json({
+							"Result": "success"
+						});
+					} else {
+						res.json({
+							"Result": "failed",
+							"ErrorInfo": "Custom Object Data Send Error",
+							"ErrorMessage": customObject_result.message
+						});
+					}
+				} else {
+					res.json({
+						"Result": "failed",
+						"ErrorInfo": "Contact Update Error",
+						"ErrorMessage": update_result.message
+					});
+				}
+			} else {
+				//사용자가 없을경우 사용자 추가
+				var contact_data = await InsertContactData_newsLetter(req_data);
+
+				if (contact_data) {
+					//사용자 추가 후 CustomObjectData 추가
+					if (contact_data.data) {
+
+						var customObjectCreateData = ConvertCustomObjectData_newsLetter(contact_data.data, req_data);
+						//커스텀 오브젝트 데이터 전송
+						var customObject_result = await SendCreateCustomObjectData(parent_id , customObjectCreateData);
+
+						console.log(result_data.data);
+
+						res.json({
+							"Result": "success"
+						});
+					} else {
+						res.json({
+							"Result": "failed",
+							"ErrorInfo": "Custom Object Data Send Error",
+							"ErrorMessage": result_data.message
+						});
+					}
+				} else {
+					res.json({
+						"Result": "failed",
+						"ErrorInfo": "Contact Add Error",
+						"ErrorMessage": contact_data.message
+					});
+				}
+			}
+		} else {
+			res.json({
+				"Result": "failed",
+				"ErrorInfo": "Request Email Error",
+				"ErrorMessage": "Request Email Validation Check"
+			})
+		}
+	} catch (err) {
+		res.json(
+			{
+				"Result": "failed",
+				"ErrorInfo": "System Error Check",
+				"ErrorMessage": err.message
+			}
+		);
+	}
+});
+
+function GetDataValue(contacts_fieldvalue) {
+	try {
+		if (contacts_fieldvalue != undefined) {
+			return contacts_fieldvalue;
+		}
+		else {
+			return "";
+		}
+	}
+	catch (e) {
+		console.log(e);
+		return "";
+	}
+}
 module.exports = router;
