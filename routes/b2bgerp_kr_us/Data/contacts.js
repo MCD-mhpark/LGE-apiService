@@ -433,7 +433,7 @@ function KR_OBJECT_DATA_ENTITY() {
 function ConvertCustomObjectData(_contact, _req_data) {
 	var contact = _contact;
 	var convert_data_entity = new KR_OBJECT_DATA_ENTITY();
-	convert_data_entity.contactId = contact.id;
+	convert_data_entity.contactId = contact.id ;
 
 	convert_data_entity.fieldValues.push({
 		"id": "319",
@@ -607,6 +607,9 @@ function ConvertCustomObjectData(_contact, _req_data) {
 function ConvertCustomObjectData_newsLetter(_contact, _req_data) {
 	var contact = _contact;
 	var convert_data_entity = new KR_OBJECT_DATA_ENTITY();
+
+	var convert_data_entity = {};
+	convert_data_entity.fieldValues = [];
 	
 	convert_data_entity.contactId = contact.id;
 
@@ -653,12 +656,20 @@ function ConvertCustomObjectData_newsLetter(_contact, _req_data) {
 
 
 
-
+	convert_data_entity.fieldValues.push({
+		"id": "342",
+		"value" : _req_data.cEmail
+	}); // 이메일
 
 	convert_data_entity.fieldValues.push({
 		"id": "341",
 		"value" : _req_data.cCode
 	}); // 업종
+
+	convert_data_entity.fieldValues.push({
+		"id": "340",
+		"value" : ""
+	}); // 업종코드
 
 
 	convert_data_entity.fieldValues.push({
@@ -677,7 +688,7 @@ function ConvertCustomObjectData_newsLetter(_contact, _req_data) {
 	}); // Paltform_Activity
 
 	convert_data_entity.fieldValues.push({
-		"id": "341",
+		"id": "354",
 		"value" : "KR"
 	}); // Subsidiary
 
@@ -849,7 +860,7 @@ async function InsertContactData_newsLetter(_req_data) {
 	//Mobile Phone
 	// contact_data.mobilePhone = _req_data.contactCellularNo;
 	//Email Address
-	contact_data.emailAddress = _req_data.contactEmailAddr;
+	contact_data.emailAddress = _req_data.cEmail;
 
 	//inqurity to by message 100209
 	// contact_data.fieldValues.push({
@@ -859,7 +870,7 @@ async function InsertContactData_newsLetter(_req_data) {
 	//KR_Privacy Policy_Collection and Usage
 	contact_data.fieldValues.push({
 		"id": "100315",
-		"value": _req_data.ppYn == "Y" ? "Yes" : "No"
+		"value" : "Yes" 
 	});
 	//KR_Privacy Policy_Collection and Usage_AgreedDate
 	contact_data.fieldValues.push({
@@ -869,17 +880,17 @@ async function InsertContactData_newsLetter(_req_data) {
 	//KR_Privacy Policy_Consignment of PI
 	contact_data.fieldValues.push({
 		"id": "100316",
-		"value": _req_data.pcYn == "Y" ? "Yes" : "No"
+		"value" : "Yes" 
 	});
 	//KR_Privacy Policy_Transfer PI Aborad
 	contact_data.fieldValues.push({
 		"id": "100317",
-		"value": _req_data.tpiYn == "Y" ? "Yes" : "No"
+		"value" : "Yes" 
 	});
 	//KR_Privacy Policy_Optin
 	contact_data.fieldValues.push({
 		"id": "100318",
-		"value": _req_data.mktRecYn == "Y" ? "Yes" : "No"
+		"value" : "Yes" 
 	});
 	//KR_Privacy Policy_Optin_Date
 	contact_data.fieldValues.push({
@@ -896,7 +907,7 @@ async function InsertContactData_newsLetter(_req_data) {
 	//업종	신규	sector	STRING	Industry
 	contact_data.fieldValues.push({
 		"id": "100046",
-		"value": _req_data.sector
+		"value": _req_data.cCode
 	});
 	//Platform&Activity GetCustomFiledValue(FieldValues_data, 100202);
 	contact_data.fieldValues.push({
@@ -1057,7 +1068,7 @@ async function UpdateContacData_newsLetter(_contact, _req_data) {
 
 	//KR_Privacy Policy_Collection and Usage
 	//_contact.fieldValues.push( { "id": "100315", "value": _req_data.ppYn == "Y" ? "YES" : "NO" });
-	SetFieldValue(_contact.fieldValues, "100315", _req_data.ppYn == "Y" ? "Yes" : "No");
+	SetFieldValue(_contact.fieldValues, "100315", "Yes");
 
 	//KR_Privacy Policy_Collection and Usage_AgreedDate
 	//_contact.fieldValues.push( { "id": "100320", "value": moment().tz('Asia/Seoul').unix() });
@@ -1065,15 +1076,15 @@ async function UpdateContacData_newsLetter(_contact, _req_data) {
 
 	//KR_Privacy Policy_Consignment of PI
 	//_contact.fieldValues.push( { "id": "100316", "value": _req_data.pcYn == "Y" ? "YES" : "NO" });
-	SetFieldValue(_contact.fieldValues, "100316", _req_data.pcYn == "Y" ? "Yes" : "No");
+	SetFieldValue(_contact.fieldValues, "100316", "Yes");
 
 	//KR_Privacy Policy_Transfer PI Aborad
 	//_contact.fieldValues.push( { "id": "100317", "value": _req_data.tpiYn == "Y" ? "YES" : "NO" });
-	SetFieldValue(_contact.fieldValues, "100317", _req_data.tpiYn == "Y" ? "Yes" : "No");
+	SetFieldValue(_contact.fieldValues, "100317", "Yes");
 
 	//KR_Privacy Policy_Optin
 	//_contact.fieldValues.push( { "id": "100318", "value": _req_data.mktRecYn == "Y" ? "YES" : "NO" });
-	SetFieldValue(_contact.fieldValues, "100318", _req_data.mktRecYn == "Y" ? "Yes" : "No");
+	SetFieldValue(_contact.fieldValues, "100318", "Yes");
 
 	//KR_Privacy Policy_Optin_Date
 	//_contact.fieldValues.push( { "id": "100319", "value": moment().tz('Asia/Seoul').unix() });
@@ -1100,7 +1111,7 @@ async function UpdateContacData_newsLetter(_contact, _req_data) {
 	SetFieldValue(_contact.fieldValues, "100196", "KR");
 
 	await b2bkr_eloqua.data.contacts.update(contact.id, contact).then((result) => {
-		console.log(result);
+		// console.log(result);
 		return_data = result;
 	}).catch((err) => {
 		console.error(err);
@@ -1189,21 +1200,26 @@ router.get('/customObjectSearchOne/:id', function (req, res, next) {
 router.post('/newsLetterAPI', async function (req, res, next) {
 	console.log(1234);
 	let req_data = req.body;
-	let queryString = "";
-	let parent_id = 46;
+	
+	let parent_id = 43;
 	try {
-		if (validateEmail(req_data.contactEmailAddr)) {
+		
+		if (validateEmail(req_data.cEmail)) {
 			//해당 사용자 데이터 여부 확인
 			var contact_data = await GetContactData(req_data.cEmail);
 
+		
 			// 기존에 사용자가 있을 경우 update 함
 			if (contact_data && contact_data.total > 0) {
 				//기존사용자 정보 업데이트
 				var update_result = await UpdateContacData_newsLetter(contact_data.elements[0], req_data);
-
+				
 				if (update_result) {
 					var customObjectCreateData = ConvertCustomObjectData_newsLetter(contact_data.elements[0], req_data);
 					//커스텀 오브젝트 데이터 전송
+
+					console.log(customObjectCreateData);
+
 					var customObject_result = await SendCreateCustomObjectData(parent_id , customObjectCreateData);
 
 					if (customObject_result) {
@@ -1234,10 +1250,13 @@ router.post('/newsLetterAPI', async function (req, res, next) {
 					if (contact_data.data) {
 
 						var customObjectCreateData = ConvertCustomObjectData_newsLetter(contact_data.data, req_data);
+						
+						console.log(customObjectCreateData);
+
 						//커스텀 오브젝트 데이터 전송
 						var customObject_result = await SendCreateCustomObjectData(parent_id , customObjectCreateData);
 
-						console.log(result_data.data);
+						console.log(customObject_result.data);
 
 						res.json({
 							"Result": "success"
@@ -1246,7 +1265,7 @@ router.post('/newsLetterAPI', async function (req, res, next) {
 						res.json({
 							"Result": "failed",
 							"ErrorInfo": "Custom Object Data Send Error",
-							"ErrorMessage": result_data.message
+							"ErrorMessage": customObject_result.message
 						});
 					}
 				} else {

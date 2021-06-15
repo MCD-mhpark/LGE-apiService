@@ -305,7 +305,12 @@ router.get('/user', function (req, res, next) {
                 if(error){
                     console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
                     console.log(error);
-                } 
+                    req_res_logs("user_response_error" , body);
+                }
+                if(response.statusCode != 200){
+                    req_res_logs("user_response_error" , body);
+                }
+
                 if (!error && response.statusCode == 200) {
                     result = body;
                     // console.log(11);
@@ -1051,7 +1056,7 @@ function req_res_logs(filename , data){
 	// business_name : 사업부별 name
 	// data : log 저장할 데이터
 
-	var dirPath = utils.logs_makeDirectory("IAM_SYSTEM");
+	var dirPath = utils.logs_makeDirectory("IAM_SYSTEM_" + moment().format('YYYYMMDD') );
 	console.log("fileWrite Path : " + dirPath);
 
 	fs.writeFile(dirPath + filename  + ".txt", JSON.stringify(data), 'utf8', function(error){ 

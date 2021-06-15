@@ -1363,7 +1363,7 @@ router.post('/leadNumberAPI', async function (req, res, next) {
 	let CustomObject_lead_id = 46;
 
 	// 넘어온 id값을 바탕으로 Eloqua 에서 조회해서 넣어줌
-	let data_list = await getEloquaContactEmail(req.body);
+	let data_list = await getEloquaContactEmail(req.body.ContentList);
 	console.log(data_list);
 
 
@@ -1371,20 +1371,30 @@ router.post('/leadNumberAPI', async function (req, res, next) {
 	let convert_data_list = ConvertCustomObjectData(data_list);
 	console.log(convert_data_list[0].fieldValues);
 
-	return;
+	let return_data = [];
+	
 	for(let i = 0 ; i < convert_data_list.length ; i++){
 		await b2bgerp_eloqua.data.customObjects.data.create(CustomObject_lead_id, convert_data_list[i]).then((result) => {
 			console.log(result);
-			return_data = result;
+			return_data.push({
+				cod_id : CustomObject_lead_id,
+				contactId : convert_data_list[i].contactId,
+				emailAddress : convert_data_list[i].emailAddress,
+				message : "Success"	
+			})
 		}).catch((err) => {
 			console.error(err);
 			console.error(err.message);
-			return_data = err.message;
+			return_data.push({
+				cod_id : CustomObject_lead_id,
+				contactId : convert_data_list[i].contactId,
+				emailAddress : convert_data_list[i].emailAddress,
+				message : err.message
+			})
 		});
-		
 	}
 
-	res.json(return_data);
+	res.json({ContentList : return_data});
 	
 });
 
@@ -1424,8 +1434,10 @@ function ConvertCustomObjectData( data_list) {
 		let this_data = {};
 
 		this_data.fieldValues = [];
+		this_data.contactId = data_list[i].Eloqua_id;
 		this_data.isMapped = "Yes";
 		this_data.type = "CustomObjectData";
+		this_data.emailAddress = data_list[i].emailAddress;
 
 		this_data.fieldValues.push({
 			"id": "361",
