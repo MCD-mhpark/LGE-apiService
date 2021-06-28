@@ -61,7 +61,11 @@ class CustomObjectData {
 	}
 
 	update(parentId, id, customObjectData, cb) {
+		console.log("Eloqua log");
+		console.log(customObjectData)
+		
 		const data = _classPrivateFieldLooseBase(this, _parent)[_parent]._validate(['accessedAt', 'accountId', 'contactId', 'createdAt', 'createdBy', 'currentStatus', 'customObjectRecordStatus', 'depth', 'description', 'fieldValues', 'folderId', 'id', 'name', 'permissions', 'scheduledFor', 'sourceTemplateId', 'type', 'uniqueCode', 'updatedAt', 'updatedBy'], customObjectData);
+		
 
 		return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
 			api: 'REST',

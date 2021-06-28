@@ -19,7 +19,8 @@ const schedule = require('node-schedule-tz');
 // var engine = require('ejs-locals');
 
 
-var Jobs;
+var Global_Jobs;
+var KR_Jobs;
 // var oracledb = require('oracledb');
 // var dbConfig = require('./config/dbconfig.js');
 
@@ -194,7 +195,7 @@ app.use(function(err, req, res, next) {
 
 
 
-function schedule_Request(){
+function schedule_Request_GLOBAL(){
 	let uniqe_jobs_name = "B2B GERP GLOBAL" +  moment().format('YYYYMMDD');
 	let second = "0";
 	let minutes = "05";
@@ -205,7 +206,7 @@ function schedule_Request(){
 	var schedate = second + ' ' + minutes + ' ' + hours + ' ' + dayofmonth + ' ' + month + ' ' + weekindex;
 
 	//test data
-	Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,"Asia/Seoul" ,async function(){
+	Global_Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,"Asia/Seoul" ,async function(){
 		// let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
 		let bant_list = ["AS" , "CM" , "ID" , "IT" , "Solution"];
 		bant_list.forEach( async BusinessName =>{
@@ -215,9 +216,31 @@ function schedule_Request(){
 	});
 }
 
+function schedule_Request_KR(){
+	let uniqe_jobs_name = "B2B GERP KR" +  moment().format('YYYYMMDD');
+	let second = "0";
+	let minutes = "*/10";
+	let hours = "*";
+	let dayofmonth = "*";
+	let month = "*";
+	let weekindex = "*";
+	var schedate = second + ' ' + minutes + ' ' + hours + ' ' + dayofmonth + ' ' + month + ' ' + weekindex;
+
+	//test data
+	KR_Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,"Asia/Seoul" ,async function(){
+		// let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
+		await b2bgerp_kr_us_data_contacts.senderToB2BGERP_KR();
+	});
+}
+
 if(__dirname == "/home/opc/LGE/b2bgerp_global"){
 	console.log("B2B GERP GLOBAL SCHEDULER REG");
-	schedule_Request();
+	schedule_Request_GLOBAL();
+} 
+
+if(__dirname == "/home/opc/LGE/b2bgerp_kr"){
+	console.log("B2B GERP KR SCHEDULER REG");
+	schedule_Request_KR();
 } 
 
 if(os.type().indexOf("Windows") > -1) global.OS_TYPE = "Windows"

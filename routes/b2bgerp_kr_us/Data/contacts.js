@@ -5,10 +5,10 @@ const {
 var router = express.Router();
 var utils = require('../../common/utils');
 var moment = require('moment-timezone');
-const { response, request } = require('express');
 //const request =  require('request'); 
 var request_promise = require('request-promise');
-
+var request = require('request');
+var fs = require("mz/fs");
 var dirPath = "KR_TEST";
 
 //=====================================================================================================================
@@ -19,7 +19,7 @@ function req_res_logs(filename, business_name, data) {
 	// business_name : 사업부별 name
 	// data : log 저장할 데이터
 
-	var today = moment().format("YYYY-MM-DD");
+	var today = moment().format("YYYY-MM-DD") + "_" + "MAT_TO_B2BGERPKR";
 	var dirPath = utils.logs_makeDirectory(today);
 	console.log("fileWrite Path : " + dirPath);
 
@@ -124,7 +124,8 @@ function Convert_B2BGERP_KR_DATA(_cod_data) {
 			//LEAD_NAME
 			//"[MQL]"+"_" + GetCustomFiledValue(FieldValues_data, 100202) + "_" + moment().format('YYYYMMDD');
 			moment.locale('kr');
-			result_item.INTERFACE_ID = moment().format('YYYYMMDD') + "8" + lpad(seq_cnt, 5, "0");
+			// result_item.INTERFACE_ID = moment().format('YYYYMMDD') + "8" + lpad(seq_cnt, 5, "0");
+			result_item.INTERFACE_ID = moment().format('YYYYMMDD') + "8";
 
 			result_item.ESTIMATION_ID = GetCustomObjectValue(267, cod_elements[i], "N"); //견적번호 X
 			result_item.ESTIMATION_SEQ_NO = GetCustomObjectValue(268, cod_elements[i], "N"); //견적상세번호 X
@@ -170,6 +171,8 @@ function Convert_B2BGERP_KR_DATA(_cod_data) {
 			result_item.ATTRIBUTE_12 = "";
 
 			result_item.LEAD_SOURCE_NAME = GetCustomObjectValue(318, cod_elements[i], "N"); //Platform & Activity
+			result_item.LEAD_NAME = GetCustomObjectValue(317, cod_elements[i], "N") + "_" + moment().format('YYYYMMDD') + "_" + GetCustomObjectValue(269, cod_elements[i], "N") ; 
+			//Leadname 조합 B2B사이트명_YYYYMMDD_r고객사명
 
 			result_item.REGISTER_DATE = moment().format('YYYY-MM-DD hh:mm:ss'); //등록일자
 
@@ -185,17 +188,18 @@ function Convert_B2BGERP_KR_DATA(_cod_data) {
 }
 
 //CustomObject 기간 조회 Eloqua API Version 1.0
-async function GetKR_CustomDataSearch(_start_date, _end_date, _parentId) {
+async function GetKR_CustomDataSearch(_parentId) {
 	var return_data = {};
 	var parentId = _parentId;
 
 	//엘로코아 시간으로 -13시간 차이가 나기때문에 -13시간으로 조회 합니다. (미국의 서머타임 시간차이)
-	moment.locale('kr');
-	var start_date = moment(_start_date).subtract(13, 'Hour').format("YYYY-MM-DD HH:mm:ss");
-	var end_date = moment(_end_date).subtract(13, 'Hour').format("YYYY-MM-DD HH:mm:ss");
+	// moment.locale('kr');
+	// var start_date = moment(_start_date).subtract(13, 'Hour').format("YYYY-MM-DD HH:mm:ss");
+	// var end_date = moment(_end_date).subtract(13, 'Hour').format("YYYY-MM-DD HH:mm:ss");
 
-	var queryString = "?search=" + "CreatedAt<'" + end_date + "'CreatedAt>'" + start_date + "'";
-
+	// var queryString = "?search=" + "CreatedAt<'" + end_date + "'CreatedAt>'" + start_date + "'";
+	// var queryString = "?search=483='N'";
+	var queryString = "?search=B2B_GERP_KR_____1='N'"
 
 
 	// Get 요청하기 http://www.google.com 
@@ -207,6 +211,9 @@ async function GetKR_CustomDataSearch(_start_date, _end_date, _parentId) {
 	};
 
 	await request_promise.get(options, function (error, response, body) {
+		// console.log(body);
+		// console.log(response.statusMessage);
+		// console.log(response.statusCode);
 		return_data = JSON.parse(body);
 	});
 
@@ -214,49 +221,49 @@ async function GetKR_CustomDataSearch(_start_date, _end_date, _parentId) {
 }
 
 router.post('/sender', async function (req, res, next) {
-	//LG전자 KR 개발 Endpoint
-	//var send_url = "";
-	//LG전자 KR 운영 Endpoint
-	var send_url = "";
+	senderToB2BGERP_KR()
+});
+async function senderToB2BGERP_KR(){
 
 	var parentId = 39;  // 한국영업본부 커스텀 오브젝트 ID
 
-	var start_date = '2021-05-17 09:00:01';
-	var end_date = '2021-05-17 23:59:59';
+	// var start_date = '2021-05-17 09:00:01';
+	// var end_date = '2021-05-17 23:59:59';
 
-	var COD_list = await GetKR_CustomDataSearch(start_date, end_date, parentId);
 
+
+	var COD_list = await GetKR_CustomDataSearch(parentId);
 
 	var B2B_GERP_KR_DATA = Convert_B2BGERP_KR_DATA(COD_list);
-
-	var send_data = {
-		elements: B2B_GERP_KR_DATA,
-		total: B2B_GERP_KR_DATA.length
-	}
-	console.log(send_data.total);
-
-	res.json(send_data);
+	// var send_data = {
+	// 	elements: B2B_GERP_KR_DATA,
+	// 	total: B2B_GERP_KR_DATA.length
+	// }
 
 
-	//res.json(COD_list.elements);
-	// if (contact_list != null) {
+	//LG전자 KR 개발 Endpoint
+	let dev_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloquaKR.lge"
+	//LG전자 KR 운영 Endpoint
+	// let prd_url = 
+	
+	if (B2B_GERP_KR_DATA != null && B2B_GERP_KR_DATA.length > 0) {
+	    var headers = {
+	        'Content-Type': "application/json",
+	        'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
+	    }
 
-	//     // contacts_data : Eloqua 에 Bant 업데이트를 하기 위한 필드
-	//     // request_data : B2B GERP 에 전송할 데이터
-	//     var request_data = await Convert_B2BGERP_GLOBAL_DATA( contact_list, business_name);
-	//     var bant_update_list = contact_list.elements;
-	//     var headers = {
-	//         'Content-Type': "application/json",
-	//         'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
-	//     }
+	    options = {
+	        url : dev_url,
+	        method: "POST",
+	        headers:headers,
+	        body : { ContentList: B2B_GERP_KR_DATA } ,
+	        json : true
+	    };
 
-	//     options = {
-	//         url : send_url,
-	//         method: "POST",
-	//         headers:headers,
-	//         body : { ContentList: request_data } ,
-	//         json : true
-	//     };
+		// res.json(COD_list);
+		// return;
+
+
 
 	// // 요청에 대한 로그를 쌓기 위함
 	// let total_logs = {
@@ -266,44 +273,87 @@ router.post('/sender', async function (req, res, next) {
 	//   convert_total : request_data.length
 	// }
 
-	// req_res_logs("reqEloqua" , business_name , contact_list );
-	// req_res_logs("reqConvert" , business_name , request_data );
+	req_res_logs("reqEloqua" , "MAT_TO_B2BGERPKR" , COD_list );
+	req_res_logs("reqConvert" , "MAT_TO_B2BGERPKR", B2B_GERP_KR_DATA );
 	// req_res_logs("reqTotal" , business_name , total_logs );
+	
 
-
-
-	// if(contact_list && contact_list.total) {
 	//   var bant_result_list = await setBant_Update( business_name , bant_update_list );
 	//   req_res_logs("bantResult" , business_name , bant_result_list );
 	//   res.json(bant_result_list);
-	// }     
+	    var result = await request(options, async function (error, response, body) {
 
-	// return;
+	        // console.log(11);
+	        // console.log(response);
+			let errorData = {
+				errorCode : response.statusCode,
+				errorMsg : error.message 
+			}
+	        if(error){
+	            console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
+	            console.log(error);
+				req_res_logs("responseError" , "MAT_TO_B2BGERPKR" , errorData );	
+	        }else if(!error && response.statusCode != 200 ){
+				req_res_logs("responseError" , "MAT_TO_B2BGERPKR" , errorData );
+			}else if (!error && response.statusCode == 200) {
+	    		req_res_logs("response" , "MAT_TO_B2BGERPKR" , body.resultData );
+	            if(B2B_GERP_KR_DATA.length > 0 ) {
+	                // console.log(B2B_GERP_KR_DATA);
+	                let trans_up_list = await getTransfer_UpdateData( COD_list.elements);
+					// console.log(trans_up_list[0].fieldValues);
+					await sendTransfer_Update(parentId , trans_up_list);
+	            }   
+	        }
+	    });
 
-	//     var result = await request(options, async function (error, response, body) {
+	}
+	else {
+		let noneData = {
+			errorInfo : null ,
+			errorMessage : "보낼 데이터가 없습니다."
+		}
+		req_res_logs("noneData" , "MAT_TO_B2BGERPKR" , noneData );
+		
+	}
+}
 
-	//         // console.log(11);
-	//         // console.log(response);
-	//         if(error){
-	//             console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
-	//             console.log(error);
-	//         } 
-	//         if (!error && response.statusCode == 200) {
+async function getTransfer_UpdateData(TRANS_KR_LIST){
 
-	//     req_res_logs("response" , business_name , body.resultData );
-	//             if(contact_list.length > 0 ) {
-	//                 console.log(contact_list);
-	//                 setBant_Update( business_name , bant_update_list);
-	//             }            
-	//         }
-	//     });
+	let return_list = [];
+	for(const kr_data of TRANS_KR_LIST){
 
-	// }
-	// else {
+		for(let i = 0 ; i <  kr_data.fieldValues.length ; i++){
+			if(kr_data.fieldValues[i].id == "483") { kr_data.fieldValues[i].value = 'Y' }
+			
+			if(kr_data.fieldValues[i].id == "301" || kr_data.fieldValues[i].id == "300" || kr_data.fieldValues[i].id == "299" || kr_data.fieldValues[i].id == "298"){ 
+			 	kr_data.fieldValues[i].value = utils.timeConverter("GET_UNIX" , kr_data.fieldValues[i].value ) 
+			}
 
-	// }
-});
+			//{ type: 'FieldValue', id:  '301', value: '4/18/2021 12:00:00 AM' },
+			// { type: 'FieldValue', id: '300', value: '4/18/2021 12:00:00 AM' },
+			// { type: 'FieldValue', id: '299', value: '4/18/2021 12:00:00 AM' },
+			// { type: 'FieldValue', id: '298', value: '4/18/2021 12:00:00 AM' },
+		}
 
+		return_list.push(kr_data);
+	}
+
+	return return_list;
+}
+
+async function sendTransfer_Update( parentId , KR_DATA_LIST){
+
+	for(let item of KR_DATA_LIST){
+		await b2bkr_eloqua.data.customObjects.data.update(parentId , item.id, item).then((result) => {
+			console.log(result);
+			return_data = result;
+		}).catch((err) => {
+			console.error(err);
+			console.error(err.message);
+			return_data = err;
+		});
+	}
+}
 
 //LEAD_NAME
 //"[MQL]"+"_" + GetCustomFiledValue(FieldValues_data, 100202) + "_" + moment().format('YYYYMMDD');
@@ -595,7 +645,11 @@ function ConvertCustomObjectData(_contact, _req_data) {
 		"id": "267",
 		"value": _req_data.estimationId
 	}); //견적번호	text	text			
-
+	convert_data_entity.fieldValues.push({
+		"id": "483",
+		"value": "N"
+	}); //전송여부	text	text			
+	
 
 
 
@@ -1309,3 +1363,4 @@ function GetDataValue(contacts_fieldvalue) {
 	}
 }
 module.exports = router;
+module.exports.senderToB2BGERP_KR = senderToB2BGERP_KR;

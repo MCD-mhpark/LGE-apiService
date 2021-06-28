@@ -3,7 +3,8 @@ var utils = require('../../common/utils');
 var express = require('express');
 var request = require('request');
 var router = express.Router();
-var fs 		= require("mz/fs");
+var fs = require("mz/fs");
+let lodash = require("lodash");
 
 //=====================================================================================================================================================================================================
 // Last Update Date : 2021-02-10
@@ -266,58 +267,59 @@ router.get('/user', function (req, res, next) {
 
         var return_data = {};
 
-       
-        
-        var responsibility_data = CONVERT_IAM_USER_DATA(result.data);
-       
-        req_res_logs("user_eloqua" , result.data);
-        req_res_logs("user_convert" , responsibility_data);
- 
-        if (responsibility_data.length > 0) {
-            return_data.ContentList = responsibility_data;
+
+
+        var user_data = CONVERT_IAM_USER_DATA(result.data);
+
+        user_data.totalDataCount = user_data.length;
+        req_res_logs("user_eloqua", result.data);
+        req_res_logs("user_convert", user_data);
+
+        if (user_data.length > 0) {
+            return_data.ContentList = user_data;
             return_data.page = result.data.page;
             return_data.pageSize = result.data.pageSize;
             return_data.total = result.data.total;
-          
+
             //console.log(request_data);
             //res.json({ ContentList: request_data });
 
             var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam/api2db/put/SODUSER_SB";
             var headers = {
                 'Content-Type': "application/json",
-                'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
+                'x-Gateway-APIKey': "da7d5553-5722-4358-91cd-9d89859bc4a0"
             }
-            
+
             options = {
-                url : send_url,
+                url: send_url,
                 method: "POST",
-                headers:headers,
-                body : return_data ,
-                json : true
+                headers: headers,
+                body: return_data,
+                json: true
             };
-            
+
             //return res.json(return_data);
             //최초 연계시 Eloqua 데이터 전체를 IAM 쪽으로 이관
             var result = await request(options, async function (error, response, body) {
-        
+
                 // console.log(11);
                 // console.log(response);
-                if(error){
+                if (error) {
                     console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
                     console.log(error);
-                    req_res_logs("user_response_error" , body);
+                    req_res_logs("user_response_error", body);
                 }
-                if(response.statusCode != 200){
-                    req_res_logs("user_response_error" , body);
+                if (response.statusCode != 200) {
+                    req_res_logs("user_response_error", body);
                 }
 
                 if (!error && response.statusCode == 200) {
                     result = body;
                     // console.log(11);
                     console.log(body);
-                    
+
                     res.json(body);
-                    req_res_logs("user_response" , body);
+                    req_res_logs("user_response", body);
                 }
             });
         }
@@ -357,14 +359,14 @@ function CONVERT_IAM_USER_RESPONSIBILITY_DATA(_eloqua_items) {
 
                 // 롤정보는 IAM 측에서 필드 max length 가 4자이기때문에 4자로 자르도록 해서 전송
                 // 법인 정보 필드가 IAM 측에서 필드 max length가 8자이기떄문에 9글자가 넘는건 테스트로 제외하고 보내도록 변경
-                if(GetCorporationExtraction(security_data.name).length >= 9) continue;
+                if (GetCorporationExtraction(security_data.name).length >= 9) continue;
 
                 var data = new IAM_IF_USER_RESPONSIBILITY_ENTITY();
                 data.IF_USER_RESPONSIBILITY_ID = GetIFNumber("1000", item.id);                // number pk Interface 사용자 테이블 ID  1000 + Eloqua UserID {4자리 0000}
                 data.SYSTEM_CODE = "ELOQUA";                                                 // 고정값 "ELOQUA"
                 data.USER_CODE = GetDataValue(item.federationId);                            // 사번 
 
-                data.USER_AFFILIATE_CODE = GetRullExtraction(security_data.name).substring(0,4);            // 롤정보
+                data.USER_AFFILIATE_CODE = GetRullExtraction(security_data.name).substring(0, 4);            // 롤정보
 
                 data.USER_CORPORATION_CODE = GetCorporationExtraction(security_data.name);   // 법인정보
                 data.RESPONSIBILITY_CODE = security_data.id;                                 // Eloqua Security ID
@@ -413,60 +415,61 @@ router.get('/user_responsibility', function (req, res, next) {
     //queryString['count'] = 5;
     //federationId LG전자 사번 ( 페더레이션 ID )
     //queryString['page'] = 1;
-    
-    
-    iam_eloqua.system.users.get(queryString).then(async(result) => {
+
+
+    iam_eloqua.system.users.get(queryString).then(async (result) => {
 
         console.log(result.data);
         // res.json(result.data);
-        
+
         var return_data = {};
 
         var user_responsibility_data = CONVERT_IAM_USER_RESPONSIBILITY_DATA(result.data);
         // console.log(user_responsibility_data);
 
-        req_res_logs("user_responsibility_eloqua" , result.data);
-        req_res_logs("user_responsibility_convert" , user_responsibility_data);
-        
+        user_responsibility_data.totalDataCount = user_responsibility_data.length;
+        req_res_logs("user_responsibility_eloqua", result.data);
+        req_res_logs("user_responsibility_convert", user_responsibility_data);
+
         if (user_responsibility_data.length > 0) {
             return_data.ContentList = user_responsibility_data;
             return_data.total = user_responsibility_data.length;
             // res.json(return_data);
-        
+
             //console.log(request_data);
             //res.json({ ContentList: request_data });
 
             var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam/api2db/put/SODUSERRESP_SB";
             var headers = {
                 'Content-Type': "application/json",
-                'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
+                'x-Gateway-APIKey': "da7d5553-5722-4358-91cd-9d89859bc4a0"
             }
-          
+
             options = {
-                url : send_url,
+                url: send_url,
                 method: "POST",
-                headers:headers,
-                body : return_data ,
-                json : true
+                headers: headers,
+                body: return_data,
+                json: true
             };
 
             //return res.json(return_data);
 
             var result = await request(options, async function (error, response, body) {
-      
+
                 // console.log(11);
                 // console.log(response);
-                if(error){
+                if (error) {
                     console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
                     console.log(error);
-                } 
+                }
                 if (!error && response.statusCode == 200) {
                     result = body;
                     // console.log(11);
                     console.log(body);
-                    
+
                     res.json(body);
-                    req_res_logs("user_responsibility_response" , body);
+                    req_res_logs("user_responsibility_response", body);
                 }
             });
 
@@ -513,30 +516,30 @@ function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items) {
             data.ATTRIBUTE1 = "";
             data.ATTRIBUTE2 = "";
             data.ATTRIBUTE3 = "";
-            
+
 
             // 사업부별 관리자 사번 전달
-            switch(data.RESPONSIBILITY_OPTION_CODE){
-                case "ID" : 
-                case "IT" :
-                data.ATTRIBUTE4 = "268965" //  // ID / IT : 서판규 선임 268965
-                break;
+            switch (data.RESPONSIBILITY_OPTION_CODE) {
+                case "ID":
+                case "IT":
+                    data.ATTRIBUTE4 = "268965" //  // ID / IT : 서판규 선임 268965
+                    break;
 
-                case "Solar" : 
-                case "CM" :
-                case "CLS" : 
-                data.ATTRIBUTE4 = "261922" // Solar / CM / CLS / Solution  김효진 선임 261922
-                break;
+                case "Solar":
+                case "CM":
+                case "CLS":
+                    data.ATTRIBUTE4 = "261922" // Solar / CM / CLS / Solution  김효진 선임 261922
+                    break;
 
-                case "AS" : 
-                data.ATTRIBUTE4 = "255147" // AS : 김정준 선임 255147
-                break;
+                case "AS":
+                    data.ATTRIBUTE4 = "255147" // AS : 김정준 선임 255147
+                    break;
 
-                case "KR" : 
-                data.ATTRIBUTE4 = "239827" // KR : 박종명 책임 239827 
-                default :
-                data.ATTRIBUTE4 = "268965" // HQ 서판규 선임 268965
-                break;
+                case "KR":
+                    data.ATTRIBUTE4 = "239827" // KR : 박종명 책임 239827 
+                default:
+                    data.ATTRIBUTE4 = "268965" // HQ 서판규 선임 268965
+                    break;
             }
 
             data.ATTRIBUTE5 = "";
@@ -573,15 +576,16 @@ router.get('/responsibility', async function (req, res, next) {
         count: 1000
     }
 
-    iam_eloqua.system.users.security_groups(queryString).then(async(result) => {
-      var return_data = {};
+    iam_eloqua.system.users.security_groups(queryString).then(async (result) => {
+        var return_data = {};
         var responsibility_data = CONVERT_IAM_RESPONSIBILITY_DATA(result.data);
 
-        req_res_logs("responsibility_eloqua" , result.data);
-        req_res_logs("responsibility_convert" , responsibility_data);
+        responsibility_data.totalDataCount = responsibility_data.length;
+        req_res_logs("responsibility_eloqua", result.data);
+        req_res_logs("responsibility_convert", responsibility_data);
 
         if (responsibility_data.length > 0) {
-            
+
             //console.log(responsibility_data);
             return_data.ContentList = responsibility_data;
             //return_data.elements = responsibility_data;
@@ -590,38 +594,38 @@ router.get('/responsibility', async function (req, res, next) {
             return_data.total = result.data.total;
             console.log(return_data);
             //res.json(return_data);
-         
+
             var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam/api2db/put/SODRESPONSIBILITY_SB";
             var headers = {
                 'Content-Type': "application/json",
-                'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
+                'x-Gateway-APIKey': "da7d5553-5722-4358-91cd-9d89859bc4a0"
             }
-          
+
             options = {
-                url : send_url,
+                url: send_url,
                 method: "POST",
-                headers:headers,
-                body : return_data ,
-                json : true
+                headers: headers,
+                body: return_data,
+                json: true
             };
 
-          //return res.json(return_data);
+            //return res.json(return_data);
 
             var result = await request(options, async function (error, response, body) {
-      
+
                 // console.log(11);
                 // console.log(response);
-                if(error){
+                if (error) {
                     console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
                     console.log(error);
-                } 
+                }
                 if (!error && response.statusCode == 200) {
                     result = body;
                     // console.log(11);
                     console.log(body);
-                    
+
                     res.json(body);
-                    req_res_logs("responsibility_response" , body);
+                    req_res_logs("responsibility_response", body);
                 }
             });
             //console.log(request_data);
@@ -648,43 +652,101 @@ router.get('/responsibility', async function (req, res, next) {
 //====================================================
 //#region (진행중) IAM USER Create Endpoint 호출 영역
 
-function Convert_IAM_TO_ELOQUA_DATA(_body) {
+function Convert_IAM_TO_ELOQUA_DATA(_body , res) {
 
-    var body_data = _body;
+    let origin_data = _body;
+    let copy_data = lodash.uniqBy(_body , "EMAIL");
+    let temp ;
 
-    var eloqua_data = new ELOQUA_CREATE_ENTITY();
 
-    if( body_data.ContentList != null && body_data.ContentList.length > 0)
-    {
-        eloqua_data.firstName = body_data.ContentList[0].firstName;
-        eloqua_data.lastName = body_data.ContentList[0].lastName;
-        eloqua_data.federationId = body_data.ContentList[0].federationId;
-        eloqua_data.loginName = body_data.ContentList[0].loginName;
-        eloqua_data.name = body_data.ContentList[0].Name;
-        eloqua_data.emailAddress = body_data.ContentList[0].emailAddress;
-        eloqua_data.address1 = body_data.ContentList[0].ORGAN;   
-        eloqua_data.address2 = body_data.ContentList[0].ORGAN_NAME;
-        eloqua_data.city = body_data.ContentList[0].MANAGEMENT_ORGAN;
-        eloqua_data.state = body_data.ContentList[0].MANAGEMENT_ORGAN_NAME;
-        eloqua_data.country = body_data.ContentList[0].X_ORGAN;
-        eloqua_data.zipCode = body_data.ContentList[0].X_ORGAN_NAME;
-        eloqua_data.jobTitle = body_data.ContentList[0].POSITION_NAME;
-        eloqua_data.department = body_data.ContentList[0].DIVISION;
+    for(let i = 0 ; i < copy_data.length ; i++){
+        let temp_response_code = copy_data[i].RESPONSIBILITY_CODE ; 
+        let duple_list = [];
+        
+        let idx = origin_data.indexOf(copy_data[i].RESPONSIBILITY_CODE);
 
-        for(i=0; i<body_data.ContentList.length; i++)
-        {
-            eloqua_data.security_groups.push( body_data.ContentList[i].RESPONSIBILITY_CODE );
+        console.log("First IDX : " + idx);
+        while(idx != -1){
+            console.log("origin_data[idx].RESPONSIBILITY_CODE : " + origin_data[idx].RESPONSIBILITY_CODE);
+            duple_list.push(origin_data[idx].RESPONSIBILITY_CODE);
+            idx = origin_data.indexOf(copy_data , idx + 1) ;
         }
+        
+        console.log(duple_list);
+        
 
+        // let temp_response_code = copy_data[i].RESPONSIBILITY_CODE ; 
+        // delete copy_data[i].RESPONSIBILITY_CODE;
+        // copy_data[i].RESPONSIBILITY_CODE = [];
+        // copy_data[i].RESPONSIBILITY_CODE.push(temp_response_code);
     }
 
-    return eloqua_data;
+    let eloqua_data = new ELOQUA_CREATE_ENTITY();
+    console.log(2)
+    let emailList = []; 
+    let convert_data = [];
+
+    for (let i = 0; i < copy_data.length; i++) {
+    
+        for(let j = 0; j < origin_data.length ; j++){
+            if(copy_data[i].EMAIL == origin_data[j].EMAIL ){
+                
+                console.log( copy_data[j].RESPONSIBILITY_CODE );
+                copy_data[i].RESPONSIBILITY_CODE = "_" (origin_data[j].RESPONSIBILITY_CODE);
+            }
+        }
+    }
+
+   
+
+    res.json(copy_data);
+    return;
+
+    for (let i = 0; i < body_data.length; i++) {
+        let this_data = body_data[i];
+        if (body_data != null && body_data.length > 0) continue;
+
+        if(emailList.indexOf(this_data.EMAIL) < 0) {
+            emailList.push({
+                index : i, 
+                email : this_data.EMAIL,
+                securityGroupIDS : [this_data.RESPONSIBILITY_CODE]
+            })
+        }else{
+           
+        }
+         
+
+        eloqua_data.firstName = this_data.ContentList[0].firstName;
+        eloqua_data.lastName = this_data.ContentList[0].lastName;
+        eloqua_data.federationId = this_data.ContentList[0].federationId;
+        eloqua_data.loginName = this_data.ContentList[0].loginName;
+        eloqua_data.name = this_data.ContentList[0].Name;
+        eloqua_data.emailAddress = this_data.ContentList[0].emailAddress;
+        eloqua_data.address1 = this_data.ContentList[0].ORGAN;
+        eloqua_data.address2 = this_data.ContentList[0].ORGAN_NAME;
+        eloqua_data.city = this_data.ContentList[0].MANAGEMENT_ORGAN;
+        eloqua_data.state = this_data.ContentList[0].MANAGEMENT_ORGAN_NAME;
+        eloqua_data.country = this_data.ContentList[0].X_ORGAN;
+        eloqua_data.zipCode = this_data.ContentList[0].X_ORGAN_NAME;
+        eloqua_data.jobTitle = this_data.ContentList[0].POSITION_NAME;
+        eloqua_data.department = this_data.ContentList[0].DIVISION;
+
+        // for (let j = 0; j < this_data.RESPONSIBILITY_CODE.length; j++) {
+        //     eloqua_data.security_groups.push(this_data.RESPONSIBILITY_CODE[j]);
+        // }
+  
+        convert_data.push(this_data);
+    }
+
+    // return eloqua_data;
+    res.json( eloqua_data);
 }
 
 router.post('/user_data', function (req, res, next) {
-
-    var body_data = Convert_IAM_TO_ELOQUA_DATA(req.body);
-
+    console.log(1234);
+    var body_data = Convert_IAM_TO_ELOQUA_DATA(req.body , res);
+    return;
     iam_eloqua.system.users.create(body_data).then((result) => {
         console.log(result.data);
         res.json(result.data);
@@ -711,7 +773,7 @@ router.post('/user/create', function (req, res, next) {
 
     iam_eloqua.system.users.create(body_data).then(async (result) => {
         console.log(result.data);
-        let result_list = await securityGroup_Modify(result.data.id , req.body.add_sc_list , res);
+        let result_list = await securityGroup_Modify(result.data.id, req.body.add_sc_list, res);
         res.json(result_list);
     }).catch((err) => {
         console.error(err);
@@ -737,7 +799,7 @@ router.post('/user/test_create', async function (req, res, next) {
     delete req.body.securityGroups;
     await iam_eloqua.system.users.create(req.body).then(async (result) => {
         console.log(result.data.id);
-        if(result.data.id) await securityGroup_Modify(result.data.id , add_sc_list , res);
+        if (result.data.id) await securityGroup_Modify(result.data.id, add_sc_list, res);
     }).catch((err) => {
         console.error(err);
         res.json(err);
@@ -771,41 +833,41 @@ router.get('/user/test_getOne/:id', function (req, res, next) {
 
 
 router.post('/user/securityGroup', async function (req, res, next) {
-    await securityGroup_Modify(req.body.id , req.body.add_sg_list , res);
+    await securityGroup_Modify(req.body.id, req.body.add_sg_list, res);
 });
 
-    //예시 Request body 참고 URL : https://docs.oracle.com/en/cloud/saas/marketing/eloqua-rest-api/op-api-rest-2.0-system-security-group-id-users-patch.html
-    // {
-    //   "id": "80",
-    //   "userinfo": {
-    //       "patchMethod": "add",
-    //       "user": {
-    //           "id": "292"
-    //       }
-    //   }
-    // }
+//예시 Request body 참고 URL : https://docs.oracle.com/en/cloud/saas/marketing/eloqua-rest-api/op-api-rest-2.0-system-security-group-id-users-patch.html
+// {
+//   "id": "80",
+//   "userinfo": {
+//       "patchMethod": "add",
+//       "user": {
+//           "id": "292"
+//       }
+//   }
+// }
 
-    //   {
-    // 	  "user_id" : 248 ,
-    // 	  "security_groupID" : 67 
-    //   }
-    async function securityGroup_Modify(user_id , add_sc_list , res ){
-      
-        var remove_sc_list = [];
-        remove_sc_list = await get_user_securityGroup(user_id, res);
-        console.log(remove_sc_list);
-        var result_list = await securityGroup_Process(user_id, remove_sc_list, add_sc_list);
-        console.log(result_list);
-        res.json(result_list);
-        // return;
-        // iam_eloqua.system.users.security_groups_add_remove(body_id, body_user_data).then((result) => {
-        //     console.log(result.data);
-        //     res.json(result.data);
-        // }).catch((err) => {
-        //     console.error(err);
-        //     res.json(err);
-        // });
-    };
+//   {
+// 	  "user_id" : 248 ,
+// 	  "security_groupID" : 67 
+//   }
+async function securityGroup_Modify(user_id, add_sc_list, res) {
+
+    var remove_sc_list = [];
+    remove_sc_list = await get_user_securityGroup(user_id, res);
+    console.log(remove_sc_list);
+    var result_list = await securityGroup_Process(user_id, remove_sc_list, add_sc_list);
+    console.log(result_list);
+    res.json(result_list);
+    // return;
+    // iam_eloqua.system.users.security_groups_add_remove(body_id, body_user_data).then((result) => {
+    //     console.log(result.data);
+    //     res.json(result.data);
+    // }).catch((err) => {
+    //     console.error(err);
+    //     res.json(err);
+    // });
+};
 
 async function get_user_securityGroup(user_id, res) {
 
@@ -822,14 +884,14 @@ async function get_user_securityGroup(user_id, res) {
     //     res.json(err);
     // });
 
-    await iam_eloqua.system.users.getOne(user_id, queryString).then( async (result) => {
-        if (!result.data.securityGroups){
+    await iam_eloqua.system.users.getOne(user_id, queryString).then(async (result) => {
+        if (!result.data.securityGroups) {
             return_list = [];
             console.log(" not data list");
         }
-        
+
         if (result.data.securityGroups) {
-            return_list = await result.data.securityGroups.filter(row => { if( row.id && row.id !== '1' )   return row.id } );
+            return_list = await result.data.securityGroups.filter(row => { if (row.id && row.id !== '1') return row.id });
         }
     }).catch((err) => {
         console.log(err);
@@ -905,12 +967,12 @@ async function securityGroup_Process(user_id, remove_sc_group, add_sc_group) {
 //#region (진행중) IAM USER Update Endpoint 호출 영역
 router.post('/update/:id', function (req, res, next) {
 
-    iam_eloqua.system.users.update(req.params.id, req.body ).then((result) => {
+    iam_eloqua.system.users.update(req.params.id, req.body).then((result) => {
         console.log(result.data);
         res.json(result.data);
-      }).catch((err) => {
+    }).catch((err) => {
         console.error(err);
-      });
+    });
 });
 // #endregion
 
@@ -1051,21 +1113,21 @@ router.get('/all_securityGroups', function (req, res, next) {
 });
 
 
-function req_res_logs(filename , data){
-	// filename : request , response 
-	// business_name : 사업부별 name
-	// data : log 저장할 데이터
+function req_res_logs(filename, data) {
+    // filename : request , response 
+    // business_name : 사업부별 name
+    // data : log 저장할 데이터
 
-	var dirPath = utils.logs_makeDirectory("IAM_SYSTEM_" + moment().format('YYYYMMDD') );
-	console.log("fileWrite Path : " + dirPath);
+    var dirPath = utils.logs_makeDirectory("IAM_SYSTEM_" + moment().format('YYYYMMDD'));
+    console.log("fileWrite Path : " + dirPath);
 
-	fs.writeFile(dirPath + filename  + ".txt", JSON.stringify(data), 'utf8', function(error){ 
-		if(error) {
-			console.log(err);
-		}else{
-			console.log('write end') ;
-		}
-	});
+    fs.writeFile(dirPath + filename + ".txt", JSON.stringify(data), 'utf8', function (error) {
+        if (error) {
+            console.log(err);
+        } else {
+            console.log('write end');
+        }
+    });
 }
 
 module.exports = router;
