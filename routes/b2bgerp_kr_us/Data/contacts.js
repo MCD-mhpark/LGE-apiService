@@ -224,7 +224,7 @@ router.post('/sender', async function (req, res, next) {
 	senderToB2BGERP_KR()
 });
 async function senderToB2BGERP_KR(){
-
+	console.log("Call senderToB2BGERP_KR + ")
 	var parentId = 39;  // 한국영업본부 커스텀 오브젝트 ID
 
 	// var start_date = '2021-05-17 09:00:01';
@@ -285,15 +285,20 @@ async function senderToB2BGERP_KR(){
 
 	        // console.log(11);
 	        // console.log(response);
-			let errorData = {
-				errorCode : response.statusCode,
-				errorMsg : error.message 
-			}
+			
 	        if(error){
 	            console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
 	            console.log(error);
+				let errorData = {
+					errorCode : response.statusCode,
+					errorMsg : error.Message 
+				}
 				req_res_logs("responseError" , "MAT_TO_B2BGERPKR" , errorData );	
 	        }else if(!error && response.statusCode != 200 ){
+				let errorData = {
+					errorCode : response.statusCode,
+					errorMsg : error.Message 
+				}
 				req_res_logs("responseError" , "MAT_TO_B2BGERPKR" , errorData );
 			}else if (!error && response.statusCode == 200) {
 	    		req_res_logs("response" , "MAT_TO_B2BGERPKR" , body.resultData );
