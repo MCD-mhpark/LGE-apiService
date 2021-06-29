@@ -145,28 +145,18 @@ function Convert_B2BGERP_KR_DATA(_cod_data) {
 			result_item.CUST_REMARK = GetCustomObjectValue(282, cod_elements[i], "N"); //고객요청사항
 			result_item.PRODUCT_DESC = GetCustomObjectValue(283, cod_elements[i], "N"); //제품설명
 
-			// result_item.ATTRIBUTE_1 = GetCustomObjectValue(296, cod_elements[i], "N"); //제품설치지역 도시
-			// result_item.ATTRIBUTE_2 = GetCustomObjectValue(297, cod_elements[i], "N"); //제품설치지역 시군구
-			// result_item.ATTRIBUTE_3 = GetCustomObjectValue(286, cod_elements[i], "N"); //카테고리명
-			// result_item.ATTRIBUTE_4 = GetCustomObjectValue(287, cod_elements[i], "N"); //상세 카테고리명
-			// result_item.ATTRIBUTE_5 = GetCustomObjectValue(288, cod_elements[i], "N"); //타입명
-			// result_item.ATTRIBUTE_6 = GetCustomObjectValue(285, cod_elements[i], "N"); //B2B 전문전 코드
-			// result_item.ATTRIBUTE_7 = GetCustomObjectValue(293, cod_elements[i], "N"); //통합회원 유니크 아이디
-			// result_item.ATTRIBUTE_8 = GetCustomObjectValue(294, cod_elements[i], "N"); //업종
-			// result_item.ATTRIBUTE_9 = GetCustomObjectValue(295, cod_elements[i], "N"); //상세업종
+			
+			result_item.ATTRIBUTE_1 = GetCustomObjectValue(296, cod_elements[i], "N"); //제품설치지역 도시 
+			result_item.ATTRIBUTE_2 = GetCustomObjectValue(297, cod_elements[i], "N"); //제품설치지역 시군구
+			result_item.ATTRIBUTE_3 = GetCustomObjectValue(285, cod_elements[i], "N"); //B2B 전문점 코드
+			result_item.ATTRIBUTE_4 = GetCustomObjectValue(286, cod_elements[i], "N"); //카테고리명
+			result_item.ATTRIBUTE_5 = GetCustomObjectValue(287, cod_elements[i], "N"); //상세 카테고리 명
+			result_item.ATTRIBUTE_6 = GetCustomObjectValue(288, cod_elements[i], "N"); //타입명
+			result_item.ATTRIBUTE_7 = GetCustomObjectValue(293, cod_elements[i], "N"); //통합회원 유니크 아이디
+			result_item.ATTRIBUTE_8 = GetCustomObjectValue(294, cod_elements[i], "N"); //업종
+			result_item.ATTRIBUTE_9 = GetCustomObjectValue(295, cod_elements[i], "N"); //상세업종
 
-			//result_item.ATTRIBUTE_1 = GetCustomObjectValue(296, cod_elements[i], "N"); //
-			result_item.ATTRIBUTE_1 = "";
-			result_item.ATTRIBUTE_2 = GetCustomObjectValue(285, cod_elements[i], "N"); //B2B 전문점 코드
-			result_item.ATTRIBUTE_3 = GetCustomObjectValue(296, cod_elements[i], "N"); //제품설치지역 도시 
-			result_item.ATTRIBUTE_4 = GetCustomObjectValue(297, cod_elements[i], "N"); //제품설치지역 시군구
-			result_item.ATTRIBUTE_5 = GetCustomObjectValue(286, cod_elements[i], "N"); //카테고리명
-			result_item.ATTRIBUTE_6 = GetCustomObjectValue(287, cod_elements[i], "N"); //상세 카테고리 명
-			result_item.ATTRIBUTE_7 = GetCustomObjectValue(288, cod_elements[i], "N"); //타입명
-			result_item.ATTRIBUTE_8 = GetCustomObjectValue(293, cod_elements[i], "N"); //통합회원 유니크 아이디
-			result_item.ATTRIBUTE_9 = GetCustomObjectValue(294, cod_elements[i], "N"); //업종
-			result_item.ATTRIBUTE_10 = GetCustomObjectValue(295, cod_elements[i], "N"); //상세업종
-
+			result_item.ATTRIBUTE_10 = "";
 			result_item.ATTRIBUTE_11 = "";
 			result_item.ATTRIBUTE_12 = "";
 

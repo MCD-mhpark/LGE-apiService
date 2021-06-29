@@ -1172,12 +1172,15 @@ bant_send = async function(business_name , state_date , end_date ){
 
 	// console.log(contacts_data);
 
-    if (contact_list != null) {
+	// 테스트용 데이터 반드시 지워야 함
+	
+    // if (contact_list != null) {
 
         // contacts_data : Eloqua 에 Bant 업데이트를 하기 위한 필드
         // request_data : B2B GERP 에 전송할 데이터
         var request_data = await Convert_B2BGERP_GLOBAL_DATA( contact_list, business_name);
-        var bant_update_list = contact_list.elements;
+        var bant_update_list ;
+		if(contact_list) bant_update_list = contact_list.elements;
         var headers = {
             'Content-Type': "application/json",
             'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
@@ -1191,6 +1194,9 @@ bant_send = async function(business_name , state_date , end_date ){
             json : true
         };
 
+		// 테스트용 데이터 반드시 지워야 함
+		request_data = await getLeadnumberData();
+
 		// 사업부별 Eloqua Data 건수 및 실제 전송 건수 로그를 쌓기 위함 (이메일 필터링에 의해 Eloqua Data 건수와 실제 전송 건수 는 다를 수 있음)
 		let total_logs = {
 			bsname : business_name ,
@@ -1200,11 +1206,25 @@ bant_send = async function(business_name , state_date , end_date ){
 		}
 
 		// reqEloqua : Eloqua Data List , reqConvert : 실제 전송 list , reqTotal : Eloqua Data 건수 및 실제 전송 건수 기록
-		req_res_logs("reqEloqua" , business_name , contact_list );
-		req_res_logs("reqConvert" , business_name , request_data );
-		req_res_logs("reqTotal" , business_name , total_logs );
+		// req_res_logs("reqEloqua" , business_name , contact_list );
+		// req_res_logs("reqConvert" , business_name , request_data );
+		// req_res_logs("reqTotal" , business_name , total_logs );
 		
-        var result = await request(options, async function (error, response, body) {
+
+
+		
+
+
+		// MQL Data 전송 전 MQL Data List 를 CustomObject 에 적재하기 위해 데이터 형태 변경
+		let mql_customobject_list = await CONVERT_B2BGERP_GLOBAL_CUSTOMOBJECT(request_data);
+		req_res_logs("reqCustomData" , business_name , mql_customobject_list );
+		// MQL Data 전송 전 MQL Data List 를 CustomObject 에 적재
+		let update_mql_data = await mqldata_to_eloqua_send(mql_customobject_list);
+
+		// let update_data = await mqldata_push_customobjectid(request_data , update_mql_data);
+
+		return;
+        await request(options, async function (error, response, body) {
 
             // console.log(11);
             // console.log(response);
@@ -1223,10 +1243,249 @@ bant_send = async function(business_name , state_date , end_date ){
             }
         });
         
-    }
-    else {
 
-    }
+}
+
+async function mqldata_to_eloqua_send(convert_mql_data){
+	let return_data = undefined;
+	let parent_id = 46;
+	for(const mqldata of convert_mql_data){
+		await b2bkr_eloqua.data.customObjects.data.create(parent_id, mqldata).then((result) => {
+			console.log(result);
+			return_data = result;
+		}).catch((err) => {
+			console.error(err);
+			console.error(err.message);
+			return_data = err.message;
+		});
+	}
+
+	return return_data;
+	
+}
+
+// function mqldata_push_customobjectid(origin_data , update_data ){
+// 	for(let i = 0; i< origin_data.length ; i++){
+
+// 		for(const update_item of update_data){
+// 			if(origin_data[i].ATTRIBUTE_1 === update_item.ATTRIBUTE_1 ){
+// 				origin_data[i].CUSTOMOBJECT_ID = update_item.
+// 			}
+// 		}
+// 	}
+// }
+
+
+
+function CONVERT_B2BGERP_GLOBAL_CUSTOMOBJECT(request_data){
+	let mql_list = [];
+	for(const item of request_data){
+		let mql_data = {};
+		mql_data.fieldValues = [];
+		
+		mql_data.contactId = item.ATTRIBUTE_1;
+		mql_data.isMapped = "Yes" ;
+		mql_data.type = "CustomObjectData";
+
+		mql_data.fieldValues.push({
+			"id": "484" ,
+			"value": item.INTERFACE_ID
+		}) 
+
+		mql_data.fieldValues.push({
+			"id": "485" ,
+			"value": item.LEAD_NAME
+		}) 
+
+		mql_data.fieldValues.push({
+			"id": "486" ,
+			"value": item.SITE_NAME
+		}) 
+
+		mql_data.fieldValues.push({
+			"id": "487" ,
+			"value": item.LEAD_SOURCE_NAME
+		}) 
+
+		mql_data.fieldValues.push({
+			"id": "488" ,
+			"value": item.LEAD_SOURCE_TYPE
+		}) 
+
+		mql_data.fieldValues.push({
+			"id": "489" ,
+			"value": item.ENTRY_TYPE
+		})
+
+		mql_data.fieldValues.push({
+			"id": "490" ,
+			"value": item.ACCOUNT
+		})
+
+		mql_data.fieldValues.push({
+			"id": "491" ,
+			"value": item.CONTACT_POINT
+		})
+
+		mql_data.fieldValues.push({
+			"id": "492" ,
+			"value": item.CORPORATION
+		})
+
+		mql_data.fieldValues.push({
+			"id": "493" ,
+			"value": item.OWNER
+		})
+
+		mql_data.fieldValues.push({
+			"id": "494" ,
+			"value": item.CORPORATION
+		})
+
+		mql_data.fieldValues.push({
+			"id": "495" ,
+			"value": item.DESCRIPTION
+		})
+
+		mql_data.fieldValues.push({
+			"id": "496" ,
+			"value": item.ATTRIBUTE_1
+		})
+
+		mql_data.fieldValues.push({
+			"id": "497" ,
+			"value": item.ATTRIBUTE_2
+		})
+
+		mql_data.fieldValues.push({
+			"id": "498" ,
+			"value": item.ATTRIBUTE_3
+		})
+
+		mql_data.fieldValues.push({
+			"id": "499" ,
+			"value": item.ATTRIBUTE_4
+		})
+
+		mql_data.fieldValues.push({
+			"id": "500" ,
+			"value": item.ATTRIBUTE_5
+		})
+
+		mql_data.fieldValues.push({
+			"id": "501" ,
+			"value": item.ATTRIBUTE_6
+		})
+
+		mql_data.fieldValues.push({
+			"id": "502" ,
+			"value": item.ATTRIBUTE_7
+		})
+
+		mql_data.fieldValues.push({
+			"id": "503" ,
+			"value": item.ATTRIBUTE_8
+		})
+
+		mql_data.fieldValues.push({
+			"id": "504" ,
+			"value": item.ATTRIBUTE_9
+		})
+
+		mql_data.fieldValues.push({
+			"id": "505" ,
+			"value": item.ATTRIBUTE_10
+		})
+
+		mql_data.fieldValues.push({
+			"id": "506" ,
+			"value": item.ATTRIBUTE_11
+		})
+
+		mql_data.fieldValues.push({
+			"id": "507" ,
+			"value": item.ATTRIBUTE_12
+		})
+
+		mql_data.fieldValues.push({
+			"id": "508" ,
+			"value": item.ATTRIBUTE_13
+		})
+
+		mql_data.fieldValues.push({
+			"id": "509" ,
+			"value": item.ATTRIBUTE_14
+		})
+
+		mql_data.fieldValues.push({
+			"id": "510" ,
+			"value": item.ATTRIBUTE_15
+		})
+
+		mql_data.fieldValues.push({
+			"id": "511" ,
+			"value": item.ATTRIBUTE_16
+		})
+
+		mql_data.fieldValues.push({
+			"id": "521" ,
+			"value": item.ATTRIBUTE_17
+		})
+
+		mql_data.fieldValues.push({
+			"id": "513" ,
+			"value": item.ATTRIBUTE_18
+		})
+
+		mql_data.fieldValues.push({
+			"id": "520" ,
+			"value": item.ATTRIBUTE_19
+		})
+
+		mql_data.fieldValues.push({
+			"id": "515" ,
+			"value": item.ATTRIBUTE_20
+		})
+
+		mql_data.fieldValues.push({
+			"id": "516" ,
+			"value": item.ATTRIBUTE_21
+		})
+
+		mql_data.fieldValues.push({
+			"id": "517" ,
+			"value": item.ATTRIBUTE_22
+		})
+
+		mql_data.fieldValues.push({
+			"id": "518" ,
+			"value": item.ATTRIBUTE_23
+		})
+
+		mql_data.fieldValues.push({
+			"id": "519" ,
+			"value": item.REGISTER_DATE
+		})
+
+		mql_data.fieldValues.push({
+			"id": "522" ,
+			"value": item.TRANSFER_DATE
+		})
+
+		mql_data.fieldValues.push({
+			"id": "523" ,
+			"value": item.TRANSFER_FLAG
+		})
+
+		mql_data.fieldValues.push({
+			"id": "524" ,
+			"value": item.LAST_UPDATE_DATE
+		});
+	
+		mql_list.push(mql_data);
+	}
+
+	return mql_list;
 }
 
 router.get('/search_gerp_data', async function (req, res, next) {
@@ -1355,17 +1614,467 @@ router.put('/menual_bant_update', async function (req, res, next) {
 // 	}
 // });
 
+router.post('/leadResponse' , async function(req , res, next){
+	console.log(123)
+	
+	res.json({ ContentList : [
+		{
+		  "INTERFACE_ID": 20210411100065,
+		  "LEAD_NAME": "[MQL]IL_AS_LG.com_20210411",
+		  "SITE_NAME": "N/A",
+		  "LEAD_SOURCE_NAME": "LG.com",
+		  "LEAD_SOURCE_TYPE": 11,
+		  "ENTRY_TYPE": "L",
+		  "ACCOUNT": "Individual ",
+		  "CONTACT_POINT": "Rajesh Mukkala/rajesh.mukkala@gmail.com/9986072499",
+		  "CORPORATION": "LGEIL",
+		  "OWNER": "",
+		  "ADDRESS": "/India",
+		  "DESCRIPTION": "Please connect with me",
+		  "ATTRIBUTE_1": 544259,
+		  "ATTRIBUTE_2": "",
+		  "ATTRIBUTE_3": null,
+		  "ATTRIBUTE_4": "rajesh.mukkala@gmail.com",
+		  "ATTRIBUTE_5": 9986072499,
+		  "ATTRIBUTE_6": "",
+		  "ATTRIBUTE_7": "Asia",
+		  "ATTRIBUTE_8": "",
+		  "ATTRIBUTE_9": "",
+		  "ATTRIBUTE_10": "AS",
+		  "ATTRIBUTE_11": "",
+		  "ATTRIBUTE_12": "",
+		  "ATTRIBUTE_13": "Sales Inquiry",
+		  "ATTRIBUTE_14": "",
+		  "ATTRIBUTE_15": "AS_Global_Asia_LG.com_I2B",
+		  "ATTRIBUTE_16": "Y",
+		  "ATTRIBUTE_17": "2021-04-10 02:21:16",
+		  "ATTRIBUTE_18": "Y",
+		  "ATTRIBUTE_19": "2021-04-10 02:21:16",
+		  "ATTRIBUTE_20": "Multi-Split",
+		  "ATTRIBUTE_21": "",
+		  "ATTRIBUTE_22": "",
+		  "ATTRIBUTE_23": null,
+		  "REGISTER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_FLAG": "Y",
+		  "LAST_UPDATE_DATE": "2021-04-11 00:08:29"
+		},
+		{
+		  "INTERFACE_ID": 20210411100066,
+		  "LEAD_NAME": "[MQL]IL_AS_LG.com_20210411",
+		  "SITE_NAME": "N/A",
+		  "LEAD_SOURCE_NAME": "LG.com",
+		  "LEAD_SOURCE_TYPE": 11,
+		  "ENTRY_TYPE": "L",
+		  "ACCOUNT": "SREE SIDDHIVINAYAK ENTERPRISE",
+		  "CONTACT_POINT": "KOMMARAJU NARASIMHA RAO/kommaraju14@gmail.com/9515441707",
+		  "CORPORATION": "LGEIL",
+		  "OWNER": "",
+		  "ADDRESS": "/India",
+		  "DESCRIPTION": "I Want Bulk Products Please contact Urgent",
+		  "ATTRIBUTE_1": 544260,
+		  "ATTRIBUTE_2": "",
+		  "ATTRIBUTE_3": null,
+		  "ATTRIBUTE_4": "kommaraju14@gmail.com",
+		  "ATTRIBUTE_5": 9515441707,
+		  "ATTRIBUTE_6": "",
+		  "ATTRIBUTE_7": "Asia",
+		  "ATTRIBUTE_8": "",
+		  "ATTRIBUTE_9": "Business Development",
+		  "ATTRIBUTE_10": "AS",
+		  "ATTRIBUTE_11": "",
+		  "ATTRIBUTE_12": "Partner",
+		  "ATTRIBUTE_13": "Sales Inquiry",
+		  "ATTRIBUTE_14": "More than a year",
+		  "ATTRIBUTE_15": "AS_IL_LG.com_I2B",
+		  "ATTRIBUTE_16": "Y",
+		  "ATTRIBUTE_17": "2021-04-10 02:45:56",
+		  "ATTRIBUTE_18": "Y",
+		  "ATTRIBUTE_19": "2021-04-10 02:45:56",
+		  "ATTRIBUTE_20": "Single-Split",
+		  "ATTRIBUTE_21": "",
+		  "ATTRIBUTE_22": "",
+		  "ATTRIBUTE_23": 8,
+		  "REGISTER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_FLAG": "Y",
+		  "LAST_UPDATE_DATE": "2021-04-11 00:05:26"
+		},
+		{
+		  "INTERFACE_ID": 20210411100067,
+		  "LEAD_NAME": "[MQL]IL_AS_LG.com_20210411",
+		  "SITE_NAME": "N/A",
+		  "LEAD_SOURCE_NAME": "LG.com",
+		  "LEAD_SOURCE_TYPE": 11,
+		  "ENTRY_TYPE": "L",
+		  "ACCOUNT": "Sooraj Colour Industries",
+		  "CONTACT_POINT": "Sanjith Shenoy/sanjith.shenoy@gmail.com/919447181086",
+		  "CORPORATION": "LGEIL",
+		  "OWNER": "",
+		  "ADDRESS": "/India",
+		  "DESCRIPTION": "Interested in \"Multi V S\" Air conditioning system for my 3BHK flat (condo)",
+		  "ATTRIBUTE_1": 544270,
+		  "ATTRIBUTE_2": "N/A",
+		  "ATTRIBUTE_3": null,
+		  "ATTRIBUTE_4": "sanjith.shenoy@gmail.com",
+		  "ATTRIBUTE_5": 919447181086,
+		  "ATTRIBUTE_6": "",
+		  "ATTRIBUTE_7": "Asia",
+		  "ATTRIBUTE_8": "",
+		  "ATTRIBUTE_9": "Administrative",
+		  "ATTRIBUTE_10": "AS",
+		  "ATTRIBUTE_11": "",
+		  "ATTRIBUTE_12": "Partner",
+		  "ATTRIBUTE_13": "Sales Inquiry",
+		  "ATTRIBUTE_14": "Less than 3 Months",
+		  "ATTRIBUTE_15": "AS_IL_LG.com_I2B",
+		  "ATTRIBUTE_16": "Y",
+		  "ATTRIBUTE_17": "2021-04-10 11:29:24",
+		  "ATTRIBUTE_18": "Y",
+		  "ATTRIBUTE_19": "2021-04-10 11:29:24",
+		  "ATTRIBUTE_20": "VRF",
+		  "ATTRIBUTE_21": "",
+		  "ATTRIBUTE_22": "",
+		  "ATTRIBUTE_23": null,
+		  "REGISTER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_FLAG": "Y",
+		  "LAST_UPDATE_DATE": "2021-04-11 00:05:21"
+		},
+		{
+		  "INTERFACE_ID": 20210411100068,
+		  "LEAD_NAME": "[MQL]SA_AS_LG.com_20210411",
+		  "SITE_NAME": "N/A",
+		  "LEAD_SOURCE_NAME": "LG.com",
+		  "LEAD_SOURCE_TYPE": 11,
+		  "ENTRY_TYPE": "L",
+		  "ACCOUNT": "Pokkel se smokkel",
+		  "CONTACT_POINT": "Fiona Steyn/Pokkelsmokkel@gmail.com/0621791327",
+		  "CORPORATION": "LGESA",
+		  "OWNER": "",
+		  "ADDRESS": "/South Africa",
+		  "DESCRIPTION": "Good day i want to sell your products what are min order quantity.  Can we order less if we collect?",
+		  "ATTRIBUTE_1": 544272,
+		  "ATTRIBUTE_2": "Less than $100,000",
+		  "ATTRIBUTE_3": 913,
+		  "ATTRIBUTE_4": "Pokkelsmokkel@gmail.com",
+		  "ATTRIBUTE_5": 621791327,
+		  "ATTRIBUTE_6": "",
+		  "ATTRIBUTE_7": "Middle East & Africa",
+		  "ATTRIBUTE_8": "",
+		  "ATTRIBUTE_9": "Other",
+		  "ATTRIBUTE_10": "AS",
+		  "ATTRIBUTE_11": "",
+		  "ATTRIBUTE_12": "CEO/Founder",
+		  "ATTRIBUTE_13": "Sales Inquiry",
+		  "ATTRIBUTE_14": "",
+		  "ATTRIBUTE_15": "AS_SA_LG.com_I2B",
+		  "ATTRIBUTE_16": "Y",
+		  "ATTRIBUTE_17": "2021-04-10 12:40:00",
+		  "ATTRIBUTE_18": "Y",
+		  "ATTRIBUTE_19": "2021-04-10 12:40:00",
+		  "ATTRIBUTE_20": "VRF",
+		  "ATTRIBUTE_21": "",
+		  "ATTRIBUTE_22": "",
+		  "ATTRIBUTE_23": 9,
+		  "REGISTER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_FLAG": "Y",
+		  "LAST_UPDATE_DATE": "2021-04-11 00:05:28"
+		},
+		{
+		  "INTERFACE_ID": 20210411100069,
+		  "LEAD_NAME": "[MQL]MS_AS_LG.com_20210411",
+		  "SITE_NAME": "N/A",
+		  "LEAD_SOURCE_NAME": "LG.com",
+		  "LEAD_SOURCE_TYPE": 11,
+		  "ENTRY_TYPE": "L",
+		  "ACCOUNT": "Healthcare corporation",
+		  "CONTACT_POINT": "Chrissa Cauich/chrissa.c@hcnahealthcare.com/529991903203",
+		  "CORPORATION": "LGEMS",
+		  "OWNER": "",
+		  "ADDRESS": "/Mexico",
+		  "DESCRIPTION": "We're looking for air conditioning options for a hospital. We need tot provide Both OR an Common Areas, with an antibacterial environment.",
+		  "ATTRIBUTE_1": 544286,
+		  "ATTRIBUTE_2": "$100,000 ~ $500,000",
+		  "ATTRIBUTE_3": 1010,
+		  "ATTRIBUTE_4": "chrissa.c@hcnahealthcare.com",
+		  "ATTRIBUTE_5": 529991903203,
+		  "ATTRIBUTE_6": "",
+		  "ATTRIBUTE_7": "Latin America and the Caribbean",
+		  "ATTRIBUTE_8": "",
+		  "ATTRIBUTE_9": "Administrative",
+		  "ATTRIBUTE_10": "AS",
+		  "ATTRIBUTE_11": "",
+		  "ATTRIBUTE_12": "Manager",
+		  "ATTRIBUTE_13": "Sales Inquiry",
+		  "ATTRIBUTE_14": "3 Months ~ 6 Months",
+		  "ATTRIBUTE_15": "AS_Global_L&C_LG.com_I2B",
+		  "ATTRIBUTE_16": "Y",
+		  "ATTRIBUTE_17": "2021-04-10 16:29:15",
+		  "ATTRIBUTE_18": "Y",
+		  "ATTRIBUTE_19": "2021-04-10 16:29:15",
+		  "ATTRIBUTE_20": "Multi-Split",
+		  "ATTRIBUTE_21": "",
+		  "ATTRIBUTE_22": "",
+		  "ATTRIBUTE_23": 10,
+		  "REGISTER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_FLAG": "Y",
+		  "LAST_UPDATE_DATE": "2021-04-11 00:08:50"
+		},
+		{
+		  "INTERFACE_ID": 20210411100070,
+		  "LEAD_NAME": "[MQL]SB_AS_LG.com_20210411",
+		  "SITE_NAME": "N/A",
+		  "LEAD_SOURCE_NAME": "LG.com",
+		  "LEAD_SOURCE_TYPE": 11,
+		  "ENTRY_TYPE": "L",
+		  "ACCOUNT": "Aramex",
+		  "CONTACT_POINT": "Abdulrahman Alshobaki/abdulrahman1413@gmail.com/966583377855",
+		  "CORPORATION": "LGESB",
+		  "OWNER": "",
+		  "ADDRESS": "/Saudi Arabia",
+		  "DESCRIPTION": "السلام عليكم ورحمة الله وبركاته\nاملك شقة سكنية ارغب في ترميمها قريبا وارغب في حلول للتكيف حيث اني احتاج 7 وحدات تكيف وقراءت عن نظام في ار اف \nحيث اني اسكن في الطابق رقم 15 ولا املك مساحة كافية لوضع سبع وحدات خارجية \nارغب في الاستفسار عن التكلفة الكاملة من حيث انشاء الخطوط النحاسية والتركيب والتصميم وتكاليف الصيانة المستقبلية\nوالفرق في الاستهلاك بين الوحدات التقليدية ذات الوحدتين الداخلية والخارجية لك تكييف والوحدة الخارجية التي تستطيع تشغيل اكثر من وحدة داخلية ",
+		  "ATTRIBUTE_1": 544295,
+		  "ATTRIBUTE_2": "",
+		  "ATTRIBUTE_3": null,
+		  "ATTRIBUTE_4": "abdulrahman1413@gmail.com",
+		  "ATTRIBUTE_5": 966583377855,
+		  "ATTRIBUTE_6": "",
+		  "ATTRIBUTE_7": "Middle East & Africa",
+		  "ATTRIBUTE_8": "",
+		  "ATTRIBUTE_9": "Information Technology",
+		  "ATTRIBUTE_10": "AS",
+		  "ATTRIBUTE_11": "",
+		  "ATTRIBUTE_12": "Associate/Analyst",
+		  "ATTRIBUTE_13": "Sales Inquiry",
+		  "ATTRIBUTE_14": "",
+		  "ATTRIBUTE_15": "AS_SB_LG.com_I2B_Ara",
+		  "ATTRIBUTE_16": "Y",
+		  "ATTRIBUTE_17": "2021-04-10 22:19:59",
+		  "ATTRIBUTE_18": "Y",
+		  "ATTRIBUTE_19": "2021-04-10 22:19:59",
+		  "ATTRIBUTE_20": "VRF",
+		  "ATTRIBUTE_21": "",
+		  "ATTRIBUTE_22": "",
+		  "ATTRIBUTE_23": null,
+		  "REGISTER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_FLAG": "Y",
+		  "LAST_UPDATE_DATE": "2021-04-11 00:05:28"
+		},
+		{
+		  "INTERFACE_ID": 20210411400062,
+		  "LEAD_NAME": "[MQL]SP_ID_LG.com_20210411",
+		  "SITE_NAME": "N/A",
+		  "LEAD_SOURCE_NAME": "LG.com",
+		  "LEAD_SOURCE_TYPE": 11,
+		  "ENTRY_TYPE": "L",
+		  "ACCOUNT": "Casa Civil",
+		  "CONTACT_POINT": "Matheus Staff/matheusstaff@casacivil.mt.gov.br/",
+		  "CORPORATION": "LGESP",
+		  "OWNER": "",
+		  "ADDRESS": "/Brazil",
+		  "DESCRIPTION": "Preciso de um orçamento de telas de videowall.",
+		  "ATTRIBUTE_1": 544255,
+		  "ATTRIBUTE_2": "N/A",
+		  "ATTRIBUTE_3": null,
+		  "ATTRIBUTE_4": "matheusstaff@casacivil.mt.gov.br",
+		  "ATTRIBUTE_5": null,
+		  "ATTRIBUTE_6": "",
+		  "ATTRIBUTE_7": "Latin America and the Caribbean",
+		  "ATTRIBUTE_8": "",
+		  "ATTRIBUTE_9": "Information Technology",
+		  "ATTRIBUTE_10": "ID",
+		  "ATTRIBUTE_11": "",
+		  "ATTRIBUTE_12": "Associate/Analyst",
+		  "ATTRIBUTE_13": "Quotation or purchase consultation",
+		  "ATTRIBUTE_14": "N/A",
+		  "ATTRIBUTE_15": "ID_SP_LG.com_I2B",
+		  "ATTRIBUTE_16": "Y",
+		  "ATTRIBUTE_17": "2021-04-10 00:39:59",
+		  "ATTRIBUTE_18": "Y",
+		  "ATTRIBUTE_19": "2021-04-10 00:39:59",
+		  "ATTRIBUTE_20": "Video Wall Signage",
+		  "ATTRIBUTE_21": "High Brightness Video Wall",
+		  "ATTRIBUTE_22": "55VX1D",
+		  "ATTRIBUTE_23": null,
+		  "REGISTER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_FLAG": "Y",
+		  "LAST_UPDATE_DATE": "2021-04-11 00:06:40"
+		},
+		{
+		  "INTERFACE_ID": 20210411400063,
+		  "LEAD_NAME": "[MQL]SP_ID_LG.com_20210411",
+		  "SITE_NAME": "N/A",
+		  "LEAD_SOURCE_NAME": "LG.com",
+		  "LEAD_SOURCE_TYPE": 11,
+		  "ENTRY_TYPE": "L",
+		  "ACCOUNT": "Plansaude assistência médica",
+		  "CONTACT_POINT": "sidney junior/sidaodutra@gmail.com/+5519996043044",
+		  "CORPORATION": "LGESP",
+		  "OWNER": "",
+		  "ADDRESS": "/Brazil",
+		  "DESCRIPTION": "Gostaria de orçamento para 4 unidades",
+		  "ATTRIBUTE_1": 544269,
+		  "ATTRIBUTE_2": "",
+		  "ATTRIBUTE_3": 1011,
+		  "ATTRIBUTE_4": "sidaodutra@gmail.com",
+		  "ATTRIBUTE_5": 5519996043044,
+		  "ATTRIBUTE_6": "",
+		  "ATTRIBUTE_7": "Latin America and the Caribbean",
+		  "ATTRIBUTE_8": "",
+		  "ATTRIBUTE_9": "Healthcare Services",
+		  "ATTRIBUTE_10": "ID",
+		  "ATTRIBUTE_11": "",
+		  "ATTRIBUTE_12": "Director",
+		  "ATTRIBUTE_13": "Quotation or purchase consultation",
+		  "ATTRIBUTE_14": "N/A",
+		  "ATTRIBUTE_15": "ID_SP_LG.com_I2B",
+		  "ATTRIBUTE_16": "Y",
+		  "ATTRIBUTE_17": "2021-04-10 10:48:48",
+		  "ATTRIBUTE_18": "Y",
+		  "ATTRIBUTE_19": "2021-04-10 10:48:48",
+		  "ATTRIBUTE_20": "Hospital TV",
+		  "ATTRIBUTE_21": "",
+		  "ATTRIBUTE_22": "",
+		  "ATTRIBUTE_23": 10,
+		  "REGISTER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_FLAG": "Y",
+		  "LAST_UPDATE_DATE": "2021-04-11 00:06:40"
+		},
+		{
+		  "INTERFACE_ID": 20210411400064,
+		  "LEAD_NAME": "[MQL]AG_ID_C-display_20210411",
+		  "SITE_NAME": "N/A",
+		  "LEAD_SOURCE_NAME": "C-display",
+		  "LEAD_SOURCE_TYPE": 11,
+		  "ENTRY_TYPE": "L",
+		  "ACCOUNT": "Hotel Persal",
+		  "CONTACT_POINT": "Fankhauser Clemens/info@persal.at/436643336780",
+		  "CORPORATION": "LGEAG",
+		  "OWNER": "",
+		  "ADDRESS": "/Austria",
+		  "DESCRIPTION": "We would like to buy 15-20 new TVs for our guest rooms. The TVs should be very slim like your G model or some of your NanoCell models. Can you please make us an offer.\nThank you and kind regards,\nClemens",
+		  "ATTRIBUTE_1": 544277,
+		  "ATTRIBUTE_2": "Less than $100,000",
+		  "ATTRIBUTE_3": 503,
+		  "ATTRIBUTE_4": "info@persal.at",
+		  "ATTRIBUTE_5": 436643336780,
+		  "ATTRIBUTE_6": "",
+		  "ATTRIBUTE_7": "Europe",
+		  "ATTRIBUTE_8": "",
+		  "ATTRIBUTE_9": "Business Development",
+		  "ATTRIBUTE_10": "ID",
+		  "ATTRIBUTE_11": "",
+		  "ATTRIBUTE_12": "Partner",
+		  "ATTRIBUTE_13": "Quotation or purchase consultation",
+		  "ATTRIBUTE_14": "More than a year",
+		  "ATTRIBUTE_15": "ID_HQ_Cdisplay_I2B",
+		  "ATTRIBUTE_16": "Y",
+		  "ATTRIBUTE_17": "2021-04-10 14:46:20",
+		  "ATTRIBUTE_18": "Y",
+		  "ATTRIBUTE_19": "2021-04-10 14:46:20",
+		  "ATTRIBUTE_20": "Hotel TV",
+		  "ATTRIBUTE_21": "WS960H Series",
+		  "ATTRIBUTE_22": "55WS960H (EU)",
+		  "ATTRIBUTE_23": 5,
+		  "REGISTER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_FLAG": "Y",
+		  "LAST_UPDATE_DATE": "2021-04-11 00:06:40"
+		},
+		{
+		  "INTERFACE_ID": 20210411500060,
+		  "LEAD_NAME": "[MQL]BN_IT_LG.com_20210411",
+		  "SITE_NAME": "N/A",
+		  "LEAD_SOURCE_NAME": "LG.com",
+		  "LEAD_SOURCE_TYPE": 11,
+		  "ENTRY_TYPE": "L",
+		  "ACCOUNT": "Dynamic Security b.v.",
+		  "CONTACT_POINT": "A Soultani/Dynasec.be@gmail.com/",
+		  "CORPORATION": "LGEBN",
+		  "OWNER": "",
+		  "ADDRESS": "/Belgium",
+		  "DESCRIPTION": "1x bu60pst (cee7/7 plug)",
+		  "ATTRIBUTE_1": 544274,
+		  "ATTRIBUTE_2": "N/A",
+		  "ATTRIBUTE_3": null,
+		  "ATTRIBUTE_4": "Dynasec.be@gmail.com",
+		  "ATTRIBUTE_5": null,
+		  "ATTRIBUTE_6": "",
+		  "ATTRIBUTE_7": "Europe",
+		  "ATTRIBUTE_8": "",
+		  "ATTRIBUTE_9": "Information Technology",
+		  "ATTRIBUTE_10": "IT",
+		  "ATTRIBUTE_11": "",
+		  "ATTRIBUTE_12": "CEO/Founder",
+		  "ATTRIBUTE_13": "Quotation or Purchase Consultation",
+		  "ATTRIBUTE_14": "Less than 3 Months",
+		  "ATTRIBUTE_15": "IT_Global_LG.com_I2B_Monitor&Other",
+		  "ATTRIBUTE_16": "Y",
+		  "ATTRIBUTE_17": "2021-04-10 14:06:46",
+		  "ATTRIBUTE_18": "Y",
+		  "ATTRIBUTE_19": "2021-04-10 14:06:46",
+		  "ATTRIBUTE_20": "Monitor",
+		  "ATTRIBUTE_21": "",
+		  "ATTRIBUTE_22": "",
+		  "ATTRIBUTE_23": null,
+		  "REGISTER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_FLAG": "Y",
+		  "LAST_UPDATE_DATE": "2021-04-11 00:05:26"
+		},
+		{
+		  "INTERFACE_ID": 20210411700061,
+		  "LEAD_NAME": "[MQL]HQ_Solution_LG.com_20210411",
+		  "SITE_NAME": "N/A",
+		  "LEAD_SOURCE_NAME": "LG.com",
+		  "LEAD_SOURCE_TYPE": 11,
+		  "ENTRY_TYPE": "L",
+		  "ACCOUNT": "Daitoyakuhin Inc.",
+		  "CONTACT_POINT": "Ryuichi Ito/ito@daitoyakuhin.co.jp/0222882677",
+		  "CORPORATION": "LGEHQ",
+		  "OWNER": "",
+		  "ADDRESS": "/Japan",
+		  "DESCRIPTION": "Thank you for your help.\nMy name is Ito from Daito Yakuhin Co., Ltd., which plans and sells water purifiers and supplements in Japan.\n\nWe would like to sell the water purifier that your company sells in Korea, so we have contacted you.\n\nWe are a company specializing in water purifiers that has a track record of frequently acquiring first place in the water purifier category at Rakuten Ichiba and Yahoo! Shopping in Japan.\n\nWe would appreciate it if you could give us an opportunity to consult with us, including various possibilities such as OEM and import sales.\n\nThank you for your cooperation.",
+		  "ATTRIBUTE_1": 544258,
+		  "ATTRIBUTE_2": "$100,000 ~ $500,000",
+		  "ATTRIBUTE_3": null,
+		  "ATTRIBUTE_4": "ito@daitoyakuhin.co.jp",
+		  "ATTRIBUTE_5": 222882677,
+		  "ATTRIBUTE_6": "",
+		  "ATTRIBUTE_7": "Asia",
+		  "ATTRIBUTE_8": "",
+		  "ATTRIBUTE_9": "Marketing",
+		  "ATTRIBUTE_10": "Solution",
+		  "ATTRIBUTE_11": "",
+		  "ATTRIBUTE_12": "Manager",
+		  "ATTRIBUTE_13": "Request for quotation or purchase",
+		  "ATTRIBUTE_14": "Less than 3 Months",
+		  "ATTRIBUTE_15": "Solution_Global_LG.com_I2B",
+		  "ATTRIBUTE_16": "Y",
+		  "ATTRIBUTE_17": "2021-04-10 01:44:12",
+		  "ATTRIBUTE_18": "Y",
+		  "ATTRIBUTE_19": "2021-04-10 01:44:12",
+		  "ATTRIBUTE_20": "Home Beauty,Water Care",
+		  "ATTRIBUTE_21": "",
+		  "ATTRIBUTE_22": "",
+		  "ATTRIBUTE_23": 9,
+		  "REGISTER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_DATE": "2021-04-11 03:05:01",
+		  "TRANSFER_FLAG": "Y",
+		  "LAST_UPDATE_DATE": "2021-04-11 00:05:54"
+		}
+	   ]})
+});
 
 router.post('/leadNumberAPI', async function (req, res, next) {
-	console.log("leadNumberAPI");
-	// console.log(req.body);
-
-	let CustomObject_lead_id = 46;
-
-	// 넘어온 id값을 바탕으로 Eloqua 에서 조회해서 넣어줌
-	let data_list = await getEloquaContactEmail(req.body.ContentList);
-	console.log(data_list);
-
+	
+	let LeadNumberData_list = await getLeadnumberData();
 
 	// 생성된 데이터를 customobject 에 적재함
 	let convert_data_list = ConvertCustomObjectData(data_list);
@@ -1393,10 +2102,63 @@ router.post('/leadNumberAPI', async function (req, res, next) {
 			})
 		});
 	}
-
 	res.json({ContentList : return_data});
-	
 });
+
+async function getLeadnumberData(){
+	console.log("leadNumberAPI");
+	// console.log(req.body);
+
+	let CustomObject_lead_id = 46;
+	
+	// MAT 에서 B2B GERP GLOBAL 을 일배치로 호출해서 데이터를 가져옴
+	// var headers = {
+	// 	'Content-Type': "application/json",
+	// 	'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
+	// }
+
+	var headers = {
+		'Content-Type': "application/json"
+	}
+
+	let b2bgerp_global_url = "http://localhost:8001/b2bgerp_global/contacts/leadResponse";
+
+	options = {
+		url : b2bgerp_global_url,
+		method: "POST",
+		headers:headers,
+		body : {} ,
+		json : true
+	};
+
+	await request(options, async function (error, response, body) {
+
+		// console.log(11);
+		// console.log(response);
+		
+		if(error){
+			console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
+			console.log(error);
+			let errorData = {
+				errorCode : response.statusCode,
+				errorMsg : error.Message 
+			}
+			req_res_logs("Response" , "LeadnumberAPI_Error" , errorData );	
+		}else if(!error && response.statusCode != 200 ){
+			let errorData = {
+				errorCode : response.statusCode,
+				errorMsg : error.Message 
+			}
+			req_res_logs("Response" , "LeadnumberAPI_Error" , errorData );
+		}else if (!error && response.statusCode == 200) {
+			req_res_logs("Response" , "LeadnumberAPI" , body.ContentList );
+
+			return body.ContentList;
+			// console.log(body.resultData);
+		}
+	});
+}
+
 
 async function getEloquaContactEmail(data_list){
 	if(data_list.length > 1){
