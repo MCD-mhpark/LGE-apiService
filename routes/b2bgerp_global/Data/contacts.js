@@ -1173,8 +1173,9 @@ bant_send = async function(business_name , state_date , end_date ){
 
 	// console.log(contacts_data);
 
+	// 테스트용 데이터 반드시 지워야 함
 	
-    if (contact_list != null) {
+    // if (contact_list != null) {
 
         // contacts_data : Eloqua 에 Bant 업데이트를 하기 위한 필드
         // request_data : B2B GERP 에 전송할 데이터
@@ -1207,9 +1208,9 @@ bant_send = async function(business_name , state_date , end_date ){
 		}
 
 		// reqEloqua : Eloqua Data List , reqConvert : 실제 전송 list , reqTotal : Eloqua Data 건수 및 실제 전송 건수 기록
-		req_res_logs("reqEloqua" , business_name , contact_list );
-		req_res_logs("reqConvert" , business_name , request_data );
-		req_res_logs("reqTotal" , business_name , total_logs );
+		// req_res_logs("reqEloqua" , business_name , contact_list );
+		// req_res_logs("reqConvert" , business_name , request_data );
+		// req_res_logs("reqTotal" , business_name , total_logs );
 		
 
 
@@ -1221,9 +1222,11 @@ bant_send = async function(business_name , state_date , end_date ){
 		
 		// MQL Data 전송 전 MQL Data List 를 CustomObject 에 적재 update_mql_data은 customobject 적재값임
 		let update_mql_data = await mqldata_to_eloqua_send(mql_customobject_list);
-		let update_data = await mqldata_push_customobjectid(request_data , update_mql_data);
-		req_res_logs("reqCustomData" , businessName , update_data );
 
+		// CustomObject 에 적재된 MQL DATA를 CUSTOMBOEJCT_ID 고유값을 추가하여 B2B GERP GLOBAL 로 전송 
+		let update_data = await mqldata_push_customobjectid(request_data , update_mql_data);
+		req_res_logs("reqCustomData" , business_name , update_data );
+		return;
         await request(options, async function (error, response, body) {
 
             // console.log(11);
@@ -1242,7 +1245,8 @@ bant_send = async function(business_name , state_date , end_date ){
 				}     
             }
         });
-	}
+        
+
 }
 
 async function mqldata_to_eloqua_send(convert_mql_data){
@@ -1276,7 +1280,7 @@ function mqldata_push_customobjectid(origin_data , update_data ){
 		}
 	}
 
-	return origin_data;
+	return origin_data
 }
 
 
@@ -2080,7 +2084,7 @@ router.post('/leadNumberAPI', async function (req, res, next) {
 	
 	let LeadNumberData_list = await getLeadnumberData();
 	let parent_id = 46;
-
+	// 생성된 데이터를 customobject 에 적재함
 	let convert_data_list = ConvertCustomObjectData(data_list);
 	console.log(convert_data_list[0].fieldValues);
 
@@ -2136,8 +2140,10 @@ async function getLeadnumberData(){
 
 	let data_list ;
 	await request_promise.get(options, function (error, response, body) {
+
 		// console.log(11);
 		// console.log(response);
+		
 		if(error){
 			console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
 			console.log(error);
@@ -2185,6 +2191,7 @@ async function getEloquaContactEmail(data_list){
 			});	
 		}
 	}
+
 	return data_list;
 }
 

@@ -19,7 +19,7 @@ function req_res_logs(filename, business_name, data) {
 	// business_name : 사업부별 name
 	// data : log 저장할 데이터
 
-	var today = moment().format("YYYY-MM-DD") + "_" + "MAT_TO_B2BGERPKR";
+	var today = moment().format("YYYY-MM-DD HH:MM") + "_" + "MAT_TO_B2BGERPKR";
 	var dirPath = utils.logs_makeDirectory(today);
 	console.log("fileWrite Path : " + dirPath);
 
@@ -120,12 +120,14 @@ function Convert_B2BGERP_KR_DATA(_cod_data) {
 	for (var i = 0; i < cod_elements.length; i++) {
 		try {
 			var result_item = new B2B_GERP_KR_ENTITY();
-
+			console.log()
 			//LEAD_NAME
 			//"[MQL]"+"_" + GetCustomFiledValue(FieldValues_data, 100202) + "_" + moment().format('YYYYMMDD');
 			moment.locale('kr');
 			// result_item.INTERFACE_ID = moment().format('YYYYMMDD') + "8" + lpad(seq_cnt, 5, "0");
 			result_item.INTERFACE_ID = moment().format('YYYYMMDD') + "8";
+			result_item.CUSTOMOBJECT_ID = cod_elements[i].id ; 
+			result_item.CONTACT_ID = cod_elements[i].contactId ;
 
 			result_item.ESTIMATION_ID = GetCustomObjectValue(267, cod_elements[i], "N"); //견적번호 X
 			result_item.ESTIMATION_SEQ_NO = GetCustomObjectValue(268, cod_elements[i], "N"); //견적상세번호 X
@@ -236,6 +238,7 @@ async function senderToB2BGERP_KR(){
 	//LG전자 KR 운영 Endpoint
 	// let prd_url = 
 	
+	console.log(B2B_GERP_KR_DATA);
 	if (B2B_GERP_KR_DATA != null && B2B_GERP_KR_DATA.length > 0) {
 	    var headers = {
 	        'Content-Type': "application/json",
