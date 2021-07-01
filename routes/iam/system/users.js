@@ -284,7 +284,12 @@ router.get('/user', function (req, res, next) {
             //console.log(request_data);
             //res.json({ ContentList: request_data });
 
-            var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam/api2db/put/SODUSER_SB";
+            // LG 전자 Iam user 개발 url
+            // var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam/api2db/put/SODUSER_SB";
+
+            // LG 전자 Iam user 운영 url
+            var send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam/api2db/put/SODUSER_SB";
+
             var headers = {
                 'Content-Type': "application/json",
                 'x-Gateway-APIKey': "da7d5553-5722-4358-91cd-9d89859bc4a0"
@@ -439,7 +444,13 @@ router.get('/user_responsibility', function (req, res, next) {
             //console.log(request_data);
             //res.json({ ContentList: request_data });
 
-            var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam/api2db/put/SODUSERRESP_SB";
+
+            // LG 전자 개발 url
+            // var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam/api2db/put/SODUSERRESP_SB";
+
+            // LG 전자 운영 url
+            var send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam/api2db/put/SODUSERRESP_SB";
+            
             var headers = {
                 'Content-Type': "application/json",
                 'x-Gateway-APIKey': "da7d5553-5722-4358-91cd-9d89859bc4a0"
@@ -595,7 +606,12 @@ router.get('/responsibility', async function (req, res, next) {
             console.log(return_data);
             //res.json(return_data);
 
-            var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam/api2db/put/SODRESPONSIBILITY_SB";
+            // LG전자 개발 url
+            // var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam/api2db/put/SODRESPONSIBILITY_SB";
+
+            // LG전자 운영 url
+            var send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam/api2db/put/SODRESPONSIBILITY_SB";
+
             var headers = {
                 'Content-Type': "application/json",
                 'x-Gateway-APIKey': "da7d5553-5722-4358-91cd-9d89859bc4a0"

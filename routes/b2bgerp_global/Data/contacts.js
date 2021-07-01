@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var request = require('request');
+var request_promise = require('request-promise');
 var httpRequest = require('../../common/httpRequest');
 var utils = require('../../common/utils');
 var moment = require('moment');
@@ -1172,9 +1173,8 @@ bant_send = async function(business_name , state_date , end_date ){
 
 	// console.log(contacts_data);
 
-	// 테스트용 데이터 반드시 지워야 함
 	
-    // if (contact_list != null) {
+    if (contact_list != null) {
 
         // contacts_data : Eloqua 에 Bant 업데이트를 하기 위한 필드
         // request_data : B2B GERP 에 전송할 데이터
@@ -1197,6 +1197,7 @@ bant_send = async function(business_name , state_date , end_date ){
 		// 테스트용 데이터 반드시 지워야 함
 		request_data = await getLeadnumberData();
 
+		// console.log(request_data);
 		// 사업부별 Eloqua Data 건수 및 실제 전송 건수 로그를 쌓기 위함 (이메일 필터링에 의해 Eloqua Data 건수와 실제 전송 건수 는 다를 수 있음)
 		let total_logs = {
 			bsname : business_name ,
@@ -1206,9 +1207,9 @@ bant_send = async function(business_name , state_date , end_date ){
 		}
 
 		// reqEloqua : Eloqua Data List , reqConvert : 실제 전송 list , reqTotal : Eloqua Data 건수 및 실제 전송 건수 기록
-		// req_res_logs("reqEloqua" , business_name , contact_list );
-		// req_res_logs("reqConvert" , business_name , request_data );
-		// req_res_logs("reqTotal" , business_name , total_logs );
+		req_res_logs("reqEloqua" , business_name , contact_list );
+		req_res_logs("reqConvert" , business_name , request_data );
+		req_res_logs("reqTotal" , business_name , total_logs );
 		
 
 
@@ -1217,13 +1218,12 @@ bant_send = async function(business_name , state_date , end_date ){
 
 		// MQL Data 전송 전 MQL Data List 를 CustomObject 에 적재하기 위해 데이터 형태 변경
 		let mql_customobject_list = await CONVERT_B2BGERP_GLOBAL_CUSTOMOBJECT(request_data);
-		req_res_logs("reqCustomData" , business_name , mql_customobject_list );
-		// MQL Data 전송 전 MQL Data List 를 CustomObject 에 적재
+		
+		// MQL Data 전송 전 MQL Data List 를 CustomObject 에 적재 update_mql_data은 customobject 적재값임
 		let update_mql_data = await mqldata_to_eloqua_send(mql_customobject_list);
+		let update_data = await mqldata_push_customobjectid(request_data , update_mql_data);
+		req_res_logs("reqCustomData" , businessName , update_data );
 
-		// let update_data = await mqldata_push_customobjectid(request_data , update_mql_data);
-
-		return;
         await request(options, async function (error, response, body) {
 
             // console.log(11);
@@ -1242,38 +1242,42 @@ bant_send = async function(business_name , state_date , end_date ){
 				}     
             }
         });
-        
-
+	}
 }
 
 async function mqldata_to_eloqua_send(convert_mql_data){
-	let return_data = undefined;
+	let return_list = [];
 	let parent_id = 46;
 	for(const mqldata of convert_mql_data){
-		await b2bkr_eloqua.data.customObjects.data.create(parent_id, mqldata).then((result) => {
-			console.log(result);
-			return_data = result;
+		await b2bkr_eloqua.data.customObjects.data.create(parent_id , mqldata).then((result) => {
+			// console.log(result.data);
+			return_list.push(result.data);
 		}).catch((err) => {
 			console.error(err);
 			console.error(err.message);
-			return_data = err.message;
 		});
 	}
 
-	return return_data;
+	return return_list;
 	
 }
 
-// function mqldata_push_customobjectid(origin_data , update_data ){
-// 	for(let i = 0; i< origin_data.length ; i++){
+function mqldata_push_customobjectid(origin_data , update_data ){
+	for(let i = 0; i< origin_data.length ; i++){
+		for(const update_item of update_data){
+			console.log("origin contact id : " + origin_data[i].ATTRIBUTE_1);
+			console.log("update contact id : " + update_item.contactId);
+			if(origin_data[i].ATTRIBUTE_1 == update_item.contactId ){
+				origin_data[i]['CUSTOMOBJECT_ID'] =  update_item.id;
 
-// 		for(const update_item of update_data){
-// 			if(origin_data[i].ATTRIBUTE_1 === update_item.ATTRIBUTE_1 ){
-// 				origin_data[i].CUSTOMOBJECT_ID = update_item.
-// 			}
-// 		}
-// 	}
-// }
+				console.log("Come Change");
+				console.log(	origin_data[i].CUSTOMOBJECT_ID);
+			}
+		}
+	}
+
+	return origin_data;
+}
 
 
 
@@ -1429,7 +1433,7 @@ function CONVERT_B2BGERP_GLOBAL_CUSTOMOBJECT(request_data){
 
 		mql_data.fieldValues.push({
 			"id": "521" ,
-			"value": item.ATTRIBUTE_17
+			"value": utils.timeConverter("GET_UNIX" , item.ATTRIBUTE_17) 
 		})
 
 		mql_data.fieldValues.push({
@@ -1439,7 +1443,7 @@ function CONVERT_B2BGERP_GLOBAL_CUSTOMOBJECT(request_data){
 
 		mql_data.fieldValues.push({
 			"id": "520" ,
-			"value": item.ATTRIBUTE_19
+			"value": utils.timeConverter("GET_UNIX" , item.ATTRIBUTE_19) 
 		})
 
 		mql_data.fieldValues.push({
@@ -1464,12 +1468,12 @@ function CONVERT_B2BGERP_GLOBAL_CUSTOMOBJECT(request_data){
 
 		mql_data.fieldValues.push({
 			"id": "519" ,
-			"value": item.REGISTER_DATE
+			"value": utils.timeConverter("GET_UNIX" , item.REGISTER_DATE) 
 		})
 
 		mql_data.fieldValues.push({
 			"id": "522" ,
-			"value": item.TRANSFER_DATE
+			"value": utils.timeConverter("GET_UNIX" , item.TRANSFER_DATE)
 		})
 
 		mql_data.fieldValues.push({
@@ -1479,7 +1483,7 @@ function CONVERT_B2BGERP_GLOBAL_CUSTOMOBJECT(request_data){
 
 		mql_data.fieldValues.push({
 			"id": "524" ,
-			"value": item.LAST_UPDATE_DATE
+			"value": utils.timeConverter("GET_UNIX" , item.LAST_UPDATE_DATE)
 		});
 	
 		mql_list.push(mql_data);
@@ -1614,7 +1618,7 @@ router.put('/menual_bant_update', async function (req, res, next) {
 // 	}
 // });
 
-router.post('/leadResponse' , async function(req , res, next){
+router.get('/leadResponse' , async function(req , res, next){
 	console.log(123)
 	
 	res.json({ ContentList : [
@@ -2075,15 +2079,15 @@ router.post('/leadResponse' , async function(req , res, next){
 router.post('/leadNumberAPI', async function (req, res, next) {
 	
 	let LeadNumberData_list = await getLeadnumberData();
+	let parent_id = 46;
 
-	// 생성된 데이터를 customobject 에 적재함
 	let convert_data_list = ConvertCustomObjectData(data_list);
 	console.log(convert_data_list[0].fieldValues);
 
 	let return_data = [];
 	
 	for(let i = 0 ; i < convert_data_list.length ; i++){
-		await b2bgerp_eloqua.data.customObjects.data.create(CustomObject_lead_id, convert_data_list[i]).then((result) => {
+		await b2bgerp_eloqua.data.customObjects.data.update(parent_id , CustomObject_lead_id, convert_data_list[i]).then((result) => {
 			console.log(result);
 			return_data.push({
 				cod_id : CustomObject_lead_id,
@@ -2125,17 +2129,15 @@ async function getLeadnumberData(){
 
 	options = {
 		url : b2bgerp_global_url,
-		method: "POST",
 		headers:headers,
 		body : {} ,
 		json : true
 	};
 
-	await request(options, async function (error, response, body) {
-
+	let data_list ;
+	await request_promise.get(options, function (error, response, body) {
 		// console.log(11);
 		// console.log(response);
-		
 		if(error){
 			console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
 			console.log(error);
@@ -2153,10 +2155,12 @@ async function getLeadnumberData(){
 		}else if (!error && response.statusCode == 200) {
 			req_res_logs("Response" , "LeadnumberAPI" , body.ContentList );
 
-			return body.ContentList;
+			data_list = body.ContentList;
 			// console.log(body.resultData);
 		}
 	});
+
+	return data_list;
 }
 
 
@@ -2181,7 +2185,6 @@ async function getEloquaContactEmail(data_list){
 			});	
 		}
 	}
-
 	return data_list;
 }
 
