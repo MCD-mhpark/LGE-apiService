@@ -11,6 +11,7 @@ var request = require('request');
 var fs = require("mz/fs");
 var dirPath = "KR_TEST";
 
+moment.locale('kr');
 //=====================================================================================================================
 // 한국영업본부 LOG 함수
 //=====================================================================================================================
@@ -266,8 +267,8 @@ async function senderToB2BGERP_KR(){
 	//   convert_total : request_data.length
 	// }
 
-	req_res_logs("reqEloqua_" + moment().format("HH:MM") , "MAT_TO_B2BGERPKR" , COD_list );
-	req_res_logs("reqConvert_" + moment().format("HH:MM")  , "MAT_TO_B2BGERPKR", B2B_GERP_KR_DATA );
+	req_res_logs("reqEloqua_" + moment().format("hh:mm") , "MAT_TO_B2BGERPKR" , COD_list );
+	req_res_logs("reqConvert_" + moment().format("hh:mm")  , "MAT_TO_B2BGERPKR", B2B_GERP_KR_DATA );
 	// req_res_logs("reqTotal" , business_name , total_logs );
 	
 
@@ -286,15 +287,15 @@ async function senderToB2BGERP_KR(){
 					errorCode : response.statusCode,
 					errorMsg : error.Message 
 				}
-				req_res_logs("responseError_" + moment().format("HH:MM")  , "MAT_TO_B2BGERPKR" , errorData );	
+				req_res_logs("responseError_" + moment().format("hh:mm")  , "MAT_TO_B2BGERPKR" , errorData );	
 	        }else if(!error && response.statusCode != 200 ){
 				let errorData = {
 					errorCode : response.statusCode,
 					errorMsg : error.Message 
 				}
-				req_res_logs("responseError_" + moment().format("HH:MM")  , "MAT_TO_B2BGERPKR" , errorData );
+				req_res_logs("responseError_" + moment().format("hh:mm")  , "MAT_TO_B2BGERPKR" , errorData );
 			}else if (!error && response.statusCode == 200) {
-	    		req_res_logs("response_" + moment().format("HH:MM")  , "MAT_TO_B2BGERPKR" , body.resultData );
+	    		req_res_logs("response_" + moment().format("hh:mm")  , "MAT_TO_B2BGERPKR" , body.resultData );
 	            if(B2B_GERP_KR_DATA.length > 0 ) {
 	                // console.log(B2B_GERP_KR_DATA);
 	                let trans_up_list = await getTransfer_UpdateData( COD_list.elements);
@@ -310,7 +311,7 @@ async function senderToB2BGERP_KR(){
 			errorInfo : null ,
 			errorMessage : "보낼 데이터가 없습니다."
 		}
-		req_res_logs("noneData_" + moment().format("HH:MM")  , "MAT_TO_B2BGERPKR" , noneData );
+		req_res_logs("noneData_" + moment().format("hh:mm")  , "MAT_TO_B2BGERPKR" , noneData );
 		
 	}
 }
