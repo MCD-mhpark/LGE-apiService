@@ -19,7 +19,7 @@ function req_res_logs(filename, business_name, data) {
 	// business_name : 사업부별 name
 	// data : log 저장할 데이터
 
-	var today = moment().format("YYYY-MM-DD HH:MM") + "_" + "MAT_TO_B2BGERPKR";
+	var today = moment().format("YYYY-MM-DD") + "_" + "MAT_TO_B2BGERPKR";
 	var dirPath = utils.logs_makeDirectory(today);
 	console.log("fileWrite Path : " + dirPath);
 
@@ -266,8 +266,8 @@ async function senderToB2BGERP_KR(){
 	//   convert_total : request_data.length
 	// }
 
-	req_res_logs("reqEloqua" , "MAT_TO_B2BGERPKR" , COD_list );
-	req_res_logs("reqConvert" , "MAT_TO_B2BGERPKR", B2B_GERP_KR_DATA );
+	req_res_logs("reqEloqua_" + moment().format("HH:MM") , "MAT_TO_B2BGERPKR" , COD_list );
+	req_res_logs("reqConvert_" + moment().format("HH:MM")  , "MAT_TO_B2BGERPKR", B2B_GERP_KR_DATA );
 	// req_res_logs("reqTotal" , business_name , total_logs );
 	
 
@@ -286,15 +286,15 @@ async function senderToB2BGERP_KR(){
 					errorCode : response.statusCode,
 					errorMsg : error.Message 
 				}
-				req_res_logs("responseError" , "MAT_TO_B2BGERPKR" , errorData );	
+				req_res_logs("responseError_" + moment().format("HH:MM")  , "MAT_TO_B2BGERPKR" , errorData );	
 	        }else if(!error && response.statusCode != 200 ){
 				let errorData = {
 					errorCode : response.statusCode,
 					errorMsg : error.Message 
 				}
-				req_res_logs("responseError" , "MAT_TO_B2BGERPKR" , errorData );
+				req_res_logs("responseError_" + moment().format("HH:MM")  , "MAT_TO_B2BGERPKR" , errorData );
 			}else if (!error && response.statusCode == 200) {
-	    		req_res_logs("response" , "MAT_TO_B2BGERPKR" , body.resultData );
+	    		req_res_logs("response_" + moment().format("HH:MM")  , "MAT_TO_B2BGERPKR" , body.resultData );
 	            if(B2B_GERP_KR_DATA.length > 0 ) {
 	                // console.log(B2B_GERP_KR_DATA);
 	                let trans_up_list = await getTransfer_UpdateData( COD_list.elements);
@@ -310,7 +310,7 @@ async function senderToB2BGERP_KR(){
 			errorInfo : null ,
 			errorMessage : "보낼 데이터가 없습니다."
 		}
-		req_res_logs("noneData" , "MAT_TO_B2BGERPKR" , noneData );
+		req_res_logs("noneData_" + moment().format("HH:MM")  , "MAT_TO_B2BGERPKR" , noneData );
 		
 	}
 }
