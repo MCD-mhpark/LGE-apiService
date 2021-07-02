@@ -433,10 +433,16 @@ router.get('/user_responsibility', function (req, res, next) {
         // console.log(user_responsibility_data);
 
         user_responsibility_data.totalDataCount = user_responsibility_data.length;
+        
+        // 각 row 의 TRANSMISSION_COUNT 를 전체 row 를 맞게 다시 세팅
+        user_responsibility_data =  await get_IAM_USER_RESPONSIBILITY_SET_TOTAL_COUNT(user_responsibility_data)
+
         req_res_logs("user_responsibility_eloqua", result.data);
         req_res_logs("user_responsibility_convert", user_responsibility_data);
 
+
         if (user_responsibility_data.length > 0) {
+
             return_data.ContentList = user_responsibility_data;
             return_data.total = user_responsibility_data.length;
             // res.json(return_data);
@@ -498,6 +504,12 @@ router.get('/user_responsibility', function (req, res, next) {
 
 //#endregion
 
+function get_IAM_USER_RESPONSIBILITY_SET_TOTAL_COUNT(user_responsibility_data){
+    for(let i = 0 ; i < user_responsibility_data.length ; i++  ){
+        user_responsibility_data[i].TRANSMISSION_COUNT = user_responsibility_data.length;
+    }
+    return user_responsibility_data;
+}
 
 
 //====================================================
