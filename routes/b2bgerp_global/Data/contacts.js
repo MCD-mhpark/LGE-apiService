@@ -1193,10 +1193,7 @@ bant_send = async function(business_name , state_date , end_date ){
 		}
 
 		
-		// reqEloqua : Eloqua Data List , reqConvert : 실제 전송 list , reqTotal : Eloqua Data 건수 및 실제 전송 건수 기록
-		req_res_logs("reqEloqua" , business_name , contact_list );
-		req_res_logs("reqConvert" , business_name , request_data );
-		req_res_logs("reqTotal" , business_name , total_logs );
+	
 		
 
 		// MQL Data 전송 전 MQL Data List 를 CustomObject 에 적재하기 위해 데이터 형태 변경
@@ -1221,6 +1218,11 @@ bant_send = async function(business_name , state_date , end_date ){
             body : { ContentList: update_data } ,
             json : true
         };
+
+		// reqEloqua : Eloqua Data List , reqConvert : 실제 전송 list , reqTotal : Eloqua Data 건수 및 실제 전송 건수 기록
+		req_res_logs("reqEloqua" , business_name , contact_list );
+		req_res_logs("reqConvert" , business_name , request_data );
+		req_res_logs("reqTotal" , business_name , total_logs );
 
         await request(options, async function (error, response, body) {
             if(error){
