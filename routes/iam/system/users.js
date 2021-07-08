@@ -681,53 +681,41 @@ router.get('/responsibility', async function (req, res, next) {
 //#region (진행중) IAM USER Create Endpoint 호출 영역
 
 function Convert_IAM_TO_ELOQUA_DATA(_body , res) {
-
+	console.log(11);
     let origin_data = _body;
-    let copy_data = lodash.uniqBy(_body , "EMAIL");
-    let temp ;
+	let copy_data = [];
+	let result_data = [];
+    let duple_email_list = [];
 
 
-    for(let i = 0 ; i < copy_data.length ; i++){
-        let temp_response_code = copy_data[i].RESPONSIBILITY_CODE ; 
-        let duple_list = [];
-        
-        let idx = origin_data.indexOf(copy_data[i].RESPONSIBILITY_CODE);
+	let datas = [];
+	try{
+		for(let i = 0 ; i < origin_data.length ; i++){
+			origin_data[i]['SECURITY_GROUPS'] = [];
+			for(let j = 0 ; j < copy_data.length ; j++){
 
-        console.log("First IDX : " + idx);
-        while(idx != -1){
-            console.log("origin_data[idx].RESPONSIBILITY_CODE : " + origin_data[idx].RESPONSIBILITY_CODE);
-            duple_list.push(origin_data[idx].RESPONSIBILITY_CODE);
-            idx = origin_data.indexOf(copy_data , idx + 1) ;
-        }
-        
-        console.log(duple_list);
-        
+				console.log("copy_data.length : " + copy_data.length);
+				console.log("origin EMAIL : " + origin_data[i].EMAIL + " copy EMAIL  : " + copy_data[j].EMAIL);
+				if( origin_data[i].EMAIL == copy_data[j].EMAIL){
+					origin_data[i]['SECURITY_GROUPS'].push(copy_data[j].RESPONSIBILITY_CODE);
+					
+					if(origin_data[i]['SECURITY_GROUPS'].length > 1){
+						delete copy_data[j];
+					}
+				}
 
-        // let temp_response_code = copy_data[i].RESPONSIBILITY_CODE ; 
-        // delete copy_data[i].RESPONSIBILITY_CODE;
-        // copy_data[i].RESPONSIBILITY_CODE = [];
-        // copy_data[i].RESPONSIBILITY_CODE.push(temp_response_code);
-    }
+			}
 
-    let eloqua_data = new ELOQUA_CREATE_ENTITY();
-    console.log(2)
-    let emailList = []; 
-    let convert_data = [];
+			result_data.push(origin_data[i])
+		}
+	}catch(err){
+		console.log(err);
+	}
 
-    for (let i = 0; i < copy_data.length; i++) {
-    
-        for(let j = 0; j < origin_data.length ; j++){
-            if(copy_data[i].EMAIL == origin_data[j].EMAIL ){
-                
-                console.log( copy_data[j].RESPONSIBILITY_CODE );
-                copy_data[i].RESPONSIBILITY_CODE = "_" (origin_data[j].RESPONSIBILITY_CODE);
-            }
-        }
-    }
+	
 
-   
 
-    res.json(copy_data);
+    res.json(result_data);
     return;
 
     for (let i = 0; i < body_data.length; i++) {
