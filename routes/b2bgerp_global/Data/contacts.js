@@ -2179,7 +2179,7 @@ router.get('/test_sender', async function (req, res, next) {
 		body : { ContentList: test_data } ,
 		json : true
 	};   
-	
+	req_res_logs("RequestData" , "TEST" , options.body );
 	console.log("test data 전송")
 	await request(options, async function (error, response, body) {
 		if(error){
