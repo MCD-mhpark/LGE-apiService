@@ -683,30 +683,36 @@ router.get('/responsibility', async function (req, res, next) {
 function Convert_IAM_TO_ELOQUA_DATA(_body , res) {
 	console.log(11);
     let origin_data = _body;
-	let copy_data = [];
+	let copy_data = origin_data;
 	let result_data = [];
-    let duple_email_list = [];
+    let overlap_email_list = [];
 
 
 	let datas = [];
 	try{
 		for(let i = 0 ; i < origin_data.length ; i++){
 			origin_data[i]['SECURITY_GROUPS'] = [];
+            
+            console.log("overlap email list");
+            console.log(overlap_email_list);
+            console.log("origin_data : " + i + "   origin_data[i].EMAIL : " + origin_data[i].EMAIL );
+            if( !origin_data ) continue;
+            if(overlap_email_list.indexOf(origin_data[i].EMAIL) > -1){
+                delete origin_data[i];
+                continue;
+            }
 			for(let j = 0 ; j < copy_data.length ; j++){
 
-				console.log("copy_data.length : " + copy_data.length);
-				console.log("origin EMAIL : " + origin_data[i].EMAIL + " copy EMAIL  : " + copy_data[j].EMAIL);
-				if( origin_data[i].EMAIL == copy_data[j].EMAIL){
-					origin_data[i]['SECURITY_GROUPS'].push(copy_data[j].RESPONSIBILITY_CODE);
-					
-					if(origin_data[i]['SECURITY_GROUPS'].length > 1){
-						delete copy_data[j];
-					}
-				}
-
+				if( origin_data[i].EMAIL == copy_data[j].EMAIL ){
+					origin_data[i]['SECURITY_GROUPS'].push(copy_data[j].RESPONSIBILITY_CODE);	
+                    overlap_email_list.push(origin_data[i].EMAIL) ;	
+					// if(origin_data[i]['SECURITY_GROUPS'].length > 1){
+					// 	delete copy_data[j];
+					// }
+				}                
 			}
-
-			result_data.push(origin_data[i])
+            
+			result_data.push(origin_data[i]);
 		}
 	}catch(err){
 		console.log(err);

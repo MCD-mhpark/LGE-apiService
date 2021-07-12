@@ -1148,6 +1148,7 @@ router.post('/req_data_yn', function (req, res, next) {
 	res.json(req.body);
 });
 
+
 // B2B GERP GLOBAL 개발쪽으로 테스트 데이터를 전송한다. 
 router.get('/test_sender', async function (req, res, next) {
 	console.log("test_sender 호출");
