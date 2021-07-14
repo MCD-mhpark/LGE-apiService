@@ -680,35 +680,61 @@ router.get('/responsibility', async function (req, res, next) {
 //====================================================
 //#region (진행중) IAM USER Create Endpoint 호출 영역
 
-function Convert_IAM_TO_ELOQUA_DATA(_body , res) {
-	console.log(11);
+function Convert_IAM_TO_ELOQUA_DATA(data_list , res) {
+    let convert_data = [];
+
+    for(const item of data_list){
+        eloqua_data.firstName = GetDataValue(item.SSOID.split(".")[0]);
+        eloqua_data.lastName = GetDataValue(item.SSOID.split(".")[1]);
+        eloqua_data.federationId = GetDataValue(item.SABUN);
+        eloqua_data.loginName = GetDataValue(item.SSOID);
+        eloqua_data.name = GetDataValue(item.NAME);
+        eloqua_data.emailAddress = GetDataValue(item.EMAIL);
+        eloqua_data.address1 = GetDataValue(item.ORGAN);
+        eloqua_data.address2 = GetDataValue(item.ORGAN_NAME);
+        eloqua_data.city = GetDataValue(item.MANAGEMENT_ORGAN);
+        eloqua_data.state = GetDataValue(item.MANAGEMENT_ORGAN_NAME);
+        eloqua_data.country = GetDataValue(item.X_ORGAN);
+        eloqua_data.zipCode = GetDataValue(item.X_ORGAN_NAME);
+        eloqua_data.jobTitle = GetDataValue(item.POSITION_NAME);
+        eloqua_data.department = GetDataValue(item.DIVISION);
+        eloqua.add_sc_list = item.SECURITY_GROUPS;
+        // for (let j = 0; j < this_data.RESPONSIBILITY_CODE.length; j++) {
+        //     eloqua_data.security_groups.push(this_data.RESPONSIBILITY_CODE[j]);
+        // }
+  
+        convert_data.push(this_data);
+    }
+
+    return convert_data;
+    
+}
+
+function OVERLAP_REMOVE_IAM_RESPOSIBILITY(_body , res){
+    console.log(11);
     let origin_data = _body;
-	let copy_data = origin_data;
+	let copy_data = origin_data.slice();
 	let result_data = [];
     let overlap_email_list = [];
 
-
-	let datas = [];
 	try{
 		for(let i = 0 ; i < origin_data.length ; i++){
 			origin_data[i]['SECURITY_GROUPS'] = [];
             
-            console.log("overlap email list");
-            console.log(overlap_email_list);
-            console.log("origin_data : " + i + "   origin_data[i].EMAIL : " + origin_data[i].EMAIL );
-            if( !origin_data ) continue;
+            // console.log("overlap email list");
+            // console.log(overlap_email_list);
+            // console.log("origin_data : " + i + "   origin_data[i].EMAIL : " + origin_data[i].EMAIL );
+            if( !origin_data[i] ){
+                continue;
+            } 
             if(overlap_email_list.indexOf(origin_data[i].EMAIL) > -1){
                 delete origin_data[i];
                 continue;
             }
-			for(let j = 0 ; j < copy_data.length ; j++){
-
+			for(let j = 0 ; j < copy_data.length ; j++){      
 				if( origin_data[i].EMAIL == copy_data[j].EMAIL ){
 					origin_data[i]['SECURITY_GROUPS'].push(copy_data[j].RESPONSIBILITY_CODE);	
                     overlap_email_list.push(origin_data[i].EMAIL) ;	
-					// if(origin_data[i]['SECURITY_GROUPS'].length > 1){
-					// 	delete copy_data[j];
-					// }
 				}                
 			}
             
@@ -718,64 +744,57 @@ function Convert_IAM_TO_ELOQUA_DATA(_body , res) {
 		console.log(err);
 	}
 
-	
-
-
-    res.json(result_data);
-    return;
-
-    for (let i = 0; i < body_data.length; i++) {
-        let this_data = body_data[i];
-        if (body_data != null && body_data.length > 0) continue;
-
-        if(emailList.indexOf(this_data.EMAIL) < 0) {
-            emailList.push({
-                index : i, 
-                email : this_data.EMAIL,
-                securityGroupIDS : [this_data.RESPONSIBILITY_CODE]
-            })
-        }else{
-           
-        }
-         
-
-        eloqua_data.firstName = this_data.ContentList[0].firstName;
-        eloqua_data.lastName = this_data.ContentList[0].lastName;
-        eloqua_data.federationId = this_data.ContentList[0].federationId;
-        eloqua_data.loginName = this_data.ContentList[0].loginName;
-        eloqua_data.name = this_data.ContentList[0].Name;
-        eloqua_data.emailAddress = this_data.ContentList[0].emailAddress;
-        eloqua_data.address1 = this_data.ContentList[0].ORGAN;
-        eloqua_data.address2 = this_data.ContentList[0].ORGAN_NAME;
-        eloqua_data.city = this_data.ContentList[0].MANAGEMENT_ORGAN;
-        eloqua_data.state = this_data.ContentList[0].MANAGEMENT_ORGAN_NAME;
-        eloqua_data.country = this_data.ContentList[0].X_ORGAN;
-        eloqua_data.zipCode = this_data.ContentList[0].X_ORGAN_NAME;
-        eloqua_data.jobTitle = this_data.ContentList[0].POSITION_NAME;
-        eloqua_data.department = this_data.ContentList[0].DIVISION;
-
-        // for (let j = 0; j < this_data.RESPONSIBILITY_CODE.length; j++) {
-        //     eloqua_data.security_groups.push(this_data.RESPONSIBILITY_CODE[j]);
-        // }
-  
-        convert_data.push(this_data);
-    }
-
-    // return eloqua_data;
-    res.json( eloqua_data);
+    return result_data;
 }
 
-router.post('/user_data', function (req, res, next) {
+router.post('/test_create', function (req, res, next) {
     console.log(1234);
-    var body_data = Convert_IAM_TO_ELOQUA_DATA(req.body , res);
-    return;
-    iam_eloqua.system.users.create(body_data).then((result) => {
-        console.log(result.data);
-        res.json(result.data);
-    }).catch((err) => {
-        console.error(err);
-        res.json(err);
-    });
+    let overlap_remove_data = OVERLAP_REMOVE_IAM_RESPOSIBILITY(req.body , res);
+    let convet_data = Convert_IAM_TO_ELOQUA_DATA(overlap_remove_data)
+    res.json(convet_data);
+    req_res_logs("create_eloqua", overlap_remove_data);
+    req_res_logs("create_convert", convet_data);
+ 
+    for(const create_item of convert_data){
+        iam_eloqua.system.users.create(create_item).then( async (result) => {
+
+            if(result.data){
+                console.log(result.data);
+                req_res_logs("create_after", result_data);
+                if (result.data.id) await securityGroup_Modify(result.data.id, item.add_sc_list, res);
+                res.json(result.data);
+            }
+           
+        }).catch((err) => {
+            console.error(err);
+            res.json(err);
+        });
+    }
+});
+
+router.post('/test_update', function (req, res, next) {
+    console.log(1234);
+    let overlap_remove_data = OVERLAP_REMOVE_IAM_RESPOSIBILITY(req.body , res);
+    let convet_data = Convert_IAM_TO_ELOQUA_DATA(overlap_remove_data)
+    res.json(convet_data);
+    req_res_logs("create_eloqua", overlap_remove_data);
+    req_res_logs("create_convert", convet_data);
+ 
+    for(const create_item of convert_data){
+        iam_eloqua.system.users.create(create_item).then( async (result) => {
+
+            if(result.data){
+                console.log(result.data);
+                req_res_logs("create_after", result_data);
+                if (result.data.id) await securityGroup_Modify(result.data.id, item.add_sc_list, res);
+                res.json(result.data);
+            }
+           
+        }).catch((err) => {
+            console.error(err);
+            res.json(err);
+        });
+    }
 });
 
 router.post('/user/create', function (req, res, next) {
@@ -803,30 +822,6 @@ router.post('/user/create', function (req, res, next) {
     });
 });
 
-router.post('/user/test_create', async function (req, res, next) {
-    console.log("user/test_create")
-    //예시 Request body 참고 URL : https://docs.oracle.com/en/cloud/saas/marketing/eloqua-rest-api/op-api-rest-2.0-system-user-post.html
-    // {
-    //   "name": "API User",
-    //   "emailAddress": "api.user@oracle.com", 
-    //   "loginName": "api.user",
-    //   "firstName": "API",
-    //   "lastName": "User"
-    // }
-
-    // var body_data = Convert_IAM_TO_ELOQUA_DATA(req.body);
-
-    // console.log(body_data);
-    let add_sc_list = req.body.securityGroups;
-    delete req.body.securityGroups;
-    await iam_eloqua.system.users.create(req.body).then(async (result) => {
-        console.log(result.data.id);
-        if (result.data.id) await securityGroup_Modify(result.data.id, add_sc_list, res);
-    }).catch((err) => {
-        console.error(err);
-        res.json(err);
-    });
-});
 
 
 router.get('/user/test_getOne/:id', function (req, res, next) {
@@ -1150,6 +1145,21 @@ function req_res_logs(filename, data) {
             console.log('write end');
         }
     });
+}
+
+function GetDataValue(contacts_fieldvalue) {
+    try {
+      if (contacts_fieldvalue != undefined) {
+        return contacts_fieldvalue;
+      }
+      else {
+        return "";
+      }
+    }
+    catch (e) {
+      console.log(e);
+      return "";
+    }
 }
 
 module.exports = router;
