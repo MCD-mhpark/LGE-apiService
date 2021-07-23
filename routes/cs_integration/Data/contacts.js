@@ -4,6 +4,7 @@ var express = require('express');
 var request = require('request');
 var router = express.Router();
 var fs = require("mz/fs");
+var request_promise = require('request-promise');
 /* Contacts */
 
 //BANT 조건 Eloqua 조회 함수
@@ -885,34 +886,44 @@ function CONVERT_INTEGRATION_DB_DATA_V2(contacts_data) {
 //2021-04-13 조회 테스트
 router.get('/test', async function (req, res, next) {
 
-	
-	// 전체 데이터를 조회하기 위해서 (Eloqua Select 는 한번에 최대 천건만 가능 ) index 를 늘려가며 계속 호출함
 	let page_index = 1;
 	let nextSearch = true;
 
-
 	// 고객통합 DB 데이터
-	while (nextSearch) {
-		
-		console.log("page_index : " + page_index + "  nextSearch : " + nextSearch);
-		let contacts_data = await get_INTEGRATION_DB_Data(page_index);
+	// while (nextSearch) {
+	// 	console.log("page_index : " + page_index + "  nextSearch : " + nextSearch + "  시작시간 : "  +  moment().format('YYYY/MM/DD HH:mm:ss'));
+	// 	let contacts_data = await CUSTOMER_GET_DATA(req, res, page_index);
+	// 	let result = await CUSTOMER_DB_SEND(req , res ,page_index , contacts_data);
+	// 	console.log(result);
+	// 	page_index ++;
+	// }
+
+	testCUSTOMER_DB_SEND(req, res);
+	 
+	// 전체 데이터를 조회하기 위해서 (Eloqua Select 는 한번에 최대 천건만 가능 ) index 를 늘려가며 계속 호출함
+	
+});
+
+async function CUSTOMER_GET_DATA(req , res , page_index){
+	let contacts_data = await get_INTEGRATION_DB_Data(page_index);
+	console.log("데이터 조회 : " + page_index + "  데이터 조회 완료 시간 : "  +  moment().format('YYYY/MM/DD HH:mm:ss'));
+	let request_data = await CONVERT_INTEGRATION_DB_DATA_V2(contacts_data);
+
+	req_res_logs("cs_elq_data_" + page_index, contacts_data);
+	req_res_logs("cs_req_data_" + page_index, request_data);
+}
+
+
+async function CUSTOMER_DB_SEND(req , res , page_index , contacts_data){
+
+
 
 		// Eloqua 의 page indexing 은 1부터 시작하네 contacts_data 는 javascript 의 array 이기 때문에 0부터 시작한다.
 
 		if (contacts_data != null && contacts_data.elements && contacts_data.elements.length > 0) {
 
-			// 다음 페이지를 조회 하기 위해 index 증가
-			
-
-			let request_data = await CONVERT_INTEGRATION_DB_DATA_V2(contacts_data);
-			req_res_logs("cs_elq_data_" + page_index, contacts_data);
-			req_res_logs("cs_req_data_" + page_index, request_data);
-			// res.json(request_data);
-			// nextSearch = false;
 
 			
-			
-		
 			/*======================================================================================================== */
 			var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/customer/api2api/eloqua/eloquaPardot.lge";
 
@@ -931,41 +942,110 @@ router.get('/test', async function (req, res, next) {
 			};
 
 			
-
-			var result = await request(options, async function (error, response, body) {
-
+			var result = await request_promise(options, function (error, response, body) {
+				console.log("데이터 응답 : " + page_index + "  데이터 응답 완료 시간 : "  +  moment().format('YYYY/MM/DD HH:mm:ss'));
 				// console.log(11);
 				console.log(response.statusCode);
-				if (error) {
-					console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
-					console.log(error);
-					await req_res_logs("cs_err_edata_" + page_index, { errorCode : response.statusCode});
-					// page_index++;
-				}
+				// if (error) {
+				// 	console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
+				// 	console.log(error);
+				// 	req_res_logs("cs_err_edata_" + page_index, response);
+				// }
 
-				if(response.statusCode != 200){
+				// if(response.statusCode != 200){
+				// 	req_res_logs("cs_err_edata_" + page_index, response);
+				// }
+				// if (!error && response.statusCode == 200) {
+				// 	result = body;
+				// 	console.log("result page_index : " + page_index + "  nextSearch : " + nextSearch);
 					
-					await req_res_logs("cs_err_edata_" + page_index, { errorCode : response.statusCode});
-					// page_index++;
-				}
-				if (!error && response.statusCode == 200) {
-					result = body;
-					// console.log(11);
-					console.log("result page_index : " + page_index + "  nextSearch : " + nextSearch);
-					// res.json(body);
-					await req_res_logs("cs_res_edata_" + page_index, body);
-					// page_index++;
-				}
+				// 	req_res_logs("cs_res_edata_" + page_index, body);
+					
+				// }
+
 			});
-			await sleep(3000);
-			page_index ++;
+
+			
+			
 		} else {
 			nextSearch = false;
 			res.json(false);
 		}
+		return result;
 	}
 
-});
+
+
+async function testCUSTOMER_DB_SEND(req , res ){
+
+	let page_index = 1;
+	let nextSearch = true;
+
+	// 고객통합 DB 데이터
+	while (nextSearch) {
+		
+		console.log("page_index : " + page_index + "  nextSearch : " + nextSearch + "  시작시간 : "  +  moment().format('YYYY/MM/DD HH:mm:ss'));
+		let contacts_data = await get_INTEGRATION_DB_Data(page_index);
+
+		// Eloqua 의 page indexing 은 1부터 시작하네 contacts_data 는 javascript 의 array 이기 때문에 0부터 시작한다.
+
+		if (contacts_data != null && contacts_data.elements && contacts_data.elements.length > 0) {
+
+			// 다음 페이지를 조회 하기 위해 index 증가
+			
+			
+			let request_data = await CONVERT_INTEGRATION_DB_DATA_V2(contacts_data);
+
+			console.log("데이터 조회 : " + page_index + "  데이터 조회 완료 시간 : "  +  moment().format('YYYY/MM/DD HH:mm:ss'));
+			req_res_logs("cs_elq_data_" + page_index, contacts_data);
+			req_res_logs("cs_req_data_" + page_index, request_data);
+			// res.json(request_data);
+			// nextSearch = false;
+
+			
+			/*======================================================================================================== */
+			var send_url = "https://dev-apigw-ext.lge.com:7221/gateway/customer/api2api/eloqua/eloquaPardot.lge";
+
+			var headers = {
+				'Content-Type': "application/json",
+				'x-Gateway-APIKey': "da7d5553-5722-4358-91cd-9d89859bc4a0"
+			}
+
+			options = {
+				url: send_url,
+				headers: headers,
+				//body : { ContentList: request_data } ,
+				body: { elements: request_data },
+				json: true ,
+				resolveWithFullResponse: true
+			};
+
+			
+		
+			var result = await request_promise.post(options).then(async function(response){
+				console.log("데이터 응답 : " + page_index + "  데이터 응답 완료 시간 : "  +  moment().format('YYYY/MM/DD HH:mm:ss'));
+				// console.log(11);
+				console.log(response.statusCode);
+				console.log("result page_index : " + page_index + "  nextSearch : " + nextSearch);
+				await req_res_logs("cs_res_edata_" + page_index, response);				
+			}).catch(async function(err){
+				console.log("에러 응답 : " + page_index + "  에러 응답 완료 시간 : "  +  moment().format('YYYY/MM/DD HH:mm:ss'));
+					console.log(err.statusCode);
+					await req_res_logs("cs_err_edata_" + page_index, err);
+			});
+		
+		}else{
+			nextSearch = false;
+			res.json(false);
+		}
+		page_index ++;
+
+
+
+	
+	}
+
+}
 
 function req_res_logs(filename, data) {
 	// filename : request , response 
@@ -974,13 +1054,13 @@ function req_res_logs(filename, data) {
 
 	var today = moment().format("YYYY-MM-DD");
 	var dirPath = utils.logs_makeDirectory(today + "_" + "cs_integration");
-	console.log("fileWrite Path : " + dirPath);
+	
 
 	fs.writeFile(dirPath + filename + ".txt", JSON.stringify(data), 'utf8', function (error) {
 		if (error) {
 			console.log(err);
 		} else {
-			console.log('write end');
+			
 		}
 	});
 }
