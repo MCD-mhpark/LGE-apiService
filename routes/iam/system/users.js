@@ -683,29 +683,34 @@ router.get('/responsibility', async function (req, res, next) {
 function Convert_IAM_TO_ELOQUA_DATA(data_list , res) {
     let convert_data = [];
 
+    console.log("returns 2")
     for(const item of data_list){
-        eloqua_data.firstName = GetDataValue(item.SSOID.split(".")[0]);
-        eloqua_data.lastName = GetDataValue(item.SSOID.split(".")[1]);
-        eloqua_data.federationId = GetDataValue(item.SABUN);
-        eloqua_data.loginName = GetDataValue(item.SSOID);
-        eloqua_data.name = GetDataValue(item.NAME);
-        eloqua_data.emailAddress = GetDataValue(item.EMAIL);
-        eloqua_data.address1 = GetDataValue(item.ORGAN);
-        eloqua_data.address2 = GetDataValue(item.ORGAN_NAME);
-        eloqua_data.city = GetDataValue(item.MANAGEMENT_ORGAN);
-        eloqua_data.state = GetDataValue(item.MANAGEMENT_ORGAN_NAME);
-        eloqua_data.country = GetDataValue(item.X_ORGAN);
-        eloqua_data.zipCode = GetDataValue(item.X_ORGAN_NAME);
-        eloqua_data.jobTitle = GetDataValue(item.POSITION_NAME);
-        eloqua_data.department = GetDataValue(item.DIVISION);
-        eloqua.add_sc_list = item.SECURITY_GROUPS;
+        let return_data ={};
+        return_data.add_sc_list = [];
+
+        return_data.firstName = GetDataValue(item.SSOID.split(".")[0]);
+        return_data.lastName = GetDataValue(item.SSOID.split(".")[1]);
+        return_data.federationId = GetDataValue(item.SABUN);
+        return_data.loginName = GetDataValue(item.SSOID);
+        return_data.name = GetDataValue(item.NAME);
+        return_data.emailAddress = GetDataValue(item.EMAIL);
+        return_data.address1 = GetDataValue(item.ORGAN);
+        return_data.address2 = GetDataValue(item.ORGAN_NAME);
+        return_data.city = GetDataValue(item.MANAGEMENT_ORGAN);
+        return_data.state = GetDataValue(item.MANAGEMENT_ORGAN_NAME);
+        return_data.country = GetDataValue(item.X_ORGAN);
+        return_data.zipCode = GetDataValue(item.X_ORGAN_NAME);
+        return_data.jobTitle = GetDataValue(item.POSITION_NAME);
+        return_data.department = GetDataValue(item.DIVISION);
+        return_data.add_sc_list = item.SECURITY_GROUPS;
+        return_data.gubun = GetDataValue(item.GUBUN);
         // for (let j = 0; j < this_data.RESPONSIBILITY_CODE.length; j++) {
         //     eloqua_data.security_groups.push(this_data.RESPONSIBILITY_CODE[j]);
         // }
-  
-        convert_data.push(this_data);
+        // console.log(convert_data);
+        convert_data.push(return_data);
     }
-
+    console.log("returns 3")
     return convert_data;
     
 }
@@ -747,29 +752,67 @@ function OVERLAP_REMOVE_IAM_RESPOSIBILITY(_body , res){
     return result_data;
 }
 
-router.post('/test_create', function (req, res, next) {
-    console.log(1234);
-    let overlap_remove_data = OVERLAP_REMOVE_IAM_RESPOSIBILITY(req.body , res);
-    let convet_data = Convert_IAM_TO_ELOQUA_DATA(overlap_remove_data)
-    res.json(convet_data);
-    req_res_logs("create_eloqua", overlap_remove_data);
-    req_res_logs("create_convert", convet_data);
- 
-    for(const create_item of convert_data){
-        iam_eloqua.system.users.create(create_item).then( async (result) => {
+async function CREATE_UPDATE_GUBUN_DATA(data_list ) {
+    let convert_data = [];
 
-            if(result.data){
-                console.log(result.data);
-                req_res_logs("create_after", result_data);
-                if (result.data.id) await securityGroup_Modify(result.data.id, item.add_sc_list, res);
-                res.json(result.data);
+    // console.log(data_list);
+    for(const item of data_list){
+        let email = item.EMAIL ;
+        let queryString = {};
+        queryString['search'] = "emailAddress='" + email +"'";
+
+        await iam_eloqua.system.users.get(queryString).then((result) => {
+            if(result.data.elements && result.data.elements.length > 0){
+                item.GUBUN = "UPDATE";
+                convert_data.push(item);
+            }else{
+                item.GUBUN = "CREATE";
+                convert_data.push(item);
             }
-           
         }).catch((err) => {
-            console.error(err);
-            res.json(err);
+            item.GUBUN = "CREATE";
+            convert_data.push(item);
         });
     }
+
+    return convert_data;
+    
+}
+
+router.post('/user_data', async function (req, res, next) {
+ 
+    // 한 사용자에 대하여 시큐리티 그룹별로 오는 중복 데이터를 머지
+    let overlap_remove_data = await OVERLAP_REMOVE_IAM_RESPOSIBILITY(req.body , res);
+
+    // 중복을 merge 한 데이터를 Eloqua 에서 조회하여 업데이트 할 데이터 일지 ,  create 할 데이터 일지 구분
+    let create_update_data = await CREATE_UPDATE_GUBUN_DATA(overlap_remove_data); 
+ 
+    // 해당 데이터를 Eloqua 에 create / update 를 하기위해 데이터형식을 맞춤
+    console.log("returns 1")
+    let convert_data = await Convert_IAM_TO_ELOQUA_DATA(create_update_data)
+    // console.log(convert_data);
+    console.log("returns 4")
+    console.log(convert_data)
+    await res.json(convert_data);
+    await req_res_logs("create_eloqua", overlap_remove_data);
+    await req_res_logs("create_gubun", create_update_data);
+    await req_res_logs("create_convert", convert_data);
+ 
+    // for(const create_item of convert_data){
+    //     iam_eloqua.system.users.create(create_item).then( async (result) => {
+
+    //         if(result.data){
+    //             console.log(result.data);
+    //             req_res_logs("create_after", result_data);
+    //             if (result.data.id) await securityGroup_Modify(result.data.id, item.add_sc_list, res);
+    //             res.json(result.data);
+    //         }
+           
+    //     }).catch((err) => {
+    //         console.error(err);
+    //         res.json(err);
+    //     });
+    // }
 });
 
 router.post('/test_update', function (req, res, next) {
@@ -777,8 +820,8 @@ router.post('/test_update', function (req, res, next) {
     let overlap_remove_data = OVERLAP_REMOVE_IAM_RESPOSIBILITY(req.body , res);
     let convet_data = Convert_IAM_TO_ELOQUA_DATA(overlap_remove_data)
     res.json(convet_data);
-    req_res_logs("create_eloqua", overlap_remove_data);
-    req_res_logs("create_convert", convet_data);
+    req_res_logs("update_eloqua", overlap_remove_data);
+    req_res_logs("update_convert", convet_data);
  
     for(const create_item of convert_data){
         iam_eloqua.system.users.create(create_item).then( async (result) => {
@@ -840,6 +883,33 @@ router.get('/user/test_getOne/:id', function (req, res, next) {
     // console.log(body_data);
 
     iam_eloqua.system.users.getOne(req.params.id).then((result) => {
+        console.log(result.data);
+        res.json(result.data);
+    }).catch((err) => {
+        console.error(err);
+        res.json(err);
+    });
+});
+
+router.get('/user/test_Search', function (req, res, next) {
+
+    //예시 Request body 참고 URL : https://docs.oracle.com/en/cloud/saas/marketing/eloqua-rest-api/op-api-rest-2.0-system-user-post.html
+    // {
+    //   "name": "API User",
+    //   "emailAddress": "api.user@oracle.com", 
+    //   "loginName": "api.user",
+    //   "firstName": "API",
+    //   "lastName": "User"
+    // }
+
+    // var body_data = Convert_IAM_TO_ELOQUA_DATA(req.body);
+
+    // console.log(body_data);
+    let email = req.query.email ;
+    let queryString = {};
+    queryString['search'] = "emailAddress='" + email +"'";
+
+    iam_eloqua.system.users.get(queryString).then((result) => {
         console.log(result.data);
         res.json(result.data);
     }).catch((err) => {
