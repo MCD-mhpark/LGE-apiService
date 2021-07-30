@@ -704,13 +704,20 @@ function Convert_IAM_TO_ELOQUA_DATA(data_list , res) {
         return_data.department = GetDataValue(item.DIVISION);
         return_data.add_sc_list = item.SECURITY_GROUPS;
         return_data.gubun = GetDataValue(item.GUBUN);
+        return_data.id = GetDataValue(item.ID);
+
+
+        // 넘어온 데이터에 상관없이 추가적으로 들어가야 할 필드
+        return_data.ssoOnly = "True" ;
+        return_data.isDisabled = "False";
+        return_data.passwordExpires = "False" ;
+
         // for (let j = 0; j < this_data.RESPONSIBILITY_CODE.length; j++) {
         //     eloqua_data.security_groups.push(this_data.RESPONSIBILITY_CODE[j]);
         // }
         // console.log(convert_data);
         convert_data.push(return_data);
     }
-    console.log("returns 3")
     return convert_data;
     
 }
@@ -764,6 +771,8 @@ async function CREATE_UPDATE_GUBUN_DATA(data_list ) {
         await iam_eloqua.system.users.get(queryString).then((result) => {
             if(result.data.elements && result.data.elements.length > 0){
                 item.GUBUN = "UPDATE";
+                item.ID = result.data.elements[0].id;
+                console.log(result.data.elements[0]);
                 convert_data.push(item);
             }else{
                 item.GUBUN = "CREATE";
@@ -788,31 +797,46 @@ router.post('/user_data', async function (req, res, next) {
     let create_update_data = await CREATE_UPDATE_GUBUN_DATA(overlap_remove_data); 
  
     // 해당 데이터를 Eloqua 에 create / update 를 하기위해 데이터형식을 맞춤
-    console.log("returns 1")
+
     let convert_data = await Convert_IAM_TO_ELOQUA_DATA(create_update_data)
     // console.log(convert_data);
-    console.log("returns 4")
-    console.log(convert_data)
+
+    // console.log(convert_data)
     await res.json(convert_data);
     await req_res_logs("create_eloqua", overlap_remove_data);
     await req_res_logs("create_gubun", create_update_data);
     await req_res_logs("create_convert", convert_data);
  
-    // for(const create_item of convert_data){
-    //     iam_eloqua.system.users.create(create_item).then( async (result) => {
+    for(const item of convert_data){
 
-    //         if(result.data){
-    //             console.log(result.data);
-    //             req_res_logs("create_after", result_data);
-    //             if (result.data.id) await securityGroup_Modify(result.data.id, item.add_sc_list, res);
-    //             res.json(result.data);
-    //         }
-           
-    //     }).catch((err) => {
-    //         console.error(err);
-    //         res.json(err);
-    //     });
-    // }
+        if(item.gubun == 'CREATE'){
+            iam_eloqua.system.users.create(create_item).then( async (result) => {
+
+                if(result.data){
+                    console.log(result.data);
+                    req_res_logs("create_after", result_data);
+                    if (result.data.id) await securityGroup_Modify(result.data.id, item.add_sc_list, res);
+                    res.json(result.data);
+                }
+               
+            }).catch((err) => {
+                console.error(err);
+                res.json(err);
+            });
+        }else if(item.gubun == 'UPDATE'){
+            
+            iam_eloqua.system.users.update(item.id, item).then(async(result) => {
+                if(result.data){
+                    console.log(result.data);
+                    req_res_logs("create_after", result_data);
+                    if (result.data.id) await securityGroup_Modify(result.data.id, item.add_sc_list, res);
+                    res.json(result.data);
+                }
+            }).catch((err) => {
+                console.error(err);
+            });
+        }
+    }
 });
 
 router.post('/test_update', function (req, res, next) {
