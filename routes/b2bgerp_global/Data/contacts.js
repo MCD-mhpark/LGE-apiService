@@ -2280,8 +2280,24 @@ bant_send = async function(business_name , state_date , end_date ){
              
 				req_res_logs("response" , business_name , body.resultData );
 				if(contact_list && contact_list.total) {
+
+
+					// Bant 전송 후 Eloqua 에 Bant 조건을 초기화 할 때 Subsidiary 가 없는 값은 전송되지 않았기 때문에 제외 한다.
+					let bant_update_data = [];
+					let not_bant_data = [];
+					if(contact_list && contact_list.elements){
+						for(const bant_item of contact_list.elements){
+							let fieldValues_list = bant_item.fieldValues;
+							let subsidiary_data = GetCustomFiledValue(fieldValues_list, 100196);
+					
+							if(subsidiary_data != '') bant_update_data.push(bant_item);
+							else { not_bant_data.push(bant_item)}
+						}
+					}
+
 					var bant_result_list = await setBant_Update( business_name , bant_update_list );
-					req_res_logs("bantResult" , business_name , bant_result_list );
+					req_res_logs("bantUpdateData" , business_name , bant_result_list );
+					req_res_logs("NOT_bantUpdateData" , business_name , not_bant_data );
 				}     
             }
         });
@@ -2548,6 +2564,18 @@ router.get('/search_gerp_data', async function (req, res, next) {
 	let bant_data = await get_b2bgerp_global_bant_data(bsname , start_date , end_date);
 	let convert_data = await Convert_B2BGERP_GLOBAL_DATA( bant_data, bsname)
 
+	let bant_update_data = [];
+	let not_bant_data = [];
+	if(bant_data && bant_data.elements){
+		for(const bant_item of bant_data.elements){
+			let fieldValues_list = bant_item.fieldValues;
+			let subsidiary_data = GetCustomFiledValue(fieldValues_list, 100196);
+	
+			if(subsidiary_data != '') bant_update_data.push(bant_item);
+			else { not_bant_data.push(bant_item)}
+		}
+	}
+	
 
 	if(bant_data && getStatus == 'eloqua') res.json(bant_data);
 	else if(bant_data && getStatus == 'convert')res.json(convert_data);
@@ -2564,6 +2592,8 @@ router.get('/search_gerp_data', async function (req, res, next) {
 	if(bant_data){
 		req_res_logs("reqEloqua" , bsname , bant_data );
 		req_res_logs("reqConvert" , bsname , convert_data );
+		req_res_logs("reqUpdate" , bsname , bant_update_data );
+		req_res_logs("reqNOT_Update" , bsname , not_bant_data );
 		req_res_logs("reqTotal" , bsname , total_logs );
 	}
 	
