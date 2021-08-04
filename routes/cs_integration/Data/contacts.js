@@ -1022,7 +1022,7 @@ async function testCUSTOMER_DB_SEND(req , res ){
 
 			
 		
-			var result = await request_promise.post(options).then(async function(response){
+			await request_promise.post(options).then(async function(response){
 				console.log("데이터 응답 : " + page_index + "  데이터 응답 완료 시간 : "  +  moment().format('YYYY/MM/DD HH:mm:ss'));
 				// console.log(11);
 				console.log(response.statusCode);
