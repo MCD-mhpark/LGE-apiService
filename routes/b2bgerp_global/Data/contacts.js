@@ -2862,7 +2862,10 @@ function ConvertCustomObjectData( data_list ) {
 
 // 2021 08 09 잘못넘어간 데이터 건에 대하여 파일로 떨구기
 router.post('/get_test', async function (req, res, next) {
+
+
 	let contact_list = req.body ; 
+
 	for(const contact_info of contact_list){
 		
 	}
@@ -3001,8 +3004,7 @@ function Convert_TEST_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 	  }
 	  
 	
-	 
- 
+
 }
 
 module.exports = router;
