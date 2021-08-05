@@ -6,12 +6,14 @@ var logger = require('morgan');
 var methodOverride = require('method-override');
 var EloquaApi = require('./public/modules/eloqua-sdk');
 var moment = require('moment');
+const bodyParser = require('body-parser');
 require('console-stamp')(console, {
     formatter: function() {
         return moment().tz('Asia/Seoul').format('YYYY-MM-DD HH:mm:ss');
     }
 });
 var os = require('os');
+
 
 
 
@@ -147,6 +149,9 @@ var module_files = path.join(process.cwd(), '../modules');
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/modules', express.static(module_files));
+
+app.use(bodyParser.json({limit: '50mb'})); //body 의 크기 설정
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true})); //url의 크기 설정
  
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));
