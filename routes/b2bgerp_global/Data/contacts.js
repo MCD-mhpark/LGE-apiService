@@ -1009,7 +1009,8 @@ function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 				"[MQL]" + GetCustomFiledValue(FieldValues_data, 100196) + "_" +
 				business_department + "_" +
 				GetCustomFiledValue(FieldValues_data, 100202) + "_" +
-				moment().format('YYYYMMDD');
+				moment().format('YYYYMMDD') + "_" + 
+				utils.timeConverter("GET_DATE", contacts_data.elements[i].updatedAt);
         
 			result_item.SITE_NAME = GetCustomFiledValue(FieldValues_data, 100187) == "" ? "N/A" : GetCustomFiledValue(FieldValues_data, 100187);        //100187	Territory //SITE_NAME ( 현장명 매핑필드 확인 ) //2021-02-02 기준 데이터 없음
 			result_item.LEAD_SOURCE_TYPE = "11";                                          //default 11 (협의됨) //Eloqua에서 넘어오는 값이면 By Marketing, 영업인원이 수기입할 경우 By Sales로 지정
