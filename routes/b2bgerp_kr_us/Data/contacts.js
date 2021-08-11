@@ -285,13 +285,13 @@ async function senderToB2BGERP_KR(){
 	            console.log(error);
 				let errorData = {
 					errorCode : response.statusCode,
-					errorMsg : error.Message 
+					errorMsg : error.message 
 				}
 				req_res_logs("responseError_" + moment().format("hh:mm")  , "MAT_TO_B2BGERPKR" , errorData );	
 	        }else if(!error && response.statusCode != 200 ){
 				let errorData = {
 					errorCode : response.statusCode,
-					errorMsg : error.Message 
+					errorMsg : error.message 
 				}
 				req_res_logs("responseError_" + moment().format("hh:mm")  , "MAT_TO_B2BGERPKR" , errorData );
 			}else if (!error && response.statusCode == 200) {
