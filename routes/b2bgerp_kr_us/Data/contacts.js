@@ -192,7 +192,7 @@ async function GetKR_CustomDataSearch(_parentId) {
 
 	// var queryString = "?search=" + "CreatedAt<'" + end_date + "'CreatedAt>'" + start_date + "'";
 	// var queryString = "?search=483='N'";
-	var queryString = "?search=B2B_GERP_KR_____1='N'"
+	var queryString = "?search=B2B_GERP_KR_____1=''"
 
 
 	// Get 요청하기 http://www.google.com 
@@ -204,6 +204,7 @@ async function GetKR_CustomDataSearch(_parentId) {
 	};
 
 	await request_promise.get(options, function (error, response, body) {
+		console.log("data return");
 		// console.log(body);
 		// console.log(response.statusMessage);
 		// console.log(response.statusCode);
@@ -218,7 +219,7 @@ router.post('/sender', async function (req, res, next) {
 });
 async function senderToB2BGERP_KR(){
 	console.log("Call senderToB2BGERP_KR + ")
-	var parentId = 39;  // 한국영업본부 커스텀 오브젝트 ID
+	var parentId = 39;  // 한국영업본부 온라인 견적문의 커스텀 오브젝트 ID
 
 	// var start_date = '2021-05-17 09:00:01';
 	// var end_date = '2021-05-17 23:59:59';
@@ -227,7 +228,7 @@ async function senderToB2BGERP_KR(){
 
 	var COD_list = await GetKR_CustomDataSearch(parentId);
 
-	var B2B_GERP_KR_DATA = Convert_B2BGERP_KR_DATA(COD_list);
+	var B2B_GERP_KR_DATA = await Convert_B2BGERP_KR_DATA(COD_list);
 	// var send_data = {
 	// 	elements: B2B_GERP_KR_DATA,
 	// 	total: B2B_GERP_KR_DATA.length
@@ -254,8 +255,7 @@ async function senderToB2BGERP_KR(){
 	        json : true
 	    };
 
-		// res.json(COD_list);
-		// return;
+		
 
 
 
@@ -275,7 +275,7 @@ async function senderToB2BGERP_KR(){
 	//   var bant_result_list = await setBant_Update( business_name , bant_update_list );
 	//   req_res_logs("bantResult" , business_name , bant_result_list );
 	//   res.json(bant_result_list);
-	    var result = await request(options, async function (error, response, body) {
+		await request_promise.get(options, async function (error, response, body) {
 
 	        // console.log(11);
 	        // console.log(response);
@@ -300,7 +300,7 @@ async function senderToB2BGERP_KR(){
 	                // console.log(B2B_GERP_KR_DATA);
 	                let trans_up_list = await getTransfer_UpdateData( COD_list.elements);
 					// console.log(trans_up_list[0].fieldValues);
-					await sendTransfer_Update(parentId , trans_up_list);
+					// await sendTransfer_Update(parentId , trans_up_list);
 	            }   
 	        }
 	    });

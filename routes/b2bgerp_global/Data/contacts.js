@@ -2252,9 +2252,9 @@ bant_send = async function (business_name, state_date, end_date) {
 
 
 		// reqEloqua : Eloqua Data List , reqConvert : 실제 전송 list , reqTotal : Eloqua Data 건수 및 실제 전송 건수 기록
-		req_res_logs("addreqEloqua", business_name, contact_list);
-		req_res_logs("addreqConvert", business_name, request_data);
-		req_res_logs("addreqTotal", business_name, total_logs);
+		req_res_logs("reqEloqua", business_name, contact_list);
+		req_res_logs("reqConvert", business_name, request_data);
+		req_res_logs("reqTotal", business_name, total_logs);
 
 
 		// MQL Data 전송 전 MQL Data List 를 CustomObject 에 적재하기 위해 데이터 형태 변경
@@ -2265,7 +2265,7 @@ bant_send = async function (business_name, state_date, end_date) {
 
 		// CustomObject 에 적재된 MQL DATA를 CUSTOMBOEJCT_ID 고유값을 추가하여 B2B GERP GLOBAL 로 전송 
 		let update_data = await mqldata_push_customobjectid(request_data, update_mql_data);
-		req_res_logs("addreqCustomData", business_name, update_data);
+		req_res_logs("reqCustomData", business_name, update_data);
 
 		var headers = {
 			'Content-Type': "application/json",
@@ -2284,11 +2284,11 @@ bant_send = async function (business_name, state_date, end_date) {
 			if (error) {
 				console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
 				console.log(error);
-				req_res_logs("addbantsend_error", business_name, []);
+				req_res_logs("bantsend_error", business_name, []);
 			}
 			if (!error && response.statusCode == 200) {
 
-				req_res_logs("addresponse", business_name, body.resultData);
+				req_res_logs("response", business_name, body.resultData);
 				if (contact_list && contact_list.total) {
 
 
@@ -2306,8 +2306,8 @@ bant_send = async function (business_name, state_date, end_date) {
 					}
 
 					var bant_result_list = await setBant_Update(business_name, bant_update_list);
-					req_res_logs("addbantUpdateData", business_name, bant_result_list);
-					req_res_logs("addNOT_bantUpdateData", business_name, not_bant_data);
+					req_res_logs("bantUpdateData", business_name, bant_result_list);
+					req_res_logs("NOT_bantUpdateData", business_name, not_bant_data);
 				}
 			}
 		});
@@ -2559,54 +2559,61 @@ function CONVERT_B2BGERP_GLOBAL_CUSTOMOBJECT(request_data) {
 	return mql_list;
 }
 
+// 사업부 전체의 데이터를 검색
 router.get('/search_gerp_data', async function (req, res, next) {
-	let Business_Unit_List = [];
-	let bsname = req.query.bsname;
-	let getStatus = req.query.status;
+	let Business_Unit_List = ["AS" , "CM" , "ID" , "IT" , "Solution"];
+	// let Business_Unit_List = ["AS" ];
+	// let bsname = req.query.bsname;
+	// let getStatus = req.query.status;
 	let start_date = req.query.start_date;
 	let end_date = req.query.end_date;
 	console.log("search_gerp_data");
 
 
-	console.log(bsname);
-	console.log(getStatus);
+	let result_list = [];
 
-	let bant_data = await get_b2bgerp_global_bant_data(bsname, start_date, end_date);
-	let convert_data = await Convert_B2BGERP_GLOBAL_DATA(bant_data, bsname)
 
-	let bant_update_data = [];
-	let not_bant_data = [];
-	if (bant_data && bant_data.elements) {
-		for (const bant_item of bant_data.elements) {
-			let fieldValues_list = bant_item.fieldValues;
-			let subsidiary_data = GetCustomFiledValue(fieldValues_list, 100196);
+	for(const bsname of Business_Unit_List){
 
-			if (subsidiary_data != '') bant_update_data.push(bant_item);
-			else { not_bant_data.push(bant_item) }
+		let bant_data = await get_b2bgerp_global_bant_data(bsname, start_date, end_date);
+		let convert_data = await Convert_B2BGERP_GLOBAL_DATA(bant_data, bsname)
+
+		let bant_update_data = [];
+		let not_bant_data = [];
+		if (bant_data && bant_data.elements) {
+			for (const bant_item of bant_data.elements) {
+				let fieldValues_list = bant_item.fieldValues;
+				let subsidiary_data = GetCustomFiledValue(fieldValues_list, 100196);
+
+				if (subsidiary_data != '') bant_update_data.push(bant_item);
+				else { not_bant_data.push(bant_item) }
+			}
+		}
+
+
+		// if (bant_data && getStatus == 'eloqua') res.json(bant_data);
+		// else if (bant_data && getStatus == 'convert') res.json(convert_data);
+		// else res.json(false)
+
+		// 요청에 대한 로그를 쌓기 위함
+		let total_logs = {
+			bsname: bsname,
+			search_time: utils.todayDetail_getDateTime(),
+			eloqua_total: bant_data && bant_data.total ? bant_data.total : 0,
+			convert_total: convert_data ? convert_data.length : null
+		}
+
+		
+		if (bant_data) {
+			req_res_logs("reqSearchEloqua", bsname, bant_data);
+			req_res_logs("reqSearchConvert", bsname, convert_data);
+			req_res_logs("reqSearchUpdate", bsname, bant_update_data);
+			req_res_logs("reqSearchNOT_Update", bsname, not_bant_data);
+			req_res_logs("reqSearchTotal", bsname, total_logs);
+			result_list.push(convert_data);
 		}
 	}
-
-
-	if (bant_data && getStatus == 'eloqua') res.json(bant_data);
-	else if (bant_data && getStatus == 'convert') res.json(convert_data);
-	else res.json(false)
-
-	// 요청에 대한 로그를 쌓기 위함
-	let total_logs = {
-		bsname: bsname,
-		search_time: utils.todayDetail_getDateTime(),
-		eloqua_total: bant_data && bant_data.total ? bant_data.total : 0,
-		convert_total: convert_data ? convert_data.length : null
-	}
-
-	if (bant_data) {
-		req_res_logs("reqEloqua", bsname, bant_data);
-		req_res_logs("reqConvert", bsname, convert_data);
-		req_res_logs("reqUpdate", bsname, bant_update_data);
-		req_res_logs("reqNOT_Update", bsname, not_bant_data);
-		req_res_logs("reqTotal", bsname, total_logs);
-	}
-
+	res.json(result_list);
 });
 
 router.put('/menual_bant_update', async function (req, res, next) {
@@ -2872,14 +2879,12 @@ function ConvertCustomObjectData(data_list) {
 }
 
 // 2021 08 09 잘못넘어간 데이터 건에 대하여 파일로 떨구기
-router.post('/wrongtest', async function (req, res, next) {
+router.post('/range_get_mql', async function (req, res, next) {
 
 	let contact_list = req.body;
 
-	
 	let result_list = await Convert_TEST_B2BGERP_GLOBAL_DATA(contact_list);
 	
-
 	res.json(result_list)
 	req_res_logs("wrongConvertData", "TEST", result_list);
 })
@@ -3037,6 +3042,40 @@ async function Convert_TEST_B2BGERP_GLOBAL_DATA(contacts_list) {
 	return result_list;
 
 }
+
+// 2021 08 09 잘못넘어간 데이터 건에 대하여 파일로 떨구기
+router.post('/wrongsend', async function (req, res, next) {
+	
+console.log(111);
+
+	let convert_data = req.body;
+	//LG전자 운영 URL
+	var send_url = "https://apigw-ext.lge.com:7211/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloqua.lge";
+
+	var headers = {
+		'Content-Type': "application/json",
+		'x-Gateway-APIKey': "da7d5553-5722-4358-91cd-9d89859bc4a0"
+	}
+
+	options = {
+		url: send_url,
+		method: "POST",
+		headers: headers,
+		body: { ContentList: convert_data },
+		json: true
+	};
+
+	await request(options, async function (error, response, body) {
+		if (error) {
+			console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
+			console.log(error);
+			req_res_logs("TESTSEND_ERR", "TEST_SEND", []);
+		}
+		if (!error && response.statusCode == 200) {
+			req_res_logs("TESTSEND_CONVERT", "TEST_SEND", convert_data);
+		}
+	})
+});
 
 module.exports = router;
 module.exports.bant_send = bant_send;
