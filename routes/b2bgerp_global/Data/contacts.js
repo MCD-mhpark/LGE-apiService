@@ -2760,15 +2760,20 @@ router.get('/leadResponse', async function (req, res, next) {
 	})
 });
 
-router.post('/leadNumberAPI', async function (req, res, next) {
+router.get('/leadNumberAPI', async function (req, res, next) {
 
 	let LeadNumberData_list = await getLeadnumberData();
 	let parent_id = 46;
 
+	console.log(LeadNumberData_list);
+
 
 	// 생성된 데이터를 customobject 에 적재함
 	let convert_data_list = ConvertCustomObjectData(LeadNumberData_list);
-	console.log(convert_data_list[0].fieldValues);
+		// console.log(convert_data_list[0].fieldValues);
+
+		return;
+
 
 	let return_data = [];
 
@@ -2800,29 +2805,31 @@ async function getLeadnumberData() {
 	let CustomObject_lead_id = 46;
 
 	// MAT 에서 B2B GERP GLOBAL 을 일배치로 호출해서 데이터를 가져옴
-	// var headers = {
-	// 	'Content-Type': "application/json",
-	// 	'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
-	// }
-
 	var headers = {
-		'Content-Type': "application/json"
+		'Content-Type': "application/json",
+		'x-Gateway-APIKey' : "da7d5553-5722-4358-91cd-9d89859bc4a0"
 	}
 
-	let b2bgerp_global_url = "http://localhost:8001/b2bgerp_global/contacts/leadResponse";
+	// var headers = {
+	// 	'Content-Type': "application/json"
+	// }
+
+	// let b2bgerp_global_url = "http://localhost:8001/b2bgerp_global/contacts/leadResponse";
+
+	let b2bgerp_global_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadMappByEloquaG.lge";
 
 	options = {
 		url: b2bgerp_global_url,
 		headers: headers,
-		body: {},
+		body: {ContentList : []},
 		json: true
 	};
 
 	let data_list;
-	await request_promise.get(options, function (error, response, body) {
+	await request_promise.post(options, function (error, response, body) {
 
 		// console.log(11);
-		// console.log(response);
+		console.log(response);
 
 		if (error) {
 			console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
@@ -2835,7 +2842,7 @@ async function getLeadnumberData() {
 		} else if (!error && response.statusCode != 200) {
 			let errorData = {
 				errorCode: response.statusCode,
-				errorMsg: error.Message
+				errorMsg: "Not Error & Not Response Code 200"
 			}
 			req_res_logs("Response", "LeadnumberAPI_Error", errorData);
 		} else if (!error && response.statusCode == 200) {
