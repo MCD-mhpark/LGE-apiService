@@ -1004,20 +1004,14 @@ async function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 
 			seq_cnt = seq_cnt + 1;
 
-			//테스트 코드 삽입
-			let date = new Date(utils.timeConverter("GET_DATE", contacts_data.updatedAt));
-			let monthNames = ["January", "February", "March", "April", "May", "June",
- 				"July", "August", "September", "October", "November", "December"
-			];
-			let eng_month = await monthNames[date.getMonth()];
+			
 
 			result_item.LEAD_NAME =
 				//GetCustomFiledValue(FieldValues_data, 100229) + "_" +
 				"[MQL]" + GetCustomFiledValue(FieldValues_data, 100196) + "_" +
 				business_department + "_" +
 				GetCustomFiledValue(FieldValues_data, 100202) + "_" +
-				moment(utils.timeConverter("GET_DATE", contacts_data.updatedAt)).format('YYYYMMDD');
-				//moment().format('YYYYMMDD');
+				moment().format('YYYYMMDD');
 
 			result_item.SITE_NAME = GetCustomFiledValue(FieldValues_data, 100187) == "" ? "N/A" : GetCustomFiledValue(FieldValues_data, 100187);        //100187	Territory //SITE_NAME ( 현장명 매핑필드 확인 ) //2021-02-02 기준 데이터 없음
 			result_item.LEAD_SOURCE_TYPE = "11";                                          //default 11 (협의됨) //Eloqua에서 넘어오는 값이면 By Marketing, 영업인원이 수기입할 경우 By Sales로 지정
@@ -1030,8 +1024,7 @@ async function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 				GetCustomFiledValue(FieldValues_data, 100172) + "/" +
 				//GetDataValue(contacts_data.elements[i].firstName) + " " + GetDataValue(contacts_data.elements[i].lastName) + "/" +
 				GetDataValue(contacts_data.elements[i].emailAddress) + "/" +
-				GetDataValue(contacts_data.elements[i].mobilePhone) + "/" + 
-				eng_month;         ;                        //Contact Point는 Eloqua 필드 중 -> Customer Name/Email/Phone No. 를 연결 시켜 매핑 필요
+				GetDataValue(contacts_data.elements[i].mobilePhone) + "/"               //Contact Point는 Eloqua 필드 중 -> Customer Name/Email/Phone No. 를 연결 시켜 매핑 필요
 			result_item.CORPORATION = "LGE" + GetCustomFiledValue(FieldValues_data, 100196);  //법인정보 "LGE" + {{Subsidiary}}
 			result_item.OWNER = "";                                                       //(확인필요);
 
@@ -2826,7 +2819,7 @@ async function getLeadnumberData() {
 	};
 
 	let data_list;
-	await request_promise.post(options, function (error, response, body) {
+	await request_promise.get(options, function (error, response, body) {
 
 		// console.log(11);
 		console.log(response);
