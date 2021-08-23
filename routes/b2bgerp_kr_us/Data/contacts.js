@@ -181,7 +181,7 @@ function Convert_B2BGERP_KR_DATA(_cod_data) {
 }
 
 //CustomObject 기간 조회 Eloqua API Version 1.0
-async function GetKR_CustomDataSearch(_parentId) {
+async function GetKR_CustomDataSearch(_parentId , type) {
 	var return_data = {};
 	var parentId = _parentId;
 
@@ -192,8 +192,9 @@ async function GetKR_CustomDataSearch(_parentId) {
 
 	// var queryString = "?search=" + "CreatedAt<'" + end_date + "'CreatedAt>'" + start_date + "'";
 	// var queryString = "?search=483='N'";
-	var queryString = "?search=B2B_GERP_KR_____1=''"
-
+	var queryString = "";
+	if(type == 'get') queryString += "?search=B2B_GERP_KR_____1=''"
+	if(type == 'init')  queryString += "?search=B2B_GERP_KR_____1='Y'"
 
 	// Get 요청하기 http://www.google.com 
 	const options = {
@@ -214,6 +215,16 @@ async function GetKR_CustomDataSearch(_parentId) {
 	return return_data;
 }
 
+router.get('/trans_gubun_init', async function (req, res, next) {
+	var parentId = 39;  // 한국영업본부 온라인 견적문의 커스텀 오브젝트 ID
+	var COD_list = await GetKR_CustomDataSearch(parentId ,"init");
+	let trans_up_list = await getTransfer_UpdateData( COD_list.elements , "init");
+	console.log(COD_list.elements.length);
+
+	await sendTransfer_Update(parentId , trans_up_list);
+});
+
+
 router.post('/sender', async function (req, res, next) {
 	senderToB2BGERP_KR()
 });
@@ -226,7 +237,7 @@ async function senderToB2BGERP_KR(){
 
 
 
-	var COD_list = await GetKR_CustomDataSearch(parentId);
+	var COD_list = await GetKR_CustomDataSearch(parentId ,"get");
 
 	var B2B_GERP_KR_DATA = await Convert_B2BGERP_KR_DATA(COD_list);
 	// var send_data = {
@@ -236,9 +247,10 @@ async function senderToB2BGERP_KR(){
 
 
 	//LG전자 KR 개발 Endpoint
-	let dev_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloquaKR.lge"
+	// let dev_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloquaKR.lge"
+													 
 	//LG전자 KR 운영 Endpoint
-	// let prd_url = 
+	let prd_url = "https://apigw-ext.lge.com:7211/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloquaKR.lge"
 	
 	console.log(B2B_GERP_KR_DATA);
 	if (B2B_GERP_KR_DATA != null && B2B_GERP_KR_DATA.length > 0) {
@@ -248,7 +260,7 @@ async function senderToB2BGERP_KR(){
 	    }
 
 	    options = {
-	        url : dev_url,
+	        url : prd_url,
 	        method: "POST",
 	        headers:headers,
 	        body : { ContentList: B2B_GERP_KR_DATA } ,
@@ -267,15 +279,15 @@ async function senderToB2BGERP_KR(){
 	//   convert_total : request_data.length
 	// }
 
-	req_res_logs("reqEloqua_" + moment().format("hh:mm") , "MAT_TO_B2BGERPKR" , COD_list );
-	req_res_logs("reqConvert_" + moment().format("hh:mm")  , "MAT_TO_B2BGERPKR", B2B_GERP_KR_DATA );
+	req_res_logs("reqEloqua_" + moment().format("HH시mm분") , "MAT_TO_B2BGERPKR" , COD_list );
+	req_res_logs("reqConvert_" + moment().format("HH시mm분")  , "MAT_TO_B2BGERPKR", B2B_GERP_KR_DATA );
 	// req_res_logs("reqTotal" , business_name , total_logs );
 	
 
 	//   var bant_result_list = await setBant_Update( business_name , bant_update_list );
 	//   req_res_logs("bantResult" , business_name , bant_result_list );
 	//   res.json(bant_result_list);
-		await request_promise.get(options, async function (error, response, body) {
+		await request_promise.post(options, async function (error, response, body) {
 
 	        // console.log(11);
 	        // console.log(response);
@@ -287,20 +299,23 @@ async function senderToB2BGERP_KR(){
 					errorCode : response.statusCode,
 					errorMsg : error.message 
 				}
-				req_res_logs("responseError_" + moment().format("hh:mm")  , "MAT_TO_B2BGERPKR" , errorData );	
+				req_res_logs("responseError_" + moment().format("HH시mm분")  , "MAT_TO_B2BGERPKR" , errorData );	
 	        }else if(!error && response.statusCode != 200 ){
+			
 				let errorData = {
 					errorCode : response.statusCode,
-					errorMsg : "Error Object Not Found & Response Code Not 200"
+					errorMsg : "Error Object Not Found & Response Code Not 200" ,
+					errorDetailMsg : response.body
 				}
-				req_res_logs("responseError_" + moment().format("hh:mm")  , "MAT_TO_B2BGERPKR" , errorData );
+				req_res_logs("responseError_" + moment().format("HH시mm분")  , "MAT_TO_B2BGERPKR" , errorData );
+				req_res_logs("requestObject_" + moment().format("HH시mm분")  , "MAT_TO_B2BGERPKR" , response );
 			}else if (!error && response.statusCode == 200) {
-	    		req_res_logs("response_" + moment().format("hh:mm")  , "MAT_TO_B2BGERPKR" , body.resultData );
+	    		req_res_logs("response_" + moment().format("HH시mm분")  , "MAT_TO_B2BGERPKR" , body.resultData );
 	            if(B2B_GERP_KR_DATA.length > 0 ) {
 	                // console.log(B2B_GERP_KR_DATA);
-	                let trans_up_list = await getTransfer_UpdateData( COD_list.elements);
+	                let trans_up_list = await getTransfer_UpdateData( COD_list.elements , "get");
 					// console.log(trans_up_list[0].fieldValues);
-					// await sendTransfer_Update(parentId , trans_up_list);
+					await sendTransfer_Update(parentId , trans_up_list);
 	            }   
 	        }
 	    });
@@ -311,18 +326,23 @@ async function senderToB2BGERP_KR(){
 			errorInfo : null ,
 			errorMessage : "보낼 데이터가 없습니다."
 		}
-		req_res_logs("noneData_" + moment().format("hh:mm")  , "MAT_TO_B2BGERPKR" , noneData );
+		req_res_logs("noneData_" + moment().format("HH시mm분")  , "MAT_TO_B2BGERPKR" , noneData );
 		
 	}
 }
 
-async function getTransfer_UpdateData(TRANS_KR_LIST){
+async function getTransfer_UpdateData(TRANS_KR_LIST , type){
 
 	let return_list = [];
+	let trans_check = "";
+	if(type == 'get' ) trans_check = 'Y'
+	else if(type == 'init' ) trans_check = ''
+	
+
 	for(const kr_data of TRANS_KR_LIST){
 
 		for(let i = 0 ; i <  kr_data.fieldValues.length ; i++){
-			if(kr_data.fieldValues[i].id == "483") { kr_data.fieldValues[i].value = 'Y' }
+			if(kr_data.fieldValues[i].id == "483") { kr_data.fieldValues[i].value = trans_check }
 			
 			if(kr_data.fieldValues[i].id == "301" || kr_data.fieldValues[i].id == "300" || kr_data.fieldValues[i].id == "299" || kr_data.fieldValues[i].id == "298"){ 
 			 	kr_data.fieldValues[i].value = utils.timeConverter("GET_UNIX" , kr_data.fieldValues[i].value ) 
