@@ -245,7 +245,7 @@ if(__dirname == "/home/opc/LGE/b2bgerp_global"){
 
 if(__dirname == "/home/opc/LGE/b2bgerp_kr"){
 	console.log("B2B GERP KR SCHEDULER REG");
-	// schedule_Request_KR();
+	schedule_Request_KR();
 } 
 
 if(os.type().indexOf("Windows") > -1) global.OS_TYPE = "Windows"
