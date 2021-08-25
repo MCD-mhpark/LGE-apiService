@@ -722,6 +722,45 @@ function Convert_IAM_TO_ELOQUA_DATA(data_list , res) {
     
 }
 
+
+// 휴/퇴직자 구분 및 전보 발령일 경우에 대해 처리
+// H : 휴직자 , T : 퇴직자 , M : 조직 코드 변경자
+function Convert_IAM_TO_RE_ELOQUA_DATA(data_list ) {
+    let convert_data = [];
+
+    console.log("returns 2")
+    
+    for(const item of data_list){
+        let return_data ={};
+        
+        return_data.add_sc_list = [];
+
+        return_data.id = item.id;
+        return_data.HTGUBUN = item.HTGUBUN;
+
+        if(item.HTGUBUN == 'H'){
+            return_data.personalMessage = 'rest';
+
+        }else if(item.HTGUBUN == 'T'){
+            
+            return_data.isDisabled = "True";
+            return_data.personalMessage = 'retiree';
+        }else if(item.ELOQUA_ORGAN != item.ORGAN ){
+            return_data.HTGUBUN = "M";
+        }
+
+    
+
+        // for (let j = 0; j < this_data.RESPONSIBILITY_CODE.length; j++) {
+        //     eloqua_data.security_groups.push(this_data.RESPONSIBILITY_CODE[j]);
+        // }
+        // console.log(convert_data);
+        convert_data.push(return_data);
+    }
+    return convert_data;
+    
+}
+
 function OVERLAP_REMOVE_IAM_RESPOSIBILITY(_body , res){
     console.log(11);
     let origin_data = _body;
@@ -787,6 +826,35 @@ async function CREATE_UPDATE_GUBUN_DATA(data_list ) {
     return convert_data;
     
 }
+
+async function HT_GUBUN_DATA(data_list ) {
+    let convert_data = [];
+
+    // console.log(data_list);
+    for(const item of data_list){
+        let email = item.EMAIL ;
+        let queryString = {};
+        queryString['search'] = "emailAddress='" + email +"'";
+
+        await iam_eloqua.system.users.get(queryString).then((result) => {
+            if(result.data.elements && result.data.elements.length > 0){
+                item.ELOQUA_ORGAN = result.data.elements[0].address1;
+                item.ID = result.data.elements[0].id;
+                console.log(result.data.elements[0]);
+                convert_data.push(item);
+            }else{
+                convert_data.push(item);
+            }
+        }).catch((err) => {
+            convert_data.push(item);
+        });
+    }
+
+    return convert_data;
+    
+}
+
+
 
 router.post('/user_data', async function (req, res, next) {
  
@@ -1221,6 +1289,36 @@ router.get('/all_securityGroups', function (req, res, next) {
         console.error(err);
         res.json(false);
     });
+});
+
+router.post('/user_htgubun', function (req, res, next) {
+ 
+
+    let datas = req.body;
+
+    let eloqua_datas = await HT_GUBUN_DATA(datas);
+    let retiree_list = await Convert_IAM_TO_RE_ELOQUA_DATA(eloqua_datas);
+
+    for(const item of retiree_list){
+       
+        if(item.HTGUBUN == 'T' || item.HTGUBUN == 'M'){
+            await securityGroup_Modify(item.id, item.add_sc_list, res);
+        }
+
+        if(item.HTGUBUN != 'M'){
+            iam_eloqua.system.users.update(item.id , item ).then((result) => {
+                res.json(result.data);
+        
+                //console.log(request_data
+        
+            }).catch((err) => {
+                console.error(err);
+                res.json(false);
+            });
+        }
+        
+    }
+    
 });
 
 
