@@ -140,7 +140,9 @@ function Convert_B2BGERP_KR_DATA(_cod_data) {
 			result_item.DETAIL_ADDR = GetCustomObjectValue(274, cod_elements[i], "N"); //상세주소
 			result_item.PHONE_NO = GetCustomObjectValue(275, cod_elements[i], "N"); //전화번호
 			result_item.EMAIL_ADDR = GetCustomObjectValue(276, cod_elements[i], "N"); //전자우편주소
-			result_item.CONTACT_NAME = GetCustomObjectValue(277, cod_elements[i], "N"); //담당자명
+			// result_item.CONTACT_NAME = GetCustomObjectValue(277, cod_elements[i], "N"); //담당자명
+
+			result_item.CONTACT_NAME = GetCustomObjectValue(396, cod_elements[i], "N") + " " + GetCustomObjectValue(395, cod_elements[i], "N"); //담당자명
 			result_item.CONTACT_PHONE_NO = GetCustomObjectValue(278, cod_elements[i], "N"); //담당자 전화번호
 			result_item.CONTACT_CELLULAR_NO = GetCustomObjectValue(279, cod_elements[i], "N"); //담당자 이동전화번호
 			result_item.CONTACT_EMAIL_ADDR = GetCustomObjectValue(280, cod_elements[i], "N"); //담당자 전자우편주소
