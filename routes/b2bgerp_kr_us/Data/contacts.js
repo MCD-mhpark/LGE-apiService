@@ -1275,7 +1275,9 @@ router.get('/customObjectSearchOne/:id', function (req, res, next) {
 router.post('/newsLetterAPI', async function (req, res, next) {
 	console.log(1234);
 	let req_data = req.body;
-	
+	console.log("newsLetterAPI");
+	console.log(req.body);
+
 	let parent_id = 43;
 	try {
 		
