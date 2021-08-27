@@ -11,6 +11,7 @@ var request = require('request');
 var fs = require("mz/fs");
 var dirPath = "KR_TEST";
 
+
 moment.locale('kr');
 //=====================================================================================================================
 // 한국영업본부 LOG 함수
@@ -1280,7 +1281,6 @@ router.post('/newsLetterAPI', async function (req, res, next) {
 
 	let parent_id = 43;
 	try {
-		
 		if (validateEmail(req_data.cEmail)) {
 			//해당 사용자 데이터 여부 확인
 			var contact_data = await GetContactData(req_data.cEmail);
