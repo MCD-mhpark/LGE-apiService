@@ -1291,7 +1291,7 @@ router.get('/all_securityGroups', function (req, res, next) {
     });
 });
 
-router.post('/htgubun_data', function (req, res, next) {
+router.post('/htgubun_data', async function (req, res, next) {
  
 
     let datas = req.body;
