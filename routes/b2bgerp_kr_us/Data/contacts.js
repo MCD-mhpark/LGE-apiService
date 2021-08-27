@@ -1277,6 +1277,7 @@ router.post('/newsLetterAPI', async function (req, res, next) {
 	console.log(1234);
 	let req_data = req.body;
 	console.log("newsLetterAPI");
+	console.log(req);
 	console.log(req.body);
 
 	let parent_id = 43;
