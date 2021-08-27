@@ -1295,7 +1295,7 @@ router.post('/htgubun_data', async function (req, res, next) {
  
 
     let datas = req.body;
-
+    
     let eloqua_datas = await HT_GUBUN_DATA(datas);
     let retiree_list = await Convert_IAM_TO_RE_ELOQUA_DATA(eloqua_datas);
 
