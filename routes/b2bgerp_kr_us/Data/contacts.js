@@ -667,10 +667,7 @@ function ConvertCustomObjectData(_contact, _req_data) {
 		"id": "267",
 		"value": _req_data.estimationId
 	}); //견적번호	text	text			
-	convert_data_entity.fieldValues.push({
-		"id": "483",
-		"value": "N"
-	}); //전송여부	text	text			
+	
 	
 
 
