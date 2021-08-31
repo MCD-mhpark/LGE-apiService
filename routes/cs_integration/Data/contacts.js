@@ -795,23 +795,6 @@ router.get('/', async function (req, res, next) {
 
 });
 
-router.get('/req_data', function (req, res, next) {
-	var id = 941;
-	csintergration_eloqua_config.data.contacts.getOne(id).then((result) => {
-		console.log(result.data);
-		httpRequest.sender("http://localhost:8001/b2bgerp_kr_us/contacts/req_data_yn", "POST", result.data);
-	}).catch((err) => {
-		console.error(err.message);
-	});
-});
-
-// 가상의 LG API GATEWAY의 
-router.post('/req_data_yn', function (req, res, next) {
-	console.log("call req_data_yn");
-
-	console.log(req.body);
-});
-
 
 
 //Eloqua Data B2B GERP CS INTERGRATION Mapping 데이터 생성
@@ -1065,10 +1048,5 @@ function req_res_logs(filename, data) {
 	});
 }
 
-const sleep = (ms) => {
-	return new Promise(resolve=>{
-		setTimeout(resolve,ms)
-	})
-}
 
 module.exports = router;

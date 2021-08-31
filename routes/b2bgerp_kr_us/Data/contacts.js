@@ -386,7 +386,7 @@ async function sendTransfer_Update( parentId , KR_DATA_LIST){
 
 //커스텀 오브젝트 데이터 추가
 router.post('/customObjectDataCreate', async function (req, res, next) {
-	console.log(1234);
+	console.log("call customObjectDataCreate");
 	var req_data = req.body;
 	var queryString = "";
 	let parent_id = 39;
@@ -405,7 +405,7 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 					var customObject_result = await SendCreateCustomObjectData(parent_id , customObjectCreateData);
 
 					if (customObject_result) {
-						console.log(customObject_result);
+						// console.log(customObject_result);
 						res.json({
 							"Result": "success"
 						});
@@ -435,7 +435,7 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 						//커스텀 오브젝트 데이터 전송
 						var result_data = await SendCreateCustomObjectData(customObjectCreateData);
 
-						console.log(result_data.data);
+						// console.log(result_data.data);
 
 						res.json({
 							"Result": "success"
@@ -776,10 +776,10 @@ async function SendCreateCustomObjectData(parent_id , _customObjectCreateData) {
 	var return_data = undefined;
 	//LGE KR 사용자정의 객체 / LGEKR(한영본)_대표사이트B2B_온라인문의 id : 39
 	await b2bkr_eloqua.data.customObjects.data.create(parent_id, _customObjectCreateData).then((result) => {
-		console.log(result);
+		// console.log(result);
 		return_data = result;
 	}).catch((err) => {
-		console.error(err);
+		// console.error(err);
 		console.error(err.message);
 		return_data = err.message;
 	});
@@ -1094,10 +1094,10 @@ async function UpdateContacData(_contact, _req_data) {
 	SetFieldValue(_contact.fieldValues, "100196", "KR");
 
 	await b2bkr_eloqua.data.contacts.update(contact.id, contact).then((result) => {
-		console.log(result);
+		// console.log(result);
 		return_data = result;
 	}).catch((err) => {
-		console.error(err);
+		// console.error(err);
 		console.error(err.message);
 		return_data = err;
 	});
@@ -1190,7 +1190,7 @@ async function UpdateContacData_newsLetter(_contact, _req_data) {
 		// console.log(result);
 		return_data = result;
 	}).catch((err) => {
-		console.error(err);
+		// console.error(err);
 		console.error(err.message);
 		return_data = err;
 	});
