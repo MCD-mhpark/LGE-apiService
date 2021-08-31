@@ -659,7 +659,7 @@ function ConvertCustomObjectData(_contact, _req_data) {
 	}); //사업자등록번호	text	text			
 	convert_data_entity.fieldValues.push({
 		"id": "269",
-		"value": _req_data.customerName
+		"value": reConvertXSS(_req_data.customerName)
 	}); //고객명	text	text			
 	convert_data_entity.fieldValues.push({
 		"id": "268",
@@ -816,7 +816,8 @@ async function InsertContactData(_req_data) {
 	var contact_data = {};
 	contact_data.fieldValues = [];
 
-	contact_data.accountname = _req_data.customerName;
+	contact_data.accountname = reConvertXSS(_req_data.customerName);
+	
 	//zip
 	contact_data.postalCode = _req_data.postalCode;
 	//address1
@@ -1026,7 +1027,7 @@ async function UpdateContacData(_contact, _req_data) {
 	// 	delete contact.accountName;
 	// }
 
-	_contact.accountname = _req_data.customerName;
+	_contact.accountname = reConvertXSS(_req_data.customerName);
 	//zip
 	_contact.postalCode = _req_data.postalCode;
 	//address1
@@ -1385,5 +1386,53 @@ function GetDataValue(contacts_fieldvalue) {
 		return "";
 	}
 }
+
+//replaceAll prototype 선언
+String.prototype.replaceAll = function(org, dest) {
+    return this.split(org).join(dest);
+}
+
+function reConvertXSS(str){
+
+	if(str != undefined){
+		str = str.trim();
+	
+		str.replaceAll("&amp;" , "&")
+		str.replaceAll("&#60;" , "<");
+		str.replaceAll("&#62;" , ">");
+		str.replaceAll("&#39;" , "'");
+		str.replaceAll("&#34;" ,  "\"");
+		str.replaceAll("&#45;&#45;" , "--");
+		str.replaceAll("&#46;&#46;" , "..");
+		str.replaceAll("&#40;" , "(");
+		str.replaceAll("&#41;" , ")");
+		str.replaceAll("&#123;" , "{");
+		str.replaceAll("&#125;" , "}");
+		str.replaceAll("&lsquo;" , "‘");
+		str.replaceAll("&rsquo;" , "’");
+
+	}else{
+		str =  "";
+	}
+	
+	return str;
+
+	// str = replace(str, "&amp;" , "&");
+	// str = replace(str, "&#60;" , "<");
+	// str = replace(str, "&#62;" , ">");
+	// str = replace(str, "&#39;" , "'");
+	// str = replace(str, "&#34;" ,  "\"");
+	// str = replace(str, "&#45;&#45;" , "--");
+	// str = replace(str, "&#46;&#46;" , "..");
+	// str = replace(str, "&#40;" , "(");
+	// str = replace(str, "&#41;" , ")");
+	// str = replace(str, "&#123;" , "{");
+	// str = replace(str, "&#125;" , "}");
+	// str = replace(str, "&lsquo;" , "‘");
+	// str = replace(str, "&rsquo;" , "’");
+
+
+}
+
 module.exports = router;
 module.exports.senderToB2BGERP_KR = senderToB2BGERP_KR;
