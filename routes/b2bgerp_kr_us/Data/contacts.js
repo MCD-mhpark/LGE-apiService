@@ -470,6 +470,8 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 				"ErrorMessage": err.message
 			}
 		);
+		console.log("ERR발생 : " + err.message);
+
 	}
 });
 
