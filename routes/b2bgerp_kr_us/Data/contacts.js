@@ -1211,9 +1211,27 @@ function SetFieldValue(_fieldValues, _id, _value) {
 router.get('/customObjectDataSearch/:id', function (req, res, next) {
 	var parentId = req.params.id;
 	var queryString = "";
+	console.log(parentId)
 	//queryString.emailAddress = req.params.email;
 
 	b2bkr_eloqua.data.customObjects.data.get(parentId, queryString).then((result) => {
+		console.log(result.data);
+		res.json(result.data);
+	}).catch((err) => {
+		console.error(err.message);
+		res.send(error);
+	});
+});
+
+//커스텀 오브젝트 데이터 조회
+router.get('/customObjectDataSearchOne/:parentID/:customObjectID', function (req, res, next) {
+	var parentId = req.params.parentID;
+	var id = req.params.customObjectID
+	var queryString = {};
+	console.log(parentId)
+	//queryString.emailAddress = req.params.email;
+
+	b2bkr_eloqua.data.customObjects.data.getOne(parentId, id , queryString).then((result) => {
 		console.log(result.data);
 		res.json(result.data);
 	}).catch((err) => {
@@ -1387,8 +1405,15 @@ function GetDataValue(contacts_fieldvalue) {
 	}
 }
 
+router.post('/test', async function (req, res, next) {
+	let str = req.body.str;
+	console.log(str);
+	res.json(reConvertXSS(str));
+});
+
 //replaceAll prototype 선언
 String.prototype.replaceAll = function(org, dest) {
+	console.log(this.split(org).join(dest));
     return this.split(org).join(dest);
 }
 
@@ -1397,25 +1422,26 @@ function reConvertXSS(str){
 	if(str != undefined){
 		str = str.trim();
 	
-		str.replaceAll("&amp;" , "&")
-		str.replaceAll("&#60;" , "<");
-		str.replaceAll("&#62;" , ">");
-		str.replaceAll("&#39;" , "'");
-		str.replaceAll("&#34;" ,  "\"");
-		str.replaceAll("&#45;&#45;" , "--");
-		str.replaceAll("&#46;&#46;" , "..");
-		str.replaceAll("&#40;" , "(");
-		str.replaceAll("&#41;" , ")");
-		str.replaceAll("&#123;" , "{");
-		str.replaceAll("&#125;" , "}");
-		str.replaceAll("&lsquo;" , "‘");
-		str.replaceAll("&rsquo;" , "’");
-
+		str = str.replaceAll("&amp;" , "&")
+		str = str.replaceAll("&#60;" , "<");
+		str = str.replaceAll("&#62;" , ">");
+		str = str.replaceAll("&#39;" , "'");
+		str = str.replaceAll("&#34;" ,  "\"");
+		str = str.replaceAll("&#45;&#45;" , "--");
+		str = str.replaceAll("&#46;&#46;" , "..");
+		str = str.replaceAll("&#40;" , "(");
+		str = str.replaceAll("&#41;" , ")");
+		str = str.replaceAll("&#123;" , "{");
+		str = str.replaceAll("&#125;" , "}");
+		str = str.replaceAll("&lsquo;" , "‘");
+		str = str.replaceAll("&rsquo;" , "’");
+		return str;
 	}else{
 		str =  "";
+		return str;
 	}
 	
-	return str;
+	
 
 	// str = replace(str, "&amp;" , "&");
 	// str = replace(str, "&#60;" , "<");

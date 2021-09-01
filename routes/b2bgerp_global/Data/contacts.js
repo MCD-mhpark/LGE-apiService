@@ -2755,32 +2755,36 @@ router.get('/leadResponse', async function (req, res, next) {
 
 router.get('/leadNumberAPI', async function (req, res, next) {
 
+	
 	let LeadNumberData_list = await getLeadnumberData();
 	let parent_id = 46;
+	
 
-	console.log(LeadNumberData_list);
+	// console.log(LeadNumberData_list);
+	let addName_LeadList = await getLeadNameData(parent_id , LeadNumberData_list);
+	
 
 
 	// 생성된 데이터를 customobject 에 적재함
-	let convert_data_list = ConvertCustomObjectData(LeadNumberData_list);
+	let convert_data_list = await ConvertCustomObjectData(addName_LeadList);
 		// console.log(convert_data_list[0].fieldValues);
 
-		return;
+	// res.json(convert_data_list);
 
 
 	let return_data = [];
 
 	for (let i = 0; i < convert_data_list.length; i++) {
 		await b2bgerp_eloqua.data.customObjects.data.update(parent_id, convert_data_list[i].id, convert_data_list[i]).then((result) => {
-			console.log(result);
+			// console.log(result);
 			return_data.push({
 				cod_id: convert_data_list[i].id,
 				contactId: convert_data_list[i].contactId,
 				message: "Success"
 			})
 		}).catch((err) => {
-			console.error(err);
-			console.error(err.message);
+			//console.error(err);
+			//console.error(err.message);
 			return_data.push({
 				cod_id: convert_data_list[i].id,
 				contactId: convert_data_list[i].contactId,
@@ -2807,22 +2811,25 @@ async function getLeadnumberData() {
 	// 	'Content-Type': "application/json"
 	// }
 
+	
 	// let b2bgerp_global_url = "http://localhost:8001/b2bgerp_global/contacts/leadResponse";
 
+	// DEV URL
 	let b2bgerp_global_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadMappByEloquaG.lge";
 
 	options = {
 		url: b2bgerp_global_url,
-		headers: headers,
-		body: {ContentList : []},
-		json: true
+		headers: headers
 	};
 
 	let data_list;
-	await request_promise.get(options, function (error, response, body) {
+
+
+
+	await request_promise.get(options, async function (error, response, body) {
 
 		// console.log(11);
-		console.log(response);
+		// console.log(response);
 
 		if (error) {
 			console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
@@ -2831,22 +2838,51 @@ async function getLeadnumberData() {
 				errorCode: response.statusCode,
 				errorMsg: error.Message
 			}
-			req_res_logs("Response", "LeadnumberAPI_Error", errorData);
+			await req_res_logs("Response", "LeadnumberAPI_Error", errorData);
 		} else if (!error && response.statusCode != 200) {
 			let errorData = {
 				errorCode: response.statusCode,
 				errorMsg: "Not Error & Not Response Code 200"
 			}
-			req_res_logs("Response", "LeadnumberAPI_Error", errorData);
+			await req_res_logs("Response", "LeadnumberAPI_Error", errorData);
 		} else if (!error && response.statusCode == 200) {
-			req_res_logs("Response", "LeadnumberAPI", body.ContentList);
+			
+			// console.log(JSON.parse(body));
 
-			data_list = body.ContentList;
-			// console.log(body.resultData);
+			// b2b GERP 측에서 array 가 아닌 String 형식으로 return 해줌
+			let rev_data = JSON.parse(body);
+			data_list = rev_data.ContentList;
+			await req_res_logs("Response", "LeadnumberAPI", body.ContentList);
 		}
 	});
 
 	return data_list;
+
+
+}
+
+async function getLeadNameData(parentID , data_list){
+	//커스텀 오브젝트 데이터 조회
+	let return_list = [];
+	let queryString = {};
+	for(let i = 0 ; i < data_list.length ; i++){
+		
+		//queryString.emailAddress = req.params.email;
+		
+		await b2bkr_eloqua.data.customObjects.data.getOne(parentID, data_list[i].CUSTOMOBJECT_ID , queryString).then((result) => {
+			// console.log(result.data);
+			data_list[i].name = GetCustomObjectValue(499, result.data, "N");
+			
+		}).catch((err) => {
+			console.error(err.message);
+			data_list[i].name = data_list[i].CUSTOMOBJECT_ID;
+		});
+
+		return_list.push(data_list[i]);
+
+	}
+	
+	return return_list;
 }
 
 
@@ -2863,14 +2899,15 @@ function ConvertCustomObjectData(data_list) {
 		this_data.id = data_list[i].CUSTOMOBJECT_ID;
 		this_data.isMapped = "Yes";
 		this_data.type = "CustomObjectData";
+		this_data.name = data_list[i].name;
 
 		this_data.fieldValues.push({
 			"id": "525",
-			"value": data_list[i].LeadNumber
-		}); // EmailAddress
+			"value": data_list[i].LEAD_SEQ
+		}); // LeadNumber
 		this_data.fieldValues.push({
 			"id": "526",
-			"value": utils.timeConverter("GET_UNIX", data_list[i].LeadCreateDate)
+			"value": utils.timeConverter("GET_UNIX", data_list[i].LEAD_CREATE_DATE)
 		}); //Leadnumber 생성일
 
 		convert_list.push(this_data);
@@ -3076,6 +3113,23 @@ console.log(111);
 		}
 	})
 });
+
+function GetCustomObjectValue(filed_id, element, type) {
+	var return_value = "";
+
+
+	for (i = 0; i < element.fieldValues.length; i++) {
+		if (element.fieldValues[i].id == filed_id) {
+			if (type == "N")
+				return_value = element.fieldValues[i].value;
+			else {
+				moment.locale('kr');
+				return_value = moment(element.fieldValues[i].value).add(13, 'Hour').format("YYYY-MM-DD HH:mm:ss");
+			}
+		}
+	}
+	return return_value;
+}
 
 module.exports = router;
 module.exports.bant_send = bant_send;
