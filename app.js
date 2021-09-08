@@ -259,6 +259,7 @@ function schedule_Request_KR(){
 if(__dirname == "/home/opc/LGE/b2bgerp_global"){
 	console.log("B2B GERP GLOBAL SCHEDULER REG");
 	schedule_Request_GLOBAL();
+	console.log("schedule_Request_GLOBAL_LEADNUMBER");
 	schedule_Request_GLOBAL_LEADNUMBER();
 } 
 
