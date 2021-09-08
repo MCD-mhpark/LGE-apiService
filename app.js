@@ -23,6 +23,7 @@ const schedule = require('node-schedule-tz');
 
 var Global_Jobs;
 var KR_Jobs;
+var Global_Lead_Jobs;
 // var oracledb = require('oracledb');
 // var dbConfig = require('./config/dbconfig.js');
 
@@ -221,6 +222,23 @@ function schedule_Request_GLOBAL(){
 	});
 }
 
+function schedule_Request_GLOBAL_LEADNUMBER(){
+	let uniqe_jobs_name = "B2B GERP GLOBAL" +  moment().format('YYYYMMDD');
+	let second = "0";
+	let minutes = "0";
+	let hours = "7";
+	let dayofmonth = "*";
+	let month = "*";
+	let weekindex = "*";
+	var schedate = second + ' ' + minutes + ' ' + hours + ' ' + dayofmonth + ' ' + month + ' ' + weekindex;
+
+	//test data
+	Global_Lead_Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,"Asia/Seoul" ,async function(){
+		// let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
+		await b2bgerp_global_data_contacts.LeadnumberAPI();
+	});
+}
+
 function schedule_Request_KR(){
 	let uniqe_jobs_name = "B2B GERP KR" +  moment().format('YYYYMMDD');
 	let second = "0";
@@ -241,6 +259,7 @@ function schedule_Request_KR(){
 if(__dirname == "/home/opc/LGE/b2bgerp_global"){
 	console.log("B2B GERP GLOBAL SCHEDULER REG");
 	schedule_Request_GLOBAL();
+	schedule_Request_GLOBAL_LEADNUMBER();
 } 
 
 if(__dirname == "/home/opc/LGE/b2bgerp_kr"){

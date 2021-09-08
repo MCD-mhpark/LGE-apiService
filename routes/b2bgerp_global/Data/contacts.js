@@ -2634,6 +2634,25 @@ function req_res_logs(filename, business_name, data) {
 	});
 }
 
+function lead_req_res_logs(filename, business_name, data) {
+	// filename : request , response 
+	// business_name : 사업부별 name
+	// data : log 저장할 데이터
+
+	var today = moment().format("YYYY-MM-DD");
+	var dirPath = utils.logs_makeDirectory(today+"_Leadnumber");
+	console.log("fileWrite Path : " + dirPath);
+
+	fs.writeFile(dirPath + filename + "_" + business_name + ".txt", JSON.stringify(data), 'utf8', function (error) {
+		if (error) {
+			console.log(err);
+		} else {
+			console.log('write end');
+		}
+	});
+}
+
+
 
 
 //전 사업부별(AS , ID , CM ...)  MQL 리스트를 사업부별로 조회하는 function - 확인용
@@ -2699,76 +2718,25 @@ router.put('/menual_bant_update', async function (req, res, next) {
 // 	}
 // });
 
-router.get('/leadResponse', async function (req, res, next) {
-	console.log(123)
-
-	res.json({
-		ContentList: [
-			{
-				"LeadNumber": 0,
-				"CUSTOMOBJECT_ID": "2094552"
-			},
-			{
-				"LeadNumber": 1,
-				"CUSTOMOBJECT_ID": "2094553"
-			},
-			{
-				"LeadNumber": 2,
-				"CUSTOMOBJECT_ID": "2094554"
-			},
-			{
-				"LeadNumber": 3,
-				"CUSTOMOBJECT_ID": "2094555"
-			},
-			{
-				"LeadNumber": 4,
-				"CUSTOMOBJECT_ID": "2094556"
-			},
-			{
-				"LeadNumber": 5,
-				"CUSTOMOBJECT_ID": "2094557"
-			},
-			{
-				"LeadNumber": 6,
-				"CUSTOMOBJECT_ID": "2094558"
-			},
-			{
-				"LeadNumber": 7,
-				"CUSTOMOBJECT_ID": "2094559"
-			},
-			{
-				"LeadNumber": 8,
-				"CUSTOMOBJECT_ID": "2094560"
-			},
-			{
-				"LeadNumber": 9,
-				"CUSTOMOBJECT_ID": "2094561"
-			},
-			{
-				"LeadNumber": 10,
-
-				"CUSTOMOBJECT_ID": "2094562"
-			}
-		]
-	})
-});
 
 router.get('/leadNumberAPI', async function (req, res, next) {
+	await LeadnumberAPI();
+	console.log(11);
+});
 
-	
+LeadnumberAPI = async function (){
 	let LeadNumberData_list = await getLeadnumberData();
 	let parent_id = 46;
 	
-
-	// console.log(LeadNumberData_list);
 	let addName_LeadList = await getLeadNameData(parent_id , LeadNumberData_list);
 	
+	lead_req_res_logs("addName_LeadList" , "Lead" , addName_LeadList );
 
-
-	// 생성된 데이터를 customobject 에 적재함
+	// 생성된 데이터를 customobject 에 update 하기 위해 변경
 	let convert_data_list = await ConvertCustomObjectData(addName_LeadList);
 		// console.log(convert_data_list[0].fieldValues);
 
+	lead_req_res_logs("convert_data_list" , "Lead" , convert_data_list );
 	// res.json(convert_data_list);
 
 
@@ -2792,8 +2760,10 @@ router.get('/leadNumberAPI', async function (req, res, next) {
 			})
 		});
 	}
-	res.json({ ContentList: return_data });
-});
+
+	lead_req_res_logs("return_data" , "Lead" , return_data );
+	// res.json({ ContentList: return_data });
+}
 
 async function getLeadnumberData() {
 	console.log("leadNumberAPI");
@@ -2815,7 +2785,11 @@ async function getLeadnumberData() {
 	// let b2bgerp_global_url = "http://localhost:8001/b2bgerp_global/contacts/leadResponse";
 
 	// DEV URL
-	let b2bgerp_global_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadMappByEloquaG.lge";
+	//  let b2bgerp_global_url = "https://dev-apigw-ext.lge.com:7221/gateway/b2bgerp/api2api/leadByEloquaNavG/leadMappByEloquaG.lge";
+
+	// 운영 url
+	let b2bgerp_global_url = "https://apigw-ext.lge.com:7211/gateway/b2bgerp/api2api/leadByEloquaNavG/leadMappByEloquaG.lge";
+
 
 	options = {
 		url: b2bgerp_global_url,
@@ -3133,3 +3107,4 @@ function GetCustomObjectValue(filed_id, element, type) {
 
 module.exports = router;
 module.exports.bant_send = bant_send;
+module.exports.LeadnumberAPI = LeadnumberAPI;
