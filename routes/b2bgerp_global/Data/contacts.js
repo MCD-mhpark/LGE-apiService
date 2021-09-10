@@ -2621,7 +2621,7 @@ function req_res_logs(filename, business_name, data) {
 	// business_name : 사업부별 name
 	// data : log 저장할 데이터
 
-	var today = moment().format("YYYY-MM-DD");
+	var today = moment().tz('Asia/Seoul').format("YYYYMMDD");
 	var dirPath = utils.logs_makeDirectory(today);
 	console.log("fileWrite Path : " + dirPath);
 
@@ -2639,7 +2639,7 @@ function lead_req_res_logs(filename, business_name, data) {
 	// business_name : 사업부별 name
 	// data : log 저장할 데이터
 
-	var today = moment().format("YYYY-MM-DD");
+	var today = moment().tz('Asia/Seoul').format("YYYYMMDD");
 	var dirPath = utils.logs_makeDirectory(today+"_Leadnumber");
 	console.log("fileWrite Path : " + dirPath);
 
@@ -2700,6 +2700,12 @@ router.put('/menual_bant_update', async function (req, res, next) {
 	req_res_logs("reqEloqua", req.body.bsname, req.body.elements);
 
 });
+
+router.get('/tester123', async function (req, res, next) {
+	res.json();
+
+});
+
 
 
 // router.post('/leadNumberAPI', async function (req, res, next) {

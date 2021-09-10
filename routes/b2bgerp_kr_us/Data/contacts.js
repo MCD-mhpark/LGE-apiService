@@ -21,7 +21,7 @@ function req_res_logs(filename, business_name, data) {
 	// business_name : 사업부별 name
 	// data : log 저장할 데이터
 
-	var today = moment().format("YYYY-MM-DD") + "_" + "MAT_TO_B2BGERPKR";
+	var today = moment().tz('Asia/Seoul').format("YYYYMMDD") + "_" + "MAT_TO_B2BGERPKR";
 	var dirPath = utils.logs_makeDirectory(today);
 	console.log("fileWrite Path : " + dirPath);
 
@@ -282,8 +282,8 @@ async function senderToB2BGERP_KR(){
 	//   convert_total : request_data.length
 	// }
 
-	req_res_logs("reqEloqua_" + moment().format("HH시mm분") , "MAT_TO_B2BGERPKR" , COD_list );
-	req_res_logs("reqConvert_" + moment().format("HH시mm분")  , "MAT_TO_B2BGERPKR", B2B_GERP_KR_DATA );
+	req_res_logs("reqEloqua_" + moment().tz('Asia/Seoul').format("HH시mm분") , "MAT_TO_B2BGERPKR" , COD_list );
+	req_res_logs("reqConvert_" + moment().tz('Asia/Seoul').format("HH시mm분")  , "MAT_TO_B2BGERPKR", B2B_GERP_KR_DATA );
 	// req_res_logs("reqTotal" , business_name , total_logs );
 	
 
@@ -302,7 +302,7 @@ async function senderToB2BGERP_KR(){
 					errorCode : response.statusCode,
 					errorMsg : error.message 
 				}
-				req_res_logs("responseError_" + moment().format("HH시mm분")  , "MAT_TO_B2BGERPKR" , errorData );	
+				req_res_logs("responseError_" + moment().tz('Asia/Seoul').format("HH시mm분")  , "MAT_TO_B2BGERPKR" , errorData );	
 	        }else if(!error && response.statusCode != 200 ){
 			
 				let errorData = {
@@ -310,10 +310,10 @@ async function senderToB2BGERP_KR(){
 					errorMsg : "Error Object Not Found & Response Code Not 200" ,
 					errorDetailMsg : response.body
 				}
-				req_res_logs("responseError_" + moment().format("HH시mm분")  , "MAT_TO_B2BGERPKR" , errorData );
-				req_res_logs("requestObject_" + moment().format("HH시mm분")  , "MAT_TO_B2BGERPKR" , response );
+				req_res_logs("responseError_" + moment().tz('Asia/Seoul').format("HH시mm분")  , "MAT_TO_B2BGERPKR" , errorData );
+				req_res_logs("requestObject_" + moment().tz('Asia/Seoul').format("HH시mm분")  , "MAT_TO_B2BGERPKR" , response );
 			}else if (!error && response.statusCode == 200) {
-	    		req_res_logs("response_" + moment().format("HH시mm분")  , "MAT_TO_B2BGERPKR" , body.resultData );
+	    		req_res_logs("response_" + moment().tz('Asia/Seoul').format("HH시mm분")  , "MAT_TO_B2BGERPKR" , body.resultData );
 	            if(B2B_GERP_KR_DATA.length > 0 ) {
 	                // console.log(B2B_GERP_KR_DATA);
 	                let trans_up_list = await getTransfer_UpdateData( COD_list.elements , "get");
@@ -329,7 +329,7 @@ async function senderToB2BGERP_KR(){
 			errorInfo : null ,
 			errorMessage : "보낼 데이터가 없습니다."
 		}
-		req_res_logs("noneData_" + moment().format("HH시mm분")  , "MAT_TO_B2BGERPKR" , noneData );
+		req_res_logs("noneData_" + moment().tz('Asia/Seoul').format("HH시mm분")  , "MAT_TO_B2BGERPKR" , noneData );
 		
 	}
 }
