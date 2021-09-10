@@ -858,6 +858,7 @@ async function HT_GUBUN_DATA(data_list ) {
 
 router.post('/user_data', async function (req, res, next) {
  
+   
     // 한 사용자에 대하여 시큐리티 그룹별로 오는 중복 데이터를 머지
     let overlap_remove_data = await OVERLAP_REMOVE_IAM_RESPOSIBILITY(req.body , res);
 
