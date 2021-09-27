@@ -2479,7 +2479,44 @@ router.post('/customEMAILSearch', async function (req, res, next) {
 	}
 
 	res.json(result_list);
+});
+
+// CustomObject ID 값 email 로 검색
+router.post('/customLEADNUMSearch', async function (req, res, next) {
 	
+	console.log("customdata_search");
+	let parent_id = 46;
+	let email_list = req.body.email_list;
+	let queryString = {};
+	let result_list = [];
+	if(!email_list || email_list.length < 1) {
+		res.json("email 값을 넣어주세요"); 
+		return;
+	}
+
+	// if (bs_data.length > 1) emailString += "emailAddress='" + bs_data[i].email + "'";
+	// else emailString += "emailAddress=" + bs_data[i].email + "";
+	for(let i = 0 ; i < email_list.length ; i++){
+		let item = {};
+		let queryText = "?name=" + email_list[i] 
+		queryString['search'] = queryText;
+
+		// console.log(queryString);
+		// console.log(parent_id);
+		await b2bgerp_eloqua.data.customObjects.data.get(parent_id,queryString).then( async(result) => {
+			
+			item = { email : email_list[i] , LEAD_NUMBER :  GetCustomFiledValue(fieldValues, 100323) }
+			console.log(item);
+			await result_list.push(item);
+		}).catch( async (err) => {
+			// console.error(err);
+			// console.error(err.message);
+			item = { email : email_list[i] , CUSTOMOBJECT_ID : 'ERROR'}
+			await result_list.push(item);
+		});
+	}
+
+	res.json(result_list);
 });
 
 // CustomObject ID 값 검색
