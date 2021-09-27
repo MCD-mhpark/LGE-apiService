@@ -1279,12 +1279,17 @@ bant_send = async function (business_name, state_date, end_date) {
 					let bant_update_data = [];
 					let not_bant_data = [];
 					if (contact_list && contact_list.elements) {
+						let convert_data_temp = await Convert_B2BGERP_GLOBAL_DATA(contact_list, business_name);
 						for (const bant_item of contact_list.elements) {
 							let fieldValues_list = bant_item.fieldValues;
 							let subsidiary_data = GetCustomFiledValue(fieldValues_list, 100196);
 
+							
 							if (subsidiary_data != '') bant_update_data.push(bant_item);
-							else { not_bant_data.push(bant_item) }
+							else { 
+								not_bant_data.push(bant_item) ;
+								
+							}
 						}
 					}
 
