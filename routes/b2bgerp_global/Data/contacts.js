@@ -950,7 +950,7 @@ async function get_b2bgerp_global_bant_data(_business_name, start_date, end_date
 
 	var queryText = "C_DateModified>" + "'" + yesterday_Object.start + " 10:00:00'" + "C_DateModified<" + "'" + yesterday_Object.end + " 11:00:59'" + status_bant + "='MQL'";
 
-	if (business_name == 'TEST') queryText += "emailAddress='jtlim@goldenplanet.co.kr'";
+	if (business_name == 'TEST') queryText = "emailAddress='jtlim@goldenplanet.co.kr'";
 	// "emailAddress='jtlim@lge.com'emailAddress='jtlim@goldenplanet.co.kr'emailAddress='jtlim@test.com'emailAddress='jtlim@cnspartner.com'emailAddress='jtlim@intellicode.co.kr'emailAddress='jtlim@hsad.co.kr'emailAddress='jtlim@test.co.kr'emailAddress='jtlim@naver.com'emailAddress='jtlim@gmail.com'"
 	console.log("queryText : " + queryText);
 	queryString['search'] = queryText;
@@ -959,6 +959,7 @@ async function get_b2bgerp_global_bant_data(_business_name, start_date, end_date
 
 	await b2bgerp_eloqua.data.contacts.get(queryString).then((result) => {
 		console.log("business_name : " + business_name + " result data 건수 : " + result.data.total);
+		console.log(result.data);
 		if (result.data.total && result.data.total > 0) {
 			contacts_data = result.data;
 		}
@@ -1903,7 +1904,7 @@ function CONVERT_B2BGERP_GLOBAL_SUBSIDIARY_MISSING(request_data) {
 
 // 사업부 전체의 데이터를 검색
 router.get('/search_gerp_data', async function (req, res, next) {
-	let Business_Unit_List = ["AS" , "CM" , "ID" , "IT" , "Solution"];
+	let Business_Unit_List = ["TEST" , "CM" , "ID" , "IT" , "Solution"];
 	// let Business_Unit_List = ["AS" ];
 	// let bsname = req.query.bsname;
 	// let getStatus = req.query.status;
@@ -1917,13 +1918,13 @@ router.get('/search_gerp_data', async function (req, res, next) {
 
 	for(const bsname of Business_Unit_List){
 
-		let bant_data = await get_b2bgerp_global_bant_data(bsname, start_date, end_date);
-		let convert_data = await Convert_B2BGERP_GLOBAL_DATA(bant_data, bsname)
+		let contact_list = await get_b2bgerp_global_bant_data(bsname, start_date, end_date);
+		let convert_data = await Convert_B2BGERP_GLOBAL_DATA(contact_list, bsname)
 
 		let bant_update_data = [];
 		let not_bant_data = [];
-		if (bant_data && bant_data.elements) {
-			for (const bant_item of bant_data.elements) {
+		if (contact_list && contact_list.elements) {
+			for (const bant_item of contact_list.elements) {
 				let fieldValues_list = bant_item.fieldValues;
 				let subsidiary_data = GetCustomFiledValue(fieldValues_list, 100196);
 
@@ -1941,13 +1942,23 @@ router.get('/search_gerp_data', async function (req, res, next) {
 		let total_logs = {
 			bsname: bsname,
 			search_time: utils.todayDetail_getDateTime(),
-			eloqua_total: bant_data && bant_data.total ? bant_data.total : 0,
+			eloqua_total: contact_list && contact_list.total ? contact_list.total : 0,
 			convert_total: convert_data ? convert_data.length : null
 		}
 
-		
-		if (bant_data) {
-			req_res_logs("reqSearchEloqua", bsname, bant_data);
+		// Subsidiary 없을 경우 테스트로 데이터 쌓아둠
+		let temp_nosub_data = await Convert_B2BGERP_GLOBAL_NOSUBSIDIARY_DATA(contact_list , bsname);
+		console.log(temp_nosub_data);
+		return;
+
+		// MQL Data 전송 전 MQL Data List 를 CustomObject 에 적재하기 위해 데이터 형태 변경
+		let temp_nosub_customobject = await CONVERT_B2BGERP_GLOBAL_SUBSIDIARY_MISSING(temp_nosub_data);
+
+		// MQL Data 전송 전 MQL Data List 를 CustomObject 에 적재 update_mql_data은 customobject 적재값임
+		await mqldata_to_eloqua_send( 105 ,temp_nosub_customobject);
+
+		if (contact_list) {
+			req_res_logs("reqSearchEloqua", bsname, contact_list);
 			req_res_logs("reqSearchConvert", bsname, convert_data);
 			req_res_logs("reqSearchUpdate", bsname, bant_update_data);
 			req_res_logs("reqSearchNOT_Update", bsname, not_bant_data);
@@ -2505,13 +2516,14 @@ router.post('/customLEADNUMSearch', async function (req, res, next) {
 		// console.log(parent_id);
 		await b2bgerp_eloqua.data.customObjects.data.get(parent_id,queryString).then( async(result) => {
 			
-			item = { email : email_list[i] , LEAD_NUMBER :  GetCustomFiledValue(fieldValues, 100323) }
+			console.log(result.data.elements[0]);
+			item = { email : email_list[i] , LEAD_NUMBER :  GetCustomFiledValue(result.data.elements[0].fieldValues, 525) }
 			console.log(item);
 			await result_list.push(item);
 		}).catch( async (err) => {
 			// console.error(err);
 			// console.error(err.message);
-			item = { email : email_list[i] , CUSTOMOBJECT_ID : 'ERROR'}
+			item = { email : email_list[i] , LEAD_NUMBER : 'ERROR'}
 			await result_list.push(item);
 		});
 	}
