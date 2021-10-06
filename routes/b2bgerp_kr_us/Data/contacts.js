@@ -403,7 +403,7 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 
 					// 커스텀 오브젝트 중복 체크
 					let duple_custom_data = await Duple_Custom_Data(parent_id , req_data);
-
+					console.log(duple_custom_data.total);
 					//커스텀 오브젝트 데이터 전송
 					var customObject_result ; 
 					if(duple_custom_data.total == 0 ) customObject_result = await SendCreateCustomObjectData(parent_id , customObjectCreateData);
@@ -413,7 +413,7 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 						res.json({
 							"Result": "success"
 						});
-					}else if(duple_custom_data.total > 1){
+					}else if(duple_custom_data.total >= 1){
 						res.json({
 							"Result": "failed",
 							"ErrorInfo": "co.kr Online Custom Object Data Duplicate",
@@ -422,8 +422,8 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 					} else {
 						res.json({
 							"Result": "failed",
-							"ErrorInfo": "Custom Object Data Send Error",
-							"ErrorMessage": customObject_result.message
+							"ErrorInfo": "co.kr Online Custom Object Data Send Error",
+							"ErrorMessage": "co.kr Online CustomObject Create Error"
 						});
 					}
 				} else {
@@ -457,7 +457,7 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 							res.json({
 								"Result": "success"
 							});
-						}else if(duple_custom_data.total > 1){
+						}else if(duple_custom_data.total >= 1){
 							res.json({
 								"Result": "failed",
 								"ErrorInfo": "co.kr Online Custom Object Data Duplicate",
@@ -495,6 +495,7 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 				"ErrorMessage": err.message
 			}
 		);
+		console.log(err.stack)
 		console.log("ERR발생 : " + err.message);
 
 	}
@@ -530,12 +531,12 @@ function KR_OBJECT_DATA_ENTITY() {
 
 // 커스텀 오브젝트 데이터 적재 전 중복 체크 
 async function Duple_Custom_Data(parent_id , _req_data){
-	let estimationId = _req_data.estimationId;
+	let estimationSeqNo = _req_data.estimationSeqNo;
 
 	let queryString = {};
 
-	queryString.search = "?______1='"+estimationId+"'";
-	queryString.depth = "complete";
+	queryString.search = "?______1='"+estimationSeqNo+"'";
+	queryString.depth = "minimal";
 
 	console.log(queryString);
 	await b2bkr_eloqua.data.customObjects.data.get(parent_id, queryString ).then((result) => {
@@ -1375,7 +1376,7 @@ router.post('/newsLetterAPI', async function (req, res, next) {
 						res.json({
 							"Result": "success"
 						});
-					}else if(duple_custom_data.total > 1){
+					}else if(duple_custom_data.total >= 1){
 						res.json({
 							"Result": "failed",
 							"ErrorInfo": "co.kr NewsLetter Custom Object Data Duplicate",
@@ -1418,7 +1419,7 @@ router.post('/newsLetterAPI', async function (req, res, next) {
 						{	res.json({
 								"Result": "success"
 							});
-						}else if(duple_custom_data > 1){
+						}else if(duple_custom_data >= 1){
 							res.json({
 								"Result": "failed",
 								"ErrorInfo": "co.kr NewsLetter Custom Object Data Duplicate",
@@ -1473,17 +1474,18 @@ function GetDataValue(contacts_fieldvalue) {
 	}
 }
 
+//온라인 견적문의 중 견적일련번호 중복에 대해 함수 테스트 하기 위해 만든 것
 router.post('/customdata_duple_checker', async function (req, res, next) {
 	
-	// EX 
+	// 예시데이터
 	let parent_id = 39;
 	let req_data = {
-		estimationId : "20211005145240428"
+		estimationSeqNo : "20211006133555033"
 	}
 
 	let duple_custom_data = await Duple_Custom_Data(parent_id , req_data);
 	// console.log(duple_custom_data.total);
-	res.json(duple_custom_data.total);
+	res.json(duple_custom_data);
 });
 
 
