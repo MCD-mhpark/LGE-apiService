@@ -388,7 +388,6 @@ async function sendTransfer_Update( parentId , KR_DATA_LIST){
 router.post('/customObjectDataCreate', async function (req, res, next) {
 	console.log("call customObjectDataCreate");
 	var req_data = req.body;
-	var queryString = "";
 	let parent_id = 39;
 	try {
 		if (validateEmail(req_data.contactEmailAddr)) {
@@ -401,14 +400,25 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 
 				if (update_result) {
 					var customObjectCreateData = ConvertCustomObjectData(contact_data.elements[0], req_data);
+
+					// 커스텀 오브젝트 중복 체크
+					let duple_custom_data = await Duple_Custom_Data(parent_id , req_data);
+
 					//커스텀 오브젝트 데이터 전송
-					var customObject_result = await SendCreateCustomObjectData(parent_id , customObjectCreateData);
+					var customObject_result ; 
+					if(duple_custom_data.total == 0 ) customObject_result = await SendCreateCustomObjectData(parent_id , customObjectCreateData);
 
 					if (customObject_result) {
 						// console.log(customObject_result);
 						res.json({
 							"Result": "success"
 						});
+					}else if(duple_custom_data.total > 1){
+						res.json({
+							"Result": "failed",
+							"ErrorInfo": "Custom Object Data Duplicate",
+							"ErrorMessage": "Custom Object Data Duplicate"
+						})
 					} else {
 						res.json({
 							"Result": "failed",
@@ -501,6 +511,28 @@ function KR_OBJECT_DATA_ENTITY() {
 	//this.uniqueCode = "";
 	//this.updatedAt = "";  read only
 	//this.updatedBy = "";  read only
+}
+
+// 커스텀 오브젝트 데이터 적재 전 중복 체크 
+async function Duple_Custom_Data(parent_id , _req_data){
+	let estimationId = _req_data.estimationId;
+
+	let queryString = {};
+
+	queryString.search = "?______1='"+estimationId+"'";
+	queryString.depth = "complete";
+
+	console.log(queryString);
+	await b2bkr_eloqua.data.customObjects.data.get(parent_id, queryString ).then((result) => {
+		// console.log(result);
+		return_data = result.data;
+	}).catch((err) => {
+		// console.error(err);
+		console.error(err.message);
+		return_data = err.message;
+	});
+	
+	return return_data;
 }
 
 //커스텀 오브젝트 데이터 형태로 변경 함수
@@ -1404,6 +1436,20 @@ function GetDataValue(contacts_fieldvalue) {
 		return "";
 	}
 }
+
+router.post('/customdata_duple_checker', async function (req, res, next) {
+	
+	// EX 
+	let parent_id = 39;
+	let req_data = {
+		estimationId : "20211005145240428"
+	}
+
+	let duple_custom_data = await Duple_Custom_Data(parent_id , req_data);
+	// console.log(duple_custom_data.total);
+	res.json(duple_custom_data.total);
+});
+
 
 router.post('/test', async function (req, res, next) {
 	let str = req.body.str;
