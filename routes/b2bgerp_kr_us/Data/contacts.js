@@ -389,6 +389,9 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 	console.log("call customObjectDataCreate");
 	var req_data = req.body;
 	let parent_id = 39;
+
+	console.log("customObjectDataCreate DupleDataCheck");
+	console.log(req_data);
 	try {
 		if (validateEmail(req_data.contactEmailAddr)) {
 			//해당 사용자 데이터 여부 확인
@@ -448,7 +451,7 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 						
 						//커스텀 오브젝트 데이터 전송
 						console.log("duple_custom_data.total : " + duple_custom_data.total);
-						
+
 						var result_data ;
 						if(duple_custom_data.total == 0 ) result_data = await SendCreateCustomObjectData(customObjectCreateData);
 
