@@ -403,7 +403,7 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 
 					// 커스텀 오브젝트 중복 체크
 					let duple_custom_data = await Duple_Custom_Data(parent_id , req_data);
-					console.log(duple_custom_data.total);
+					console.log("duple_custom_data.total : " + duple_custom_data.total);
 					//커스텀 오브젝트 데이터 전송
 					var customObject_result ; 
 					if(duple_custom_data.total == 0 ) customObject_result = await SendCreateCustomObjectData(parent_id , customObjectCreateData);
@@ -445,8 +445,9 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 
 						// 커스텀 오브젝트 중복 체크
 						let duple_custom_data = await Duple_Custom_Data(parent_id , req_data);
-
+						
 						//커스텀 오브젝트 데이터 전송
+						console.log("duple_custom_data.total : " + duple_custom_data.total);
 						
 						var result_data ;
 						if(duple_custom_data.total == 0 ) result_data = await SendCreateCustomObjectData(customObjectCreateData);
@@ -1478,10 +1479,13 @@ function GetDataValue(contacts_fieldvalue) {
 router.post('/customdata_duple_checker', async function (req, res, next) {
 	
 	// 예시데이터
+	// let parent_id = 39;
+	// let req_data = {
+	// 	estimationSeqNo : "20211006133555033"
+	// }
+
 	let parent_id = 39;
-	let req_data = {
-		estimationSeqNo : "20211006133555033"
-	}
+	let req_data = req.body;
 
 	let duple_custom_data = await Duple_Custom_Data(parent_id , req_data);
 	// console.log(duple_custom_data.total);

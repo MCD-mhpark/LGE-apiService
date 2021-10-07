@@ -949,7 +949,7 @@ async function get_b2bgerp_global_bant_data(_business_name, start_date, end_date
 	//var yesterday_Object = utils.today_getDateTime();
 
 	var queryText = "C_DateModified>" + "'" + yesterday_Object.start + " 10:00:00'" + "C_DateModified<" + "'" + yesterday_Object.end + " 11:00:59'" + status_bant + "='MQL'";
-
+														
 	if (business_name == 'TEST') queryText = "emailAddress='jtlim@goldenplanet.co.kr'";
 	// "emailAddress='jtlim@lge.com'emailAddress='jtlim@goldenplanet.co.kr'emailAddress='jtlim@test.com'emailAddress='jtlim@cnspartner.com'emailAddress='jtlim@intellicode.co.kr'emailAddress='jtlim@hsad.co.kr'emailAddress='jtlim@test.co.kr'emailAddress='jtlim@naver.com'emailAddress='jtlim@gmail.com'"
 	console.log("queryText : " + queryText);
@@ -2564,6 +2564,7 @@ function GetCustomObjectValue(filed_id, element, type) {
 	}
 	return return_value;
 }
+
 
 module.exports = router;
 module.exports.bant_send = bant_send;

@@ -725,39 +725,31 @@ function Convert_IAM_TO_ELOQUA_DATA(data_list , res) {
 
 // 휴/퇴직자 구분 및 전보 발령일 경우에 대해 처리
 // H : 휴직자 , T : 퇴직자 , M : 조직 코드 변경자
-function Convert_IAM_TO_RE_ELOQUA_DATA(data_list ) {
-    let convert_data = [];
-
+function Convert_IAM_TO_RE_ELOQUA_DATA(_req_data ) {
+  
     console.log("returns 2")
+  
+    let return_data ={};
     
-    for(const item of data_list){
-        let return_data ={};
+    return_data.add_sc_list = [];
+
+    return_data.id = _req_data.id;
+    return_data.HTGUBUN = _req_data.HTGUBUN;
+
+    if(_req_data.HTGUBUN == 'H'){
+        return_data.personalMessage = 'rest';
+
+    }else if(_req_data.HTGUBUN == 'T'){
         
-        return_data.add_sc_list = [];
-
-        return_data.id = item.id;
-        return_data.HTGUBUN = item.HTGUBUN;
-
-        if(item.HTGUBUN == 'H'){
-            return_data.personalMessage = 'rest';
-
-        }else if(item.HTGUBUN == 'T'){
-            
-            return_data.isDisabled = "True";
-            return_data.personalMessage = 'retiree';
-        }else if(item.ELOQUA_ORGAN != item.ORGAN ){
-            return_data.HTGUBUN = "M";
-        }
+        return_data.isDisabled = "True";
+        return_data.personalMessage = 'retiree';
+    }else if(_req_data.ELOQUA_ORGAN != _req_data.ORGAN ){
+        return_data.HTGUBUN = "M";
+    }
 
     
 
-        // for (let j = 0; j < this_data.RESPONSIBILITY_CODE.length; j++) {
-        //     eloqua_data.security_groups.push(this_data.RESPONSIBILITY_CODE[j]);
-        // }
-        // console.log(convert_data);
-        convert_data.push(return_data);
-    }
-    return convert_data;
+    return return_data;
     
 }
 
@@ -827,31 +819,27 @@ async function CREATE_UPDATE_GUBUN_DATA(data_list ) {
     
 }
 
-async function HT_GUBUN_DATA(data_list ) {
-    let convert_data = [];
+async function HT_GUBUN_DATA(item ) {
+   
 
     // console.log(data_list);
-    for(const item of data_list){
-        let email = item.EMAIL ;
-        let queryString = {};
-        queryString['search'] = "emailAddress='" + email +"'";
+   
+    let email = item.EMAIL ;
+    let queryString = {};
+    queryString['search'] = "emailAddress='" + email +"'";
 
-        await iam_eloqua.system.users.get(queryString).then((result) => {
-            if(result.data.elements && result.data.elements.length > 0){
-                item.ELOQUA_ORGAN = result.data.elements[0].address1;
-                item.ID = result.data.elements[0].id;
-                console.log(result.data.elements[0]);
-                convert_data.push(item);
-            }else{
-                convert_data.push(item);
-            }
-        }).catch((err) => {
-            convert_data.push(item);
-        });
-    }
-
-    return convert_data;
-    
+    await iam_eloqua.system.users.get(queryString).then((result) => {
+        if(result.data.elements && result.data.elements.length > 0){
+            item.ELOQUA_ORGAN = result.data.elements[0].address1;
+            item.ID = result.data.elements[0].id;
+            console.log(result.data.elements[0]);
+            return item;
+        }else{
+            return item;
+        }
+    }).catch((err) => {
+       console.log(err.stack);
+    });
 }
 
 
@@ -933,30 +921,7 @@ router.post('/test_update', function (req, res, next) {
     }
 });
 
-router.post('/user/create', function (req, res, next) {
 
-    //예시 Request body 참고 URL : https://docs.oracle.com/en/cloud/saas/marketing/eloqua-rest-api/op-api-rest-2.0-system-user-post.html
-    // {
-    //   "name": "API User",
-    //   "emailAddress": "api.user@oracle.com", 
-    //   "loginName": "api.user",
-    //   "firstName": "API",
-    //   "lastName": "User"
-    // }
-
-    var body_data = Convert_IAM_TO_ELOQUA_DATA(req.body);
-
-    console.log(body_data);
-
-    iam_eloqua.system.users.create(body_data).then(async (result) => {
-        console.log(result.data);
-        let result_list = await securityGroup_Modify(result.data.id, req.body.add_sc_list, res);
-        res.json(result_list);
-    }).catch((err) => {
-        console.error(err);
-        res.json(err);
-    });
-});
 
 
 
@@ -1292,12 +1257,67 @@ router.get('/all_securityGroups', function (req, res, next) {
     });
 });
 
+router.post('/user/create', function (req, res, next) {
+
+    //예시 Request body 참고 URL : https://docs.oracle.com/en/cloud/saas/marketing/eloqua-rest-api/op-api-rest-2.0-system-user-post.html
+    // {
+    //   "name": "API User",
+    //   "emailAddress": "api.user@oracle.com", 
+    //   "loginName": "api.user",
+    //   "firstName": "API",
+    //   "lastName": "User"
+    // }
+
+    
+
+    var body_data = Convert_IAM_TO_ELOQUA_DATA(req.body);
+
+    if(body_data.EMAIL){
+        res.status(404).json({
+            "Result" : "Failed" ,
+            "ErrorMessage" : "Send Data Not Include Email"
+
+        });
+    }else if(!validateEmail(body_data.EMAIL)){
+        res.status(404).json({
+            "Result" : "Failed" ,
+            "ErrorMessage" : "Invalid Email Type"
+
+        });
+    }
+
+    console.log(body_data);
+
+    iam_eloqua.system.users.create(body_data).then(async (result) => {
+        console.log(result.data);
+        let result_list = await securityGroup_Modify(result.data.id, req.body.add_sc_list, res);
+        res.json(result_list);
+    }).catch((err) => {
+        console.error(err);
+        res.json(err);
+    });
+});
+
+// 퇴직자 구분 데이터
 router.post('/htgubun_data', async function (req, res, next) {
  
-
-    let datas = req.body;
+    let ht_data = req.body;
     
-    let eloqua_datas = await HT_GUBUN_DATA(datas);
+    if(ht_data.EMAIL){
+        res.status(404).json({
+            "Result" : "Failed" ,
+            "ErrorMessage" : "Send Data Not Include Email"
+
+        });
+    }else if(!validateEmail(ht_data.EMAIL)){
+        res.status(404).json({
+            "Result" : "Failed" ,
+            "ErrorMessage" : "Invalid Email Type"
+
+        });
+    }
+    
+    let eloqua_datas = await HT_GUBUN_DATA(ht_data);
     let retiree_list = await Convert_IAM_TO_RE_ELOQUA_DATA(eloqua_datas);
 
     for(const item of retiree_list){
@@ -1310,16 +1330,14 @@ router.post('/htgubun_data', async function (req, res, next) {
             iam_eloqua.system.users.update(item.id , item ).then((result) => {
                 res.json(result.data);
         
-                //console.log(request_data
+                //console.log(request_data);
         
             }).catch((err) => {
                 console.error(err);
                 res.json(false);
             });
         }
-        
     }
-    
 });
 
 
@@ -1353,6 +1371,12 @@ function GetDataValue(contacts_fieldvalue) {
       console.log(e);
       return "";
     }
+}
+
+//이메일 확인 함수
+function validateEmail(email) {
+	const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	return re.test(String(email).toLowerCase());
 }
 
 module.exports = router;
