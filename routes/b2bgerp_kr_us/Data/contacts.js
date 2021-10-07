@@ -122,7 +122,7 @@ function Convert_B2BGERP_KR_DATA(_cod_data) {
 	for (var i = 0; i < cod_elements.length; i++) {
 		try {
 			var result_item = new B2B_GERP_KR_ENTITY();
-			console.log()
+
 			//LEAD_NAME
 			//"[MQL]"+"_" + GetCustomFiledValue(FieldValues_data, 100202) + "_" + moment().format('YYYYMMDD');
 			moment.locale('kr');
@@ -208,7 +208,7 @@ async function GetKR_CustomDataSearch(_parentId , type) {
 	};
 
 	await request_promise.get(options, function (error, response, body) {
-		console.log("data return");
+		// console.log("data return");
 		// console.log(body);
 		// console.log(response.statusMessage);
 		// console.log(response.statusCode);
@@ -255,7 +255,7 @@ async function senderToB2BGERP_KR(){
 	//LG전자 KR 운영 Endpoint
 	let prd_url = "https://apigw-ext.lge.com:7211/gateway/b2bgerp/api2api/leadByEloquaNavG/leadByEloquaKR.lge"
 	
-	console.log(B2B_GERP_KR_DATA);
+	// console.log(B2B_GERP_KR_DATA);
 	if (B2B_GERP_KR_DATA != null && B2B_GERP_KR_DATA.length > 0) {
 	    var headers = {
 	        'Content-Type': "application/json",
@@ -297,7 +297,7 @@ async function senderToB2BGERP_KR(){
 			
 	        if(error){
 	            console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
-	            console.log(error);
+	            // console.log(error);
 				let errorData = {
 					errorCode : response.statusCode,
 					errorMsg : error.message 
@@ -367,10 +367,10 @@ async function sendTransfer_Update( parentId , KR_DATA_LIST){
 
 	for(let item of KR_DATA_LIST){
 		await b2bkr_eloqua.data.customObjects.data.update(parentId , item.id, item).then((result) => {
-			console.log(result);
+			// console.log(result);
 			return_data = result;
 		}).catch((err) => {
-			console.error(err);
+			// console.error(err);
 			console.error(err.message);
 			return_data = err;
 		});
