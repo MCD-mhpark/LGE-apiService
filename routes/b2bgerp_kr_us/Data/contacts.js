@@ -691,7 +691,7 @@ function ConvertCustomObjectData(_contact, _req_data) {
 	}); //전화번호	text	text			
 	convert_data_entity.fieldValues.push({
 		"id": "274",
-		"value": _req_data.detailAddr
+		"value": reConvertXSS(_req_data.detailAddr)
 	}); //상세주소	text	text			
 	convert_data_entity.fieldValues.push({
 		"id": "273",

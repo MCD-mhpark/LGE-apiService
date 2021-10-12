@@ -1272,72 +1272,83 @@ router.post('/user/create', function (req, res, next) {
 
     var body_data = Convert_IAM_TO_ELOQUA_DATA(req.body);
 
+    let essential = true;
     if(body_data.EMAIL){
         res.status(404).json({
             "Result" : "Failed" ,
             "ErrorMessage" : "Send Data Not Include Email"
 
         });
+        essential = false;
     }else if(!validateEmail(body_data.EMAIL)){
         res.status(404).json({
             "Result" : "Failed" ,
             "ErrorMessage" : "Invalid Email Type"
-
+            
         });
+        essential = false;
     }
 
     console.log(body_data);
-
-    iam_eloqua.system.users.create(body_data).then(async (result) => {
-        console.log(result.data);
-        let result_list = await securityGroup_Modify(result.data.id, req.body.add_sc_list, res);
-        res.json(result_list);
-    }).catch((err) => {
-        console.error(err);
-        res.json(err);
-    });
+    if(essential){
+        iam_eloqua.system.users.create(body_data).then(async (result) => {
+            console.log(result.data);
+            let result_list = await securityGroup_Modify(result.data.id, req.body.add_sc_list, res);
+            res.json(result_list);
+        }).catch((err) => {
+            console.error(err);
+            res.json(err);
+        });
+    }
+  
 });
 
 // 퇴직자 구분 데이터
 router.post('/htgubun_data', async function (req, res, next) {
  
     let ht_data = req.body;
-    
+    let essential = true;
+
     if(ht_data.EMAIL){
         res.status(404).json({
             "Result" : "Failed" ,
             "ErrorMessage" : "Send Data Not Include Email"
 
         });
+        essential = false;
     }else if(!validateEmail(ht_data.EMAIL)){
         res.status(404).json({
             "Result" : "Failed" ,
             "ErrorMessage" : "Invalid Email Type"
 
         });
+        essential = false;
     }
     
-    let eloqua_datas = await HT_GUBUN_DATA(ht_data);
-    let retiree_list = await Convert_IAM_TO_RE_ELOQUA_DATA(eloqua_datas);
+    if(essential){
 
-    for(const item of retiree_list){
-       
-        if(item.HTGUBUN == 'T' || item.HTGUBUN == 'M'){
-            await securityGroup_Modify(item.id, item.add_sc_list, res);
-        }
-
-        if(item.HTGUBUN != 'M'){
-            iam_eloqua.system.users.update(item.id , item ).then((result) => {
-                res.json(result.data);
-        
-                //console.log(request_data);
-        
-            }).catch((err) => {
-                console.error(err);
-                res.json(false);
-            });
+        // HTGUBUN = T  : 퇴직자 , HTGUBUN 
+        let eloqua_datas = await HT_GUBUN_DATA(ht_data);
+        let retiree_list = await Convert_IAM_TO_RE_ELOQUA_DATA(eloqua_datas);
+    
+        for(const item of retiree_list){
+           
+            if(item.HTGUBUN == 'T' || item.HTGUBUN == 'M'){
+                await securityGroup_Modify(item.id, item.add_sc_list, res);
+            }
+    
+            if(item.HTGUBUN != 'M'){
+                iam_eloqua.system.users.update(item.id , item ).then((result) => {
+                    res.json(result.data);           
+                    //console.log(request_data);
+                }).catch((err) => {
+                    console.error(err);
+                    res.json(false);
+                });
+            }
         }
     }
+   
 });
 
 

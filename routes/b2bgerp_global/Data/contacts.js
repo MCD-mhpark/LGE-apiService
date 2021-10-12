@@ -1420,7 +1420,7 @@ bant_send = async function (business_name, state_date, end_date) {
 							let fieldValues_list = bant_item.fieldValues;
 							let subsidiary_data = GetCustomFiledValue(fieldValues_list, 100196);
 
-							if (subsidiary_data != '') bant_update_data.push(bant_item);
+							if (subsidiary_data != "" && subsidiary_data != "LGE") bant_update_data.push(bant_item);
 							else { 
 								not_bant_data.push(bant_item) ;
 							}
