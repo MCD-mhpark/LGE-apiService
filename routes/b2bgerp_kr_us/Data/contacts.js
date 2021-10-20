@@ -405,7 +405,7 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 					var customObjectCreateData = ConvertCustomObjectData(contact_data.elements[0], req_data);
 
 					// 커스텀 오브젝트 중복 체크
-					let duple_custom_data = await Duple_Custom_Data(parent_id , req_data);
+					let duple_custom_data = await Duple_Custom_Data(parent_id , req_data , "online_estimation");
 					console.log("duple_custom_data.total : " + duple_custom_data.total);
 					//커스텀 오브젝트 데이터 전송
 					var customObject_result ; 
@@ -447,7 +447,7 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 						var customObjectCreateData = ConvertCustomObjectData(contact_data.data, req_data);
 
 						// 커스텀 오브젝트 중복 체크
-						let duple_custom_data = await Duple_Custom_Data(parent_id , req_data);
+						let duple_custom_data = await Duple_Custom_Data(parent_id , req_data , "online_estimation");
 						
 						//커스텀 오브젝트 데이터 전송
 						console.log("duple_custom_data.total : " + duple_custom_data.total);
@@ -534,12 +534,16 @@ function KR_OBJECT_DATA_ENTITY() {
 }
 
 // 커스텀 오브젝트 데이터 적재 전 중복 체크 
-async function Duple_Custom_Data(parent_id , _req_data){
-	let estimationSeqNo = _req_data.estimationSeqNo;
-
+async function Duple_Custom_Data(parent_id , _req_data , api_name){
+	
 	let queryString = {};
 
-	queryString.search = "?______1='"+estimationSeqNo+"'";
+	if(api_name == 'online_estimation'){
+		queryString.search = "?______1='"+_req_data.estimationSeqNo+"'";
+	}else if(api_name == 'newsletter'){
+		queryString.search = "?___1='"+_req_data.cEmail+"'";
+	}
+	
 	queryString.depth = "minimal";
 
 	console.log(queryString);
@@ -1367,7 +1371,7 @@ router.post('/newsLetterAPI', async function (req, res, next) {
 					var customObjectCreateData = ConvertCustomObjectData_newsLetter(contact_data.elements[0], req_data);
 				
 					// 커스텀 오브젝트 중복 체크
-					let duple_custom_data = await Duple_Custom_Data(parent_id , req_data);
+					let duple_custom_data = await Duple_Custom_Data(parent_id , req_data , "newsletter");
 					
 					//커스텀 오브젝트 데이터 전송
 					var customObject_result 
@@ -1411,7 +1415,7 @@ router.post('/newsLetterAPI', async function (req, res, next) {
 						var customObjectCreateData = ConvertCustomObjectData_newsLetter(contact_data.data, req_data);
 						
 						// 커스텀 오브젝트 중복 체크
-						let duple_custom_data = await Duple_Custom_Data(parent_id , req_data);
+						let duple_custom_data = await Duple_Custom_Data(parent_id , req_data , "newsletter");
 
 						//커스텀 오브젝트 데이터 전송
 						var customObject_result ;
@@ -1490,7 +1494,7 @@ router.post('/customdata_duple_checker', async function (req, res, next) {
 	let parent_id = 39;
 	let req_data = req.body;
 
-	let duple_custom_data = await Duple_Custom_Data(parent_id , req_data);
+	let duple_custom_data = await Duple_Custom_Data(parent_id , req_data , "online_estimation");
 	// console.log(duple_custom_data.total);
 	res.json(duple_custom_data);
 });
