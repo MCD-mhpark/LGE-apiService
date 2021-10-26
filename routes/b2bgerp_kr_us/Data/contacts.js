@@ -515,7 +515,8 @@ function KR_OBJECT_DATA_ENTITY() {
 	//this.createdBy = ""; read only
 	//this.currentStatus = "";
 	//this.customObjectRecordStatus = "";
-	//this.depth = ""; read only
+	//this.depth = ""; read 
+	only
 	//this.description = "";
 
 	this.fieldValues = [];
@@ -1505,6 +1506,101 @@ router.post('/test', async function (req, res, next) {
 	console.log(str);
 	res.json(reConvertXSS(str));
 });
+
+
+// co.kr 견적문의 사이트 와 B2B GERP KR 가망기회 데이터 리스트를 살펴볼때 사용하기 위해 만든것
+
+router.post('/search_online_esti', async function (req, res, next) {
+	let parent_id = 39;
+	let status = req.body.status;
+	let data_list = [];
+	let return_data = [];
+
+
+	if(status == "estimationId") data_list = req.body.estimationId;
+	else if(status == "estimationSeqNo") data_list = req.body.estimationSeqNo;
+	console.log(data_list)
+	for(let item of data_list){
+
+		let queryString = {};
+		
+		if(status == "estimationId") queryString.search = "?____1='"+item+"'";
+		else if(status == "estimationSeqNo") queryString.search = "?______1='"+item+"'";
+		
+
+		console.log(item);
+		console.log(queryString);
+		await b2bkr_eloqua.data.customObjects.data.get(parent_id, queryString ).then(async (result) => {
+			// console.log(result);
+			console.log(result.data);
+
+			let result_none_object = {};
+
+			if(status == "estimationId"){
+				result_none_object.estimationId = item;
+				result_none_object.errorInfo = "Not Search Data";
+			} 
+			else if(status == "estimationSeqNo"){
+				result_none_object.estimationSeqNo = item;
+				result_none_object.errorInfo = "Not Search Data";
+			} 
+			
+
+			if(result.data.elements.length > 0) await return_data.push(result.data.elements);
+			else if(result.data.elements.length == 0){
+				await return_data.push(result_none_object);
+			} 
+		}).catch(async (err) => {
+			// console.error(err);
+			console.error(err.message);
+			let error_object = {};
+			if(status == "estimationId"){
+				error_object.estimationId = item;
+				error_object.errorInfo = err.message;
+			} 
+			else if(status == "estimationSeqNo"){
+				data_list = req.body.estimationSeqNo;
+				error_object.errorInfo = err.message;
+			} 
+
+			await return_data.push(error_object);
+		});
+
+		
+	}
+	console.log(return_data);	
+	res.json(return_data);
+});
+
+
+router.post('/create_data_duple_checker', async function (req, res, next) {
+	let parent_id = 39;
+	let status = req.body.status;
+	let data_list = [];
+
+
+
+	let return_object = {};
+	let duple_list = [];
+	let another_list = [];
+
+	let co_kr_list = req.body.co_kr_list;
+	let b2b_gerp_kr_list = req.body.b2b_gerp_kr_list;
+	console.log(co_kr_list);
+	console.log(b2b_gerp_kr_list);
+
+	// duple_list = await co_kr_list.filter(x => b2b_gerp_kr_list.includes(x));
+	// another_list = await co_kr_list.filter(x => !b2b_gerp_kr_list.includes(x));
+
+	duple_list = await b2b_gerp_kr_list.filter(x => co_kr_list.includes(x));
+	another_list = await b2b_gerp_kr_list.filter(x => !co_kr_list.includes(x));
+
+	return_object.duple_list = duple_list;
+	return_object.another_list = another_list;
+	console.log(return_object);	
+	res.json(return_object);
+});
+
 
 //replaceAll prototype 선언
 String.prototype.replaceAll = function(org, dest) {
