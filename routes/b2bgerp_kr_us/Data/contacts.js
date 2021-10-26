@@ -1419,7 +1419,7 @@ router.post('/newsLetterAPI', async function (req, res, next) {
 
 						//커스텀 오브젝트 데이터 전송
 						var customObject_result ;
-						if(duple_custom_data == 0) customObject_result = await SendCreateCustomObjectData(parent_id , customObjectCreateData);
+						if(duple_custom_data.total == 0 ) customObject_result = await SendCreateCustomObjectData(parent_id , customObjectCreateData);
 
 						console.log(customObject_result.data);
 
