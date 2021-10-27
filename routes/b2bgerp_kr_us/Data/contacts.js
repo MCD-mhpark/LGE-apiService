@@ -515,8 +515,7 @@ function KR_OBJECT_DATA_ENTITY() {
 	//this.createdBy = ""; read only
 	//this.currentStatus = "";
 	//this.customObjectRecordStatus = "";
-	//this.depth = ""; read 
-	only
+	//this.depth = ""; read
 	//this.description = "";
 
 	this.fieldValues = [];
@@ -1593,7 +1592,7 @@ router.post('/create_data_duple_checker', async function (req, res, next) {
 	// another_list = await co_kr_list.filter(x => !b2b_gerp_kr_list.includes(x));
 
 	duple_list = await b2b_gerp_kr_list.filter(x => co_kr_list.includes(x));
-	another_list = await b2b_gerp_kr_list.filter(x => !co_kr_list.includes(x));
+	another_list = await co_kr_list.filter(x => !co_kr_list.includes(x));
 
 	return_object.duple_list = duple_list;
 	return_object.another_list = another_list;
