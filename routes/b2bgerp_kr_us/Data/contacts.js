@@ -515,7 +515,7 @@ function KR_OBJECT_DATA_ENTITY() {
 	//this.createdBy = ""; read only
 	//this.currentStatus = "";
 	//this.customObjectRecordStatus = "";
-	//this.depth = ""; read
+	//this.depth = ""; read only
 	//this.description = "";
 
 	this.fieldValues = [];
@@ -544,7 +544,7 @@ async function Duple_Custom_Data(parent_id , _req_data , api_name){
 		queryString.search = "?___1='"+_req_data.cEmail+"'";
 	}
 	
-	queryString.depth = "minimal";
+	queryString.depth = "complete";
 
 	console.log(queryString);
 	await b2bkr_eloqua.data.customObjects.data.get(parent_id, queryString ).then((result) => {
