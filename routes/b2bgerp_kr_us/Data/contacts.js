@@ -402,7 +402,7 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 				//기존사용자 정보 업데이트
 				var update_result = await UpdateContacData(contact_data.elements[0], req_data);
 
-				if (update_result) {
+				if (update_result ) {
 					var customObjectCreateData = ConvertCustomObjectData(contact_data.elements[0], req_data);
 
 					// 커스텀 오브젝트 중복 체크
@@ -833,7 +833,7 @@ async function SendCreateCustomObjectData(parent_id , _customObjectCreateData) {
 	//LGE KR 사용자정의 객체 / LGEKR(한영본)_대표사이트B2B_온라인문의 id : 39
 	await b2bkr_eloqua.data.customObjects.data.create(parent_id, _customObjectCreateData).then((result) => {
 		// console.log(result);
-		return_data = result.data;
+		return_data = result;
 	}).catch((err) => {
 		// console.error(err);
 		console.error(err.message);
@@ -852,7 +852,7 @@ async function GetContactData(_email) {
 		queryString.depth = "complete"; //minimal, partial, complete
 		await b2bkr_eloqua.data.contacts.get(queryString).then((result) => {
 			if (result.status == 200 && result.data.total > 0)
-				return_data = result.data;
+				return_data = result;
 		}).catch((err) => {
 			return_data = undefined;
 		});
@@ -959,8 +959,8 @@ async function InsertContactData(_req_data) {
 
 
 	await b2bkr_eloqua.data.contacts.create(contact_data).then((result) => {
-		console.log(result.data);
-		return_data = result.data;
+		console.log(result);
+		return_data = result;
 	}).catch((err) => {
 		console.error(err);
 		console.error(err.message);
@@ -1060,8 +1060,8 @@ async function InsertContactData_newsLetter(_req_data) {
 
 
 	await b2bkr_eloqua.data.contacts.create(contact_data).then((result) => {
-		console.log(result.data);
-		return_data = result.data;
+		console.log(result);
+		return_data = result;
 	}).catch((err) => {
 		console.error(err);
 		console.error(err.message);
