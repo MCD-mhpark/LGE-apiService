@@ -397,7 +397,9 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 		if (validateEmail(req_data.contactEmailAddr)) {
 			//해당 사용자 데이터 여부 확인
 			var contact_data = await GetContactData(req_data.contactEmailAddr);
-
+			console.log("ContactData Checker");
+			console.log(contact_data.total > 0);
+			debugger;
 			if (contact_data && contact_data.total > 0) {
 				//기존사용자 정보 업데이트
 				var update_result = await UpdateContacData(contact_data.elements[0], req_data);
@@ -852,7 +854,7 @@ async function GetContactData(_email) {
 		queryString.depth = "complete"; //minimal, partial, complete
 		await b2bkr_eloqua.data.contacts.get(queryString).then((result) => {
 			if (result.status == 200 && result.data.total > 0)
-				return_data = result;
+				return_data = result.data;
 		}).catch((err) => {
 			return_data = undefined;
 		});
@@ -1362,8 +1364,9 @@ router.post('/newsLetterAPI', async function (req, res, next) {
 	try {
 		if (validateEmail(req_data.cEmail)) {
 			//해당 사용자 데이터 여부 확인
+			
 			var contact_data = await GetContactData(req_data.cEmail);
-
+	
 		
 			// 기존에 사용자가 있을 경우 update 함
 			if (contact_data && contact_data.total > 0) {
