@@ -978,7 +978,7 @@ async function InsertContactData(_req_data) {
 
 
 	await b2bkr_eloqua.data.contacts.create(contact_data).then((result) => {
-		console.log(result);
+		// console.log(result);
 		return_data = result;
 	}).catch((err) => {
 		console.error(err);
@@ -1079,7 +1079,7 @@ async function InsertContactData_newsLetter(_req_data) {
 
 
 	await b2bkr_eloqua.data.contacts.create(contact_data).then((result) => {
-		console.log(result);
+		// console.log(result);
 		return_data = result;
 	}).catch((err) => {
 		console.error(err);
