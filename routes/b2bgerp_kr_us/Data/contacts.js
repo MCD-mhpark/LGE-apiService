@@ -398,7 +398,7 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 			//해당 사용자 데이터 여부 확인
 			var contact_data = await GetContactData(req_data.contactEmailAddr);
 			console.log("ContactData Checker");
-			console.log(contact_data.total > 0);
+			console.log(contact_data.total);
 			debugger;
 			if (contact_data && contact_data.total > 0) {
 				//기존사용자 정보 업데이트
