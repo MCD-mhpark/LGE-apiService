@@ -391,7 +391,6 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 	var req_data = req.body;
 	let parent_id = 39;
 
-	console.log("customObjectDataCreate DupleDataCheck");
 	console.log(req_data);
 	try {
 		if (validateEmail(req_data.contactEmailAddr)) {
@@ -519,6 +518,7 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 
 
 function KR_OBJECT_DATA_ENTITY() {
+	
 	//this.accessedAt = ""; read only
 	//this.accountId = ""; read only
 	this.contactId = "";
@@ -573,7 +573,13 @@ async function Duple_Custom_Data(parent_id , _req_data , api_name){
 //커스텀 오브젝트 데이터 형태로 변경 함수
 function ConvertCustomObjectData(_contact, _req_data) {
 	var contact = _contact;
-	var convert_data_entity = new KR_OBJECT_DATA_ENTITY();
+	var convert_data_entity = {};
+
+	convert_data_entity.contactId = "";
+	convert_data_entity.fieldValues = [];
+	convert_data_entity.isMapped = "Yes";
+	convert_data_entity.name = _req_data.cEmail;
+	convert_data_entity.type = "CustomObjectData";
 	convert_data_entity.contactId = contact.id ;
 	convert_data_entity.depth = "complete";
 
@@ -749,12 +755,16 @@ function ConvertCustomObjectData(_contact, _req_data) {
 //커스텀 오브젝트 데이터 형태로 변경 함수
 function ConvertCustomObjectData_newsLetter(_contact, _req_data) {
 	var contact = _contact;
-	var convert_data_entity = new KR_OBJECT_DATA_ENTITY();
 
 	var convert_data_entity = {};
+	convert_data_entity.contactId = contact.id;
+	convert_data_entity.fieldValues = [];
+	convert_data_entity.isMapped = "Yes";
+	convert_data_entity.name = _req_data.cEmail;
+	convert_data_entity.type = "CustomObjectData";
 	convert_data_entity.fieldValues = [];
 	convert_data_entity.depth = "complete";
-	convert_data_entity.contactId = contact.id;
+
 
 	convert_data_entity.fieldValues.push({
 		"id": "351",

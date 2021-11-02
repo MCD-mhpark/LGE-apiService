@@ -571,7 +571,7 @@ router.post('/create', async function (req, res, next) {
             });
             success_count++;
 
-
+            
             //CustomObject 에 Create 데이터 적재 (단 create 나 update 가 성공했을 경우에만)
             if(req.body[i].krMkt === 'Y') KR_LBCS_History_Save(result.data.id , req.body[i]);
         }).catch((err) => {
