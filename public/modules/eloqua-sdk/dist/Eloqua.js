@@ -299,6 +299,9 @@ class Eloqua {
 
   _validate(accepted, input) {
     const output = {};
+    console.log("Eloqua.js Logger");
+    console.log(accepted);
+    console.log(input);
     accepted.forEach(value => {
       if (input[value]) {
         output[value] = input[value];
