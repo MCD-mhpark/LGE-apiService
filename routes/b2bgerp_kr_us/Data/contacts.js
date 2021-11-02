@@ -575,7 +575,6 @@ function ConvertCustomObjectData(_contact, _req_data) {
 	var contact = _contact;
 	var convert_data_entity = {};
 
-	convert_data_entity.contactId = "";
 	convert_data_entity.fieldValues = [];
 	convert_data_entity.isMapped = "Yes";
 	convert_data_entity.name = _req_data.cEmail;
