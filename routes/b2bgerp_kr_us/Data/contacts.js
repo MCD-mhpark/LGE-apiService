@@ -398,8 +398,7 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 			//해당 사용자 데이터 여부 확인
 			var contact_data = await GetContactData(req_data.contactEmailAddr);
 			
-			console.log("ContactData Checker");
-			console.log(contact_data);
+			
 			if (contact_data && contact_data.total > 0) {
 				//기존사용자 정보 업데이트
 
@@ -410,6 +409,8 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 				if (update_result ) {
 					var customObjectCreateData = ConvertCustomObjectData(contact_data.elements[0], req_data);
 
+					console.log("CustomObjectDataCreate Updater depth2");
+					console.log(customObjectCreateData);
 					// 커스텀 오브젝트 중복 체크
 					let duple_custom_data = await Duple_Custom_Data(parent_id , req_data , "online_estimation");
 					console.log("duple_custom_data.total : " + duple_custom_data.total);
@@ -454,6 +455,8 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 
 						var customObjectCreateData = ConvertCustomObjectData(contact_data.data, req_data);
 
+						console.log("CustomObjectDataCreate insert depth2");
+						console.log(customObjectCreateData);
 						// 커스텀 오브젝트 중복 체크
 						let duple_custom_data = await Duple_Custom_Data(parent_id , req_data , "online_estimation");
 						
@@ -572,6 +575,7 @@ function ConvertCustomObjectData(_contact, _req_data) {
 	var contact = _contact;
 	var convert_data_entity = new KR_OBJECT_DATA_ENTITY();
 	convert_data_entity.contactId = contact.id ;
+	convert_data_entity.depth = "complete";
 
 	convert_data_entity.fieldValues.push({
 		"id": "319",
@@ -749,7 +753,7 @@ function ConvertCustomObjectData_newsLetter(_contact, _req_data) {
 
 	var convert_data_entity = {};
 	convert_data_entity.fieldValues = [];
-	
+	convert_data_entity.depth = "complete";
 	convert_data_entity.contactId = contact.id;
 
 	convert_data_entity.fieldValues.push({
@@ -1381,7 +1385,7 @@ router.post('/newsLetterAPI', async function (req, res, next) {
 				if (update_result) {
 
 					var customObjectCreateData = ConvertCustomObjectData_newsLetter(contact_data.elements[0], req_data);
-				
+					
 					// 커스텀 오브젝트 중복 체크
 					let duple_custom_data = await Duple_Custom_Data(parent_id , req_data , "newsletter");
 					
