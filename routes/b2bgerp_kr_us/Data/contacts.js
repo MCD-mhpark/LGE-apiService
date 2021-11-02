@@ -399,7 +399,7 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 			var contact_data = await GetContactData(req_data.contactEmailAddr);
 			console.log("ContactData Checker");
 			console.log(contact_data);
-			debugger;
+
 			if (contact_data && contact_data.total > 0) {
 				//기존사용자 정보 업데이트
 				var update_result = await UpdateContacData(contact_data.elements[0], req_data);
@@ -850,7 +850,7 @@ async function GetContactData(_email) {
 	var return_data = undefined;
 	//queryString['search'] = _email;
 	if (validateEmail(_email)) {
-		queryString.search = _email;
+		queryString.search = "emailAddress='" + _email+"'";
 		queryString.depth = "complete"; //minimal, partial, complete
 		await b2bkr_eloqua.data.contacts.get(queryString).then((result) => {
 			if (result.status == 200 && result.data.total > 0)
