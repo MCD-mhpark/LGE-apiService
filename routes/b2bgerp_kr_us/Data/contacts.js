@@ -397,11 +397,14 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 		if (validateEmail(req_data.contactEmailAddr)) {
 			//해당 사용자 데이터 여부 확인
 			var contact_data = await GetContactData(req_data.contactEmailAddr);
+			
 			console.log("ContactData Checker");
 			console.log(contact_data);
-
 			if (contact_data && contact_data.total > 0) {
 				//기존사용자 정보 업데이트
+
+				console.log("CustomObjectDataCreate Updater Checker");
+				console.log(contact_data);
 				var update_result = await UpdateContacData(contact_data.elements[0], req_data);
 
 				if (update_result ) {
@@ -443,6 +446,8 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 				//사용자가 없을경우 사용자 추가
 				var contact_data = await InsertContactData(req_data);
 
+				console.log("CustomObjectDataCreate Insert Checker");
+				console.log(contact_data);
 				if (contact_data) {
 					//사용자 추가 후 CustomObjectData 추가
 					if (contact_data.data) {
