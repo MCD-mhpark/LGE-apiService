@@ -452,7 +452,7 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 					//사용자 추가 후 CustomObjectData 추가
 					if (contact_data.data) {
 
-						var customObjectCreateData = ConvertCustomObjectData(contact_data.data, req_data);
+						var customObjectCreateData = await ConvertCustomObjectData(contact_data.data, req_data);
 
 						console.log("CustomObjectDataCreate insert depth2");
 						console.log(customObjectCreateData);
@@ -849,13 +849,16 @@ function ConvertCustomObjectData_newsLetter(_contact, _req_data) {
 //CustomObjectData 전송 함수
 async function SendCreateCustomObjectData(parent_id , _customObjectCreateData) {
 	var return_data = undefined;
+
+	console.log("SendCreateCustomObjectData");
+	console.log(_customObjectCreateData);
 	//LGE KR 사용자정의 객체 / LGEKR(한영본)_대표사이트B2B_온라인문의 id : 39
 	await b2bkr_eloqua.data.customObjects.data.create(parent_id, _customObjectCreateData).then((result) => {
 		// console.log(result);
 		return_data = result;
 	}).catch((err) => {
 		// console.error(err);
-		console.error(err.message);
+		console.log(err.stack);
 		return_data = err.message;
 	});
 	return return_data;
