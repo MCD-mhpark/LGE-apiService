@@ -577,7 +577,7 @@ function ConvertCustomObjectData(_contact, _req_data) {
 
 	convert_data_entity.fieldValues = [];
 	convert_data_entity.isMapped = "Yes";
-	convert_data_entity.name = _req_data.cEmail;
+	convert_data_entity.name = _req_data.contactEmailAddr;
 	convert_data_entity.type = "CustomObjectData";
 	convert_data_entity.contactId = contact.id ;
 	convert_data_entity.depth = "complete";
@@ -759,7 +759,7 @@ function ConvertCustomObjectData_newsLetter(_contact, _req_data) {
 	convert_data_entity.contactId = contact.id;
 	convert_data_entity.fieldValues = [];
 	convert_data_entity.isMapped = "Yes";
-	convert_data_entity.name = _req_data.cEmail;
+	convert_data_entity.name = _req_data.contactEmailAddr;
 	convert_data_entity.type = "CustomObjectData";
 	convert_data_entity.fieldValues = [];
 	convert_data_entity.depth = "complete";
