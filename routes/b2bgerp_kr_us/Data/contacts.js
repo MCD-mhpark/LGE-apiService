@@ -447,23 +447,24 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 				var contact_data = await InsertContactData(req_data);
 
 				console.log("CustomObjectDataCreate Insert Checker");
-				console.log(contact_data);
+				// console.log(contact_data);
 				if (contact_data) {
 					//사용자 추가 후 CustomObjectData 추가
 					if (contact_data.data) {
 
 						var customObjectCreateData = await ConvertCustomObjectData(contact_data.data, req_data);
 
-						console.log("CustomObjectDataCreate insert depth2");
-						console.log(customObjectCreateData);
+					
 						// 커스텀 오브젝트 중복 체크
 						let duple_custom_data = await Duple_Custom_Data(parent_id , req_data , "online_estimation");
 						
 						//커스텀 오브젝트 데이터 전송
 						console.log("duple_custom_data.total : " + duple_custom_data.total);
 
+						console.log("CustomObjectDataCreate insert depth2");
+						console.log(customObjectCreateData);
 						var result_data ;
-						if(duple_custom_data.total == 0 ) result_data = await SendCreateCustomObjectData(customObjectCreateData);
+						if(duple_custom_data.total == 0 ) result_data = await SendCreateCustomObjectData(parent_id , customObjectCreateData);
 
 						// console.log(result_data.data);
 
