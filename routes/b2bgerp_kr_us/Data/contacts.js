@@ -1,8 +1,9 @@
 var express = require('express');
+var router = express.Router();
 const {
 	param
 } = require('../../common/history');
-var router = express.Router();
+
 var utils = require('../../common/utils');
 var moment = require('moment-timezone');
 //const request =  require('request'); 
@@ -401,15 +402,15 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 			if (contact_data && contact_data.total > 0) {
 				//기존사용자 정보 업데이트
 
-				console.log("CustomObjectDataCreate Updater Checker");
-				console.log(contact_data);
+				// console.log("CustomObjectDataCreate Updater Checker");
+				// console.log(contact_data);
 				var update_result = await UpdateContacData(contact_data.elements[0], req_data);
 
 				if (update_result ) {
 					var customObjectCreateData = ConvertCustomObjectData(contact_data.elements[0], req_data);
 
 					console.log("CustomObjectDataCreate Updater depth2");
-					console.log(customObjectCreateData);
+					// console.log(customObjectCreateData);
 					// 커스텀 오브젝트 중복 체크
 					let duple_custom_data = await Duple_Custom_Data(parent_id , req_data , "online_estimation");
 					console.log("duple_custom_data.total : " + duple_custom_data.total);
@@ -446,7 +447,7 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 				//사용자가 없을경우 사용자 추가
 				var contact_data = await InsertContactData(req_data);
 
-				console.log("CustomObjectDataCreate Insert Checker");
+				// console.log("CustomObjectDataCreate Insert Checker");
 				// console.log(contact_data);
 				if (contact_data) {
 					//사용자 추가 후 CustomObjectData 추가
@@ -459,10 +460,10 @@ router.post('/customObjectDataCreate', async function (req, res, next) {
 						let duple_custom_data = await Duple_Custom_Data(parent_id , req_data , "online_estimation");
 						
 						//커스텀 오브젝트 데이터 전송
-						console.log("duple_custom_data.total : " + duple_custom_data.total);
+						// console.log("duple_custom_data.total : " + duple_custom_data.total);
 
 						console.log("CustomObjectDataCreate insert depth2");
-						console.log(customObjectCreateData);
+						// console.log(customObjectCreateData);
 						var result_data ;
 						if(duple_custom_data.total == 0 ) result_data = await SendCreateCustomObjectData(parent_id , customObjectCreateData);
 

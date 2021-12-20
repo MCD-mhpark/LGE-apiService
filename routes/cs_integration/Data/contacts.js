@@ -1,4 +1,5 @@
 var utils = require('../../common/utils');
+var converter = require('../../common/converters');
 var moment = require('moment');
 var express = require('express');
 var request = require('request');
@@ -27,7 +28,7 @@ async function get_INTEGRATION_DB_Data(page_index) {
 	queryString['depth'] = "complete";
 	queryString['pageSize'] = 1000;
 	queryString['page'] = page_index;
-	
+	queryString['orderBy'] = "createdAt ASC"
 	await csintergration_eloqua.data.contacts.get(queryString).then((result) => {
 		// console.log(result.data);
 		// console.log("true");
@@ -39,6 +40,7 @@ async function get_INTEGRATION_DB_Data(page_index) {
 			console.log("not search data");
 		}
 	}).catch((err) => {
+		console.error(err);
 		console.error(err.message);
 	});
 
@@ -887,6 +889,16 @@ router.get('/test', async function (req, res, next) {
 	
 });
 
+//2021-11-16 전체 데이터 끝점 조회 테스트
+router.get('/test2', async function (req, res, next) {
+
+	let page_index = req.query.page_index;
+	let nextSearch = true;
+
+	let request_data = await get_INTEGRATION_DB_Data(page_index);
+	res.json(request_data);
+});
+
 async function CUSTOMER_GET_DATA(req , res , page_index){
 	let contacts_data = await get_INTEGRATION_DB_Data(page_index);
 	console.log("데이터 조회 : " + page_index + "  데이터 조회 완료 시간 : "  +  moment().format('YYYY/MM/DD HH:mm:ss'));
@@ -895,6 +907,10 @@ async function CUSTOMER_GET_DATA(req , res , page_index){
 	req_res_logs("cs_elq_data_" + page_index, contacts_data);
 	req_res_logs("cs_req_data_" + page_index, request_data);
 }
+
+router.get('/convert_xlsx', async function (req, res, next) {
+	converter.csintergration();
+});
 
 
 async function CUSTOMER_DB_SEND(req , res , page_index , contacts_data){
@@ -1014,7 +1030,8 @@ async function testCUSTOMER_DB_SEND(req , res ){
 			}).catch(async function(err){
 				console.log("에러 응답 : " + page_index + "  에러 응답 완료 시간 : "  +  moment().format('YYYY/MM/DD HH:mm:ss'));
 					console.log(err.statusCode);
-					await req_res_logs("cs_err_edata_" + page_index, err);
+					await req_res_logs("cs_err_index_" + page_index, err);
+					await req_res_logs("cs_err_edata_" + page_index, request_data );
 			});
 		
 		}else{

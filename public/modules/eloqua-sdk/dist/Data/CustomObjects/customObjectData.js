@@ -52,8 +52,7 @@ class CustomObjectData {
 	create(parentId, customObjectData, cb) {
 		// const data = _classPrivateFieldLooseBase(this, _parent)[_parent]._validate(['contactId', 'createdAt', 'createdBy', 'currentStatus', 'customObjectRecordStatus', 'depth', 'description', 'fieldValues', 'folderId', 'id', 'name', 'permissions', 'scheduledFor', 'sourceTemplateId', 'type', 'uniqueCode', 'updatedAt', 'updatedBy'], customObjectData);
 		const data = _classPrivateFieldLooseBase(this, _parent)[_parent]._validate(['accessedAt', 'accountId', 'contactId', 'createdAt', 'createdBy', 'currentStatus', 'customObjectRecordStatus', 'depth', 'description', 'fieldValues', 'folderId', 'id', 'name', 'permissions', 'scheduledFor', 'sourceTemplateId', 'type', 'uniqueCode', 'updatedAt', 'updatedBy'], customObjectData);
-		console.log("CustomObjectData Create");											
-		console.log(customObjectData);
+	
 		return _classPrivateFieldLooseBase(this, _parent)[_parent]._request({
 			api: 'REST',
 			uri: `/data/customObject/${parentId}/instance`,

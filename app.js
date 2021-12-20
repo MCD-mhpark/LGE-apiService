@@ -256,6 +256,23 @@ function schedule_Request_KR(){
 	});
 }
 
+function schedule_Request_CS_Intergration(){
+	let uniqe_jobs_name = "CS Intergration" +  moment().format('YYYYMMDD');
+	let second = "0";
+	let minutes = "0";
+	let hours = "*";
+	let dayofmonth = "*";
+	let month = "*";
+	let weekindex = "*";
+	var schedate = second + ' ' + minutes + ' ' + hours + ' ' + dayofmonth + ' ' + month + ' ' + weekindex;
+
+	//test data
+	KR_Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,"Asia/Seoul" ,async function(){
+		// let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
+		
+	});
+}
+
 if(__dirname == "/home/opc/LGE/b2bgerp_global"){
 	console.log("B2B GERP GLOBAL SCHEDULER REG");
 	schedule_Request_GLOBAL();
@@ -266,6 +283,12 @@ if(__dirname == "/home/opc/LGE/b2bgerp_global"){
 if(__dirname == "/home/opc/LGE/b2bgerp_kr"){
 	console.log("B2B GERP KR SCHEDULER REG");
 	schedule_Request_KR();
+} 
+
+
+if(__dirname == "/home/opc/LGE/cs_integration"){
+	console.log("cs_integration SCHEDULER REG");
+	schedule_Request_CS_Intergration();
 } 
 
 if(os.type().indexOf("Windows") > -1) global.OS_TYPE = "Windows"
