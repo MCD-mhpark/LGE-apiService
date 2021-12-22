@@ -24,6 +24,9 @@ const schedule = require('node-schedule-tz');
 var Global_Jobs;
 var KR_Jobs;
 var Global_Lead_Jobs;
+var cs_integration_jobs;
+var integrated_Pipeline_Jobs;
+
 // var oracledb = require('oracledb');
 // var dbConfig = require('./config/dbconfig.js');
 
@@ -267,11 +270,51 @@ function schedule_Request_CS_Intergration(){
 	var schedate = second + ' ' + minutes + ' ' + hours + ' ' + dayofmonth + ' ' + month + ' ' + weekindex;
 
 	//test data
-	KR_Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,"Asia/Seoul" ,async function(){
+	cs_integration_jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,"Asia/Seoul" ,async function(){
 		// let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
 		
 	});
 }
+
+
+function schedule_Request_PIPELINE_GLOBAL(){
+	let uniqe_jobs_name = "PIPELINE_GLOBAL" +  moment().format('YYYYMMDD');
+	let second = "0";
+	let minutes = "05";
+	let hours = "12";
+	let dayofmonth = "*";
+	let month = "*";
+	let weekindex = "*";
+	var schedate = second + ' ' + minutes + ' ' + hours + ' ' + dayofmonth + ' ' + month + ' ' + weekindex;
+
+	//test data
+	integrated_Pipeline_Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,"Asia/Seoul" ,async function(){
+		// let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
+		let bant_list = ["AS" , "CM" , "ID" , "IT" , "Solution"];
+		bant_list.forEach( async BusinessName =>{
+			await b2bgerp_global_data_contacts.bant_send(BusinessName);
+		})
+			
+	});
+}
+
+function schedule_Request_PIPELINE_KR(){
+	let uniqe_jobs_name = "PIPELINE_KR" +  moment().format('YYYYMMDD');
+	let second = "0";
+	let minutes = "*/10";
+	let hours = "*";
+	let dayofmonth = "*";
+	let month = "*";
+	let weekindex = "*";
+	var schedate = second + ' ' + minutes + ' ' + hours + ' ' + dayofmonth + ' ' + month + ' ' + weekindex;
+
+	//test data
+	integrated_Pipeline_Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,"Asia/Seoul" ,async function(){
+		// let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
+		await b2bgerp_kr_us_data_contacts.senderToB2BGERP_KR();
+	});
+}
+
 
 if(__dirname == "/home/opc/LGE/b2bgerp_global"){
 	console.log("B2B GERP GLOBAL SCHEDULER REG");
@@ -289,6 +332,13 @@ if(__dirname == "/home/opc/LGE/b2bgerp_kr"){
 if(__dirname == "/home/opc/LGE/cs_integration"){
 	console.log("cs_integration SCHEDULER REG");
 	schedule_Request_CS_Intergration();
+} 
+
+if(__dirname == "/home/opc/LGE/integrated_pipeline"){
+	console.log("INTEGRATED PIPELINE_GLOBAL SCHEDULER REG");
+	schedule_Request_PIPELINE_GLOBAL();
+	console.log("INTEGRATED PIPELINE_KR SCHEDULER REG");
+	schedule_Request_PIPELINE_KR();
 } 
 
 if(os.type().indexOf("Windows") > -1) global.OS_TYPE = "Windows"

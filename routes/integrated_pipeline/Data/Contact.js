@@ -8,7 +8,12 @@ var moment = require('moment');
 var global_seq_cnt = 0;
 var fs = require("mz/fs");
 
+router.get('/inte_pipeline_global', async function (req, res, next) {
+});
 
+
+router.get('/inte_pipeline_kr', async function (req, res, next) {
+});
 
 //CustomObject 기간 조회 Eloqua API Version 1.0
 async function GetKR_CustomDataSearch(_parentId , type) {
@@ -188,6 +193,9 @@ pipe_kr_bant_send = async function (){
         //   var bant_result_list = await setBant_Update( business_name , bant_update_list );
         //   req_res_logs("bantResult" , business_name , bant_result_list );
         //   res.json(bant_result_list);
+
+		// pipe test 를 위해 주석 처리
+		return;
         await request_promise.post(options, async function (error, response, body) {
 
 	        // console.log(11);
@@ -1212,7 +1220,8 @@ pipe_global_bant_send = async function (business_name, state_date, end_date) {
 		let mql_customobject_list = await CONVERT_B2BGERP_GLOBAL_CUSTOMOBJECT(request_data);
 
 		// MQL Data 전송 전 MQL Data List 를 CustomObject 에 적재 update_mql_data은 customobject 적재값임
-		let update_mql_data = await mqldata_to_eloqua_send( 46 , mql_customobject_list);
+		// pipe test 를 위해 주석 처리
+		// let update_mql_data = await mqldata_to_eloqua_send( 46 , mql_customobject_list);
 
 		// CustomObject 에 적재된 MQL DATA를 CUSTOMBOEJCT_ID 고유값을 추가하여 B2B GERP GLOBAL 로 전송 
 		let update_data = await mqldata_push_customobjectid(request_data, update_mql_data);
@@ -1230,7 +1239,8 @@ pipe_global_bant_send = async function (business_name, state_date, end_date) {
 			body: { ContentList: update_data },
 			json: true
 		};
-
+		// pipe test 를 위해 주석 처리
+		return;
 		await request(options, async function (error, response, body) {
 			if (error) {
 				console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");

@@ -19,6 +19,7 @@ switch(__dirname)
   case "/home/opc/LGE/b2bgerp_global/bin" : port = normalizePort(process.env.PORT || '9003'); break;
   case "/home/opc/LGE/b2bgerp_kr/bin" : port = normalizePort(process.env.PORT || '9004'); break;
   case "/home/opc/LGE/cs_integration/bin" : port = normalizePort(process.env.PORT || '9005'); break;
+  case "/home/opc/LGE/integrated_pipeline/bin" : port = normalizePort(process.env.PORT || '9006'); break;
   default :  port = normalizePort(process.env.PORT || '8001'); break;
 }
 /**
