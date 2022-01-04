@@ -882,7 +882,7 @@ router.post('/user_data', async function (req, res, next) {
             });
         }else if(item.gubun == 'UPDATE'){
             
-            iam_eloqua.system.users.update(item.id, item).then(async(result) => {
+            iam_eloqua.system.users.update(item.id, item).then( async (result) => {
                 if(result.data){
                     console.log(result.data);
                     req_res_logs("create_after", result_data);

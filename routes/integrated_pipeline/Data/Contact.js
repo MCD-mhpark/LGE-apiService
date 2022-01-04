@@ -9,10 +9,16 @@ var global_seq_cnt = 0;
 var fs = require("mz/fs");
 
 router.get('/inte_pipeline_global', async function (req, res, next) {
+	// let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
+	let bant_list = ["AS" , "CM" , "ID" , "IT" , "Solution"];
+	bant_list.forEach( async BusinessName =>{
+		await b2bgerp_global_data_contacts.bant_send(BusinessName);
+	})
 });
 
 
 router.get('/inte_pipeline_kr', async function (req, res, next) {
+	await b2bgerp_kr_us_data_contacts.senderToB2BGERP_KR();
 });
 
 //CustomObject 기간 조회 Eloqua API Version 1.0
