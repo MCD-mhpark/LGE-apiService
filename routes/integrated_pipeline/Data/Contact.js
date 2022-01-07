@@ -12,13 +12,17 @@ router.get('/inte_pipeline_global', async function (req, res, next) {
 	// let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
 	let bant_list = ["AS" , "CM" , "ID" , "IT" , "Solution"];
 	bant_list.forEach( async BusinessName =>{
-		await b2bgerp_global_data_contacts.bant_send(BusinessName);
+		await pipe_global_bant_send(BusinessName);
 	})
 });
 
 
 router.get('/inte_pipeline_kr', async function (req, res, next) {
-	await b2bgerp_kr_us_data_contacts.senderToB2BGERP_KR();
+	await pipe_kr_bant_send();
+});
+
+router.post('/inte_pipeline_lead_update', async function (req, res, next) {
+	await pipe_global_lead_update(req, res, next);
 });
 
 //CustomObject 기간 조회 Eloqua API Version 1.0
@@ -1711,15 +1715,95 @@ function req_res_logs(filename, business_name , folderName, data) {
 
 	fs.writeFile(dirPath + filename + "_" + business_name + ".txt", JSON.stringify(data), 'utf8', function (error) {
 		if (error) {
-			console.log(err);
+			console.log(error);
 		} else {
 			console.log('write end');
 		}
 	});
 }
 
+pipe_global_lead_update = async function (req, res, next) {
+	console.log("Pipeline pipe_global_lead_update");
+
+	//Global_B2B GERP LeadNumber-Eloqua I/F
+	const parent_id = 46;
+
+	var form = {};
+	var success_count = 0;
+	var fail_count = 0;
+	var result_list = [];
+
+	var B2B_GERP_GLOBAL_LEAD_DATA = await mappedGlobalLeadData(req.body.ContentList);
+	req_res_logs("reqLeadData_" + moment().tz('Asia/Seoul').format("HH시mm분") , "PIPELINE_GLOBAL_LEAD" , "PIPELINE_GLOBAL_LEAD_UPDATE", B2B_GERP_GLOBAL_LEAD_DATA );
+
+	for (var item of B2B_GERP_GLOBAL_LEAD_DATA) {
+
+		await b2bgerp_eloqua.data.customObjects.data.update(parent_id, item.id, item).then((result) => {
+			
+			result_list.push({
+				name: item.id, 
+                status: 200, 
+                message: "success"
+			});
+
+			success_count++;
+		}).catch((err) => {
+			console.log(err);
+			
+			result_list.push({
+				name: item.id, 
+				status: err.response.status ? err.response.status : "ETC Error",
+				message: err.response.statusText ? err.response.statusText : "Unknown Error"
+			});
+
+			fail_count++;
+		})
+	}
+
+	form.total = B2B_GERP_GLOBAL_LEAD_DATA.length;
+    form.success_count = success_count;
+    form.fail_count = fail_count;
+    form.result_list = result_list;
+
+	req_res_logs("reqLeadResult_" + moment().tz('Asia/Seoul').format("HH시mm분") , "PIPELINE_GLOBAL_LEAD" , "PIPELINE_GLOBAL_LEAD_UPDATE" , form );
+
+    res.json(form);	
+}
+
+async function mappedGlobalLeadData(data) {
+	
+	var result_list = [];
+	
+		for (var item of data) {
+
+			var resultItem = {};
+			resultItem.id = item.CUSTOMOBJECT_ID;
+			var fieldValuesItem = [];
+
+			fieldValuesItem.push({
+				"id": "496",
+				"value": item.ELOQUA_ID
+			});
+
+			fieldValuesItem.push({
+				"id": "525",
+				"value": item.LEAD_SEQ
+			});
+
+			fieldValuesItem.push({
+				"id": "526",
+				"value": utils.timeConverter("GET_UNIX" , item.LEAD_CREATE_DATE )
+			});
+
+			resultItem.fieldValues = fieldValuesItem;
+			result_list.push(resultItem);
+		}
+
+	return result_list;	
+}
 
 
 module.exports = router;
 module.exports.pipe_global_bant_send = pipe_global_bant_send;
 module.exports.pipe_kr_bant_send = pipe_kr_bant_send;
+module.exports.pipe_global_lead_update = pipe_global_lead_update;

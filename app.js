@@ -134,6 +134,7 @@ var b2bgerp_kr_us_data_contacts = require('./routes/b2bgerp_kr_us/Data/contacts'
 var cs_integration_data_contacts = require('./routes/cs_integration/Data/contacts');
 var cs_integration_data_activities = require('./routes/cs_integration/Data/activities');
 var cs_integration_Assets_campaign = require('./routes/cs_integration/Assets/campaigns');
+var integrated_pipeline_data_contacts = require('./routes/integrated_pipeline/Data/Contact');
 
 // bulk 혹은 system user 를 사용하는 project
 var bscard_app_bulk_contacts= require('./routes/bscard_app/Bulk/contacts/imports');
@@ -176,6 +177,7 @@ app.use('/b2bgerp_kr/contacts', b2bgerp_kr_us_data_contacts);
 app.use('/cs_integration/contacts', cs_integration_data_contacts);
 app.use('/cs_integration/activities', cs_integration_data_activities);
 app.use('/cs_integration/campaigns', cs_integration_Assets_campaign);
+app.use('/integrated_pipeline/contacts', integrated_pipeline_data_contacts);
 
 app.use('/bscard_app/contacts/syncAction', bscard_app_bulk_syncAction);
 app.use('/bscard_app/contacts/imports', bscard_app_bulk_contacts);
