@@ -336,12 +336,13 @@ if(__dirname == "/home/opc/LGE/cs_integration"){
 	schedule_Request_CS_Intergration();
 } 
 
-if(__dirname == "/home/opc/LGE/integrated_pipeline"){
-	console.log("INTEGRATED PIPELINE_GLOBAL SCHEDULER REG");
-	schedule_Request_PIPELINE_GLOBAL();
-	console.log("INTEGRATED PIPELINE_KR SCHEDULER REG");
-	schedule_Request_PIPELINE_KR();
-} 
+// Pipe Test를 위하여 임시 주석처리 추후 스케줄러를 위해 등록 필요
+// if(__dirname == "/home/opc/LGE/integrated_pipeline"){
+// 	console.log("INTEGRATED PIPELINE_GLOBAL SCHEDULER REG");
+// 	schedule_Request_PIPELINE_GLOBAL();
+// 	console.log("INTEGRATED PIPELINE_KR SCHEDULER REG");
+// 	schedule_Request_PIPELINE_KR();
+// } 
 
 if(os.type().indexOf("Windows") > -1) global.OS_TYPE = "Windows"
 else global.OS_TYPE = "Linux";

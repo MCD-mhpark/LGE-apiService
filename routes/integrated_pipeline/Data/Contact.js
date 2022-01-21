@@ -35,7 +35,7 @@ async function GetKR_CustomDataSearch(_parentId , type) {
 	if(type == 'get') queryString += "?search=B2B_GERP_KR_____1=''"
 	if(type == 'init')  queryString += "?search=B2B_GERP_KR_____1='Y'"
 
-	// Get 요청하기 http://www.google.com 
+	// Get 요청하기 
 	const options = {
 		uri: "https://secure.p03.eloqua.com/api/REST/1.0/data/customObject/" + parentId + queryString
 		, headers: {
@@ -1732,7 +1732,14 @@ pipe_global_lead_update = async function (req, res, next) {
 	var success_count = 0;
 	var fail_count = 0;
 	var result_list = [];
-
+	
+	if(!req.body.ContentList){
+		res.json({
+			status : "400",
+			Message : "Not Found Data"
+		})
+		return;
+	}
 	var B2B_GERP_GLOBAL_LEAD_DATA = await mappedGlobalLeadData(req.body.ContentList);
 	req_res_logs("reqLeadData_" + moment().tz('Asia/Seoul').format("HH시mm분") , "PIPELINE_GLOBAL_LEAD" , "PIPELINE_GLOBAL_LEAD_UPDATE", B2B_GERP_GLOBAL_LEAD_DATA );
 
@@ -1803,7 +1810,7 @@ async function mappedGlobalLeadData(data) {
 }
 
 
-module.exports = router;
 module.exports.pipe_global_bant_send = pipe_global_bant_send;
 module.exports.pipe_kr_bant_send = pipe_kr_bant_send;
 module.exports.pipe_global_lead_update = pipe_global_lead_update;
+module.exports = router;
