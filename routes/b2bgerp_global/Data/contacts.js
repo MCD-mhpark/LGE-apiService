@@ -1904,7 +1904,7 @@ function CONVERT_B2BGERP_GLOBAL_SUBSIDIARY_MISSING(request_data) {
 
 // 사업부 전체의 데이터를 검색
 router.get('/search_gerp_data', async function (req, res, next) {
-	let Business_Unit_List = ["TEST" , "CM" , "ID" , "IT" , "Solution"];
+	let Business_Unit_List = ["AS" , "CM" , "ID" , "IT" , "Solution"];
 	// let Business_Unit_List = ["AS" ];
 	// let bsname = req.query.bsname;
 	// let getStatus = req.query.status;
@@ -1946,10 +1946,20 @@ router.get('/search_gerp_data', async function (req, res, next) {
 			convert_total: convert_data ? convert_data.length : null
 		}
 
+
+		if (contact_list) {
+			req_res_logs("reqSearchEloqua", bsname, contact_list);
+			req_res_logs("reqSearchConvert", bsname, convert_data);
+			req_res_logs("reqSearchUpdate", bsname, bant_update_data);
+			req_res_logs("reqSearchNOT_Update", bsname, not_bant_data);
+			req_res_logs("reqSearchTotal", bsname, total_logs);
+			result_list.push(convert_data);
+		}
+		continue;
 		// Subsidiary 없을 경우 테스트로 데이터 쌓아둠
 		let temp_nosub_data = await Convert_B2BGERP_GLOBAL_NOSUBSIDIARY_DATA(contact_list , bsname);
 		console.log(temp_nosub_data);
-		return;
+	
 
 		// MQL Data 전송 전 MQL Data List 를 CustomObject 에 적재하기 위해 데이터 형태 변경
 		let temp_nosub_customobject = await CONVERT_B2BGERP_GLOBAL_SUBSIDIARY_MISSING(temp_nosub_data);
@@ -1965,6 +1975,8 @@ router.get('/search_gerp_data', async function (req, res, next) {
 			req_res_logs("reqSearchTotal", bsname, total_logs);
 			result_list.push(convert_data);
 		}
+
+	
 	}
 	res.json(result_list);
 });
@@ -2540,6 +2552,26 @@ router.get('/customIDSearch', async function (req, res, next) {
 
 	console.log(parent_id);
 	await b2bgerp_eloqua.data.customObjects.data.getOne(parent_id,id).then((result) => {
+		console.log(result.data);
+		res.json(result.data)
+	}).catch((err) => {
+		// console.error(err);
+		console.error(err.message);
+	});
+});
+
+// CustomObject ID 값 검색
+router.get('/customDupleSearch', async function (req, res, next) {
+	
+	console.log("customDupleSearch");
+	let parent_id = 46;
+
+	let queryString = "C_DateCreated>" + "'" + "2022-01-17" + " 10:00:00'" + "C_DateCreated<" + "'" + "2022-01-21" + " 23:00:00'"
+	
+	console.log("queryString : " + queryString);
+	queryString['search'] = queryString;
+
+	await b2bgerp_eloqua.data.customObjects.data.get(parent_id,queryString).then((result) => {
 		console.log(result.data);
 		res.json(result.data)
 	}).catch((err) => {
