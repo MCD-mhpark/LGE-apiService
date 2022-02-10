@@ -134,7 +134,7 @@ var b2bgerp_kr_us_data_contacts = require('./routes/b2bgerp_kr_us/Data/contacts'
 var cs_integration_data_contacts = require('./routes/cs_integration/Data/contacts');
 var cs_integration_data_activities = require('./routes/cs_integration/Data/activities');
 var cs_integration_Assets_campaign = require('./routes/cs_integration/Assets/campaigns');
-var integrated_pipeline_data_contacts = require('./routes/integrated_pipeline/Data/Contact');
+
 
 // bulk 혹은 system user 를 사용하는 project
 var bscard_app_bulk_contacts= require('./routes/bscard_app/Bulk/contacts/imports');
@@ -177,7 +177,7 @@ app.use('/b2bgerp_kr/contacts', b2bgerp_kr_us_data_contacts);
 app.use('/cs_integration/contacts', cs_integration_data_contacts);
 app.use('/cs_integration/activities', cs_integration_data_activities);
 app.use('/cs_integration/campaigns', cs_integration_Assets_campaign);
-app.use('/integrated_pipeline/contacts', integrated_pipeline_data_contacts);
+
 
 app.use('/bscard_app/contacts/syncAction', bscard_app_bulk_syncAction);
 app.use('/bscard_app/contacts/imports', bscard_app_bulk_contacts);
@@ -279,45 +279,6 @@ function schedule_Request_CS_Intergration(){
 }
 
 
-function schedule_Request_PIPELINE_GLOBAL(){
-	let uniqe_jobs_name = "PIPELINE_GLOBAL" +  moment().format('YYYYMMDD');
-	let second = "0";
-	let minutes = "05";
-	let hours = "12";
-	let dayofmonth = "*";
-	let month = "*";
-	let weekindex = "*";
-	var schedate = second + ' ' + minutes + ' ' + hours + ' ' + dayofmonth + ' ' + month + ' ' + weekindex;
-
-	//test data
-	integrated_Pipeline_Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,"Asia/Seoul" ,async function(){
-		// let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
-		let bant_list = ["AS" , "CM" , "ID" , "IT" , "Solution"];
-		bant_list.forEach( async BusinessName =>{
-			await b2bgerp_global_data_contacts.bant_send(BusinessName);
-		})
-			
-	});
-}
-
-function schedule_Request_PIPELINE_KR(){
-	let uniqe_jobs_name = "PIPELINE_KR" +  moment().format('YYYYMMDD');
-	let second = "0";
-	let minutes = "*/10";
-	let hours = "*";
-	let dayofmonth = "*";
-	let month = "*";
-	let weekindex = "*";
-	var schedate = second + ' ' + minutes + ' ' + hours + ' ' + dayofmonth + ' ' + month + ' ' + weekindex;
-
-	//test data
-	integrated_Pipeline_Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,"Asia/Seoul" ,async function(){
-		// let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
-		await b2bgerp_kr_us_data_contacts.senderToB2BGERP_KR();
-	});
-}
-
-
 if(__dirname == "/home/opc/LGE/b2bgerp_global"){
 	console.log("B2B GERP GLOBAL SCHEDULER REG");
 	schedule_Request_GLOBAL();
@@ -336,13 +297,6 @@ if(__dirname == "/home/opc/LGE/cs_integration"){
 	schedule_Request_CS_Intergration();
 } 
 
-// Pipe Test를 위하여 임시 주석처리 추후 스케줄러를 위해 등록 필요
-// if(__dirname == "/home/opc/LGE/integrated_pipeline"){
-// 	console.log("INTEGRATED PIPELINE_GLOBAL SCHEDULER REG");
-// 	schedule_Request_PIPELINE_GLOBAL();
-// 	console.log("INTEGRATED PIPELINE_KR SCHEDULER REG");
-// 	schedule_Request_PIPELINE_KR();
-// } 
 
 if(os.type().indexOf("Windows") > -1) global.OS_TYPE = "Windows"
 else global.OS_TYPE = "Linux";

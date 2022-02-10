@@ -1431,7 +1431,7 @@ bant_send = async function (business_name, state_date, end_date) {
 					// MQL Data 전송 전 MQL Data List 를 CustomObject 에 적재하기 위해 데이터 형태 변경
 					let temp_nosub_customobject = await CONVERT_B2BGERP_GLOBAL_SUBSIDIARY_MISSING(temp_nosub_data);
 
-					// MQL Data 전송 전 MQL Data List 를 CustomObject 에 적재 update_mql_data은 customobject 적재값임
+					// SubsiDiary 가 없는 값을 특정 커스텀 오브젝트에 적재
 					await mqldata_to_eloqua_send( 105 ,temp_nosub_customobject);
 
 					var bant_result_list = await setBant_Update(business_name, bant_update_list);
