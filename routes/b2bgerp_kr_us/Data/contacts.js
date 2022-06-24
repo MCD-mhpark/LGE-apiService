@@ -1490,9 +1490,12 @@ router.post('/newsLetterAPI', async function (req, res, next) {
 			{
 				"Result": "failed",
 				"ErrorInfo": "System Error Check",
-				"ErrorMessage": err.message
+				"ErrorMessage": json.stringify(err.message)
 			}
 		);
+		console.log(err.stack)
+		console.log("ERR발생 : " + err.message);
+
 	}
 });
 
