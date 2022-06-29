@@ -845,6 +845,11 @@ function ConvertCustomObjectData_newsLetter(_contact, _req_data) {
 		"value" : "KR"
 	}); // Subsidiary
 
+	convert_data_entity.fieldValues.push({
+		"id": "1775",
+		"value" : _req_data.cProductCode
+	}); // KR_Product Category
+
 	return convert_data_entity;
 }
 
@@ -980,6 +985,10 @@ async function InsertContactData(_req_data) {
 		"id": "100196",
 		"value": "KR"
 	});
+	contact_data.fieldValues.push({
+		"id": "100311",
+		"value": _req_data.cProductCode
+	});
 
 
 	await b2bkr_eloqua.data.contacts.create(contact_data).then((result) => {
@@ -1080,6 +1089,11 @@ async function InsertContactData_newsLetter(_req_data) {
 	contact_data.fieldValues.push({
 		"id": "100196",
 		"value": "KR"
+	});
+	//KR_Product Category GetCustomFiledValue(FieldValues_data, 100311);
+	contact_data.fieldValues.push({
+		"id": "100311",
+		"value": _req_data.cProductCode
 	});
 
 
@@ -1266,6 +1280,10 @@ async function UpdateContacData_newsLetter(_contact, _req_data) {
 	//Subsidiary GetCustomFiledValue(FieldValues_data, 100196);
 	//_contact.fieldValues.push( { "id": "100196", "value": "KR" });
 	SetFieldValue(_contact.fieldValues, "100196", "KR");
+
+	//_contact.fieldValues.push( { "id": "100311", "value": "System Air Conditioner", "IT(Laptop/Desktop/Monitor)" ,"Display(TV, Signage)", "H&A", "Medical Device", "Robot", "Energy", "B2B All Products/Solutions"});
+	SetFieldValue(_contact.fieldValues, "100311", _req_data.cProductCode);
+	//SetFieldValue(_contact.fieldValues, "100311", _req_data.cProductCode);
 
 	await b2bkr_eloqua.data.contacts.update(contact.id, contact).then((result) => {
 		// console.log(result);
@@ -1490,7 +1508,7 @@ router.post('/newsLetterAPI', async function (req, res, next) {
 			{
 				"Result": "failed",
 				"ErrorInfo": "System Error Check",
-				"ErrorMessage": json.stringify(err.message)
+				"ErrorMessage": err.message
 			}
 		);
 		console.log(err.stack)
