@@ -553,7 +553,7 @@ async function Duple_Custom_Data(parent_id , _req_data , api_name){
 
 	if(api_name == 'online_estimation'){
 		queryString.search = "?______1='"+_req_data.estimationSeqNo+"'";
-	}else if(api_name == 'newsletter'){
+	}else if(api_name == 'newsletter'){ //사용안함
 		queryString.search = "?___1='"+_req_data.cEmail+"'";
 	}
 	
@@ -1417,12 +1417,11 @@ router.post('/newsLetterAPI', async function (req, res, next) {
 
 					var customObjectCreateData = ConvertCustomObjectData_newsLetter(contact_data.elements[0], req_data);
 					
-					// 커스텀 오브젝트 중복 체크
-					let duple_custom_data = await Duple_Custom_Data(parent_id , req_data , "newsletter");
+					// 커스텀 오브젝트 중복 체크 안함 (커스텀 오브젝트 데이터는 기록관리용으로 사용하기로함 )
+					//let duple_custom_data = await Duple_Custom_Data(parent_id , req_data , "newsletter");
 					
 					//커스텀 오브젝트 데이터 전송
-					var customObject_result 
-					if(duple_custom_data.total == 0) customObject_result = await SendCreateCustomObjectData(parent_id , customObjectCreateData);
+					var customObject_result = await SendCreateCustomObjectData(parent_id , customObjectCreateData);
 
 					
 
@@ -1431,12 +1430,6 @@ router.post('/newsLetterAPI', async function (req, res, next) {
 						res.json({
 							"Result": "success"
 						});
-					}else if(duple_custom_data.total >= 1){
-						res.json({
-							"Result": "failed",
-							"ErrorInfo": "co.kr NewsLetter Custom Object Data Duplicate",
-							"ErrorMessage": "co.kr NewsLetter Custom Object Data Duplicate"
-						})
 					} else {
 						res.json({
 							"Result": "failed",
@@ -1461,25 +1454,25 @@ router.post('/newsLetterAPI', async function (req, res, next) {
 
 						var customObjectCreateData = ConvertCustomObjectData_newsLetter(contact_data.data, req_data);
 						
-						// 커스텀 오브젝트 중복 체크
-						let duple_custom_data = await Duple_Custom_Data(parent_id , req_data , "newsletter");
+						// 커스텀 오브젝트 중복 체크 안함 (커스텀 오브젝트 데이터는 기록관리용으로 사용하기로함 )
+						//let duple_custom_data = await Duple_Custom_Data(parent_id , req_data , "newsletter");
 
 						//커스텀 오브젝트 데이터 전송
-						var customObject_result ;
-						if(duple_custom_data.total == 0 ) customObject_result = await SendCreateCustomObjectData(parent_id , customObjectCreateData);
+						var customObject_result = await SendCreateCustomObjectData(parent_id , customObjectCreateData);
 
 						console.log(customObject_result.data);
 
-						if(customObject_result)
-						{	res.json({
+						if (customObject_result) {
+							console.log(customObject_result);
+							res.json({
 								"Result": "success"
 							});
-						}else if(duple_custom_data >= 1){
+						} else {
 							res.json({
 								"Result": "failed",
-								"ErrorInfo": "co.kr NewsLetter Custom Object Data Duplicate",
-								"ErrorMessage": "co.kr NewsLetter Custom Object Data Duplicate"
-							})
+								"ErrorInfo": "co.kr NewsLetter Custom Object Data Send Error",
+								"ErrorMessage": customObject_result.message
+							});
 						}	
 					} else {
 						res.json({
