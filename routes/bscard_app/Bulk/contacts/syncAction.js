@@ -12,7 +12,7 @@ var router = express.Router();
 //     }, cb);
 // }
 router.get('/' , function (req,res,next) {
-    bscard_eloqua.bulk.contacts.syncActions.get().then((result) => {
+    lge_eloqua.bulk.contacts.syncActions.get().then((result) => {
         console.log(result.data);
         res.json(result.data);
     }).catch((err) => {
@@ -21,7 +21,7 @@ router.get('/' , function (req,res,next) {
 });
 
 router.get('/one/:id' , function (req,res,next) {
-    bscard_eloqua.bulk.contacts.syncActions.get(req.query.id).then((result) => {
+    lge_eloqua.bulk.contacts.syncActions.get(req.query.id).then((result) => {
         console.log(result.data);
         res.json(result.data);
     }).catch((err) => {
@@ -31,7 +31,7 @@ router.get('/one/:id' , function (req,res,next) {
 
 
 router.post('/update/:id' , function (req,res,next) {
-    bscard_eloqua.bulk.contacts.syncActions.update(req.params.id , req.body).then((result) => {
+    lge_eloqua.bulk.contacts.syncActions.update(req.params.id , req.body).then((result) => {
         console.log(result.data);
         res.json(result.data);
     }).catch((err) => {

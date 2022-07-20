@@ -261,7 +261,7 @@ router.get('/user', function (req, res, next) {
     //queryString['page'] = 1;
 
 
-    iam_eloqua.system.users.get(queryString).then(async (result) => {
+    lge_eloqua.system.users.get(queryString).then(async (result) => {
 
         // console.log(result.data);
 
@@ -422,7 +422,7 @@ router.get('/user_responsibility', function (req, res, next) {
     //queryString['page'] = 1;
 
 
-    iam_eloqua.system.users.get(queryString).then(async (result) => {
+    lge_eloqua.system.users.get(queryString).then(async (result) => {
 
         console.log(result.data);
         // res.json(result.data);
@@ -599,7 +599,7 @@ router.get('/responsibility', async function (req, res, next) {
         count: 1000
     }
 
-    iam_eloqua.system.users.security_groups(queryString).then(async (result) => {
+    lge_eloqua.system.users.security_groups(queryString).then(async (result) => {
         var return_data = {};
         var responsibility_data = CONVERT_IAM_RESPONSIBILITY_DATA(result.data);
 
@@ -799,7 +799,7 @@ async function CREATE_UPDATE_GUBUN_DATA(data_list ) {
         let queryString = {};
         queryString['search'] = "emailAddress='" + email +"'";
 
-        await iam_eloqua.system.users.get(queryString).then((result) => {
+        await lge_eloqua.system.users.get(queryString).then((result) => {
             if(result.data.elements && result.data.elements.length > 0){
                 item.GUBUN = "UPDATE";
                 item.ID = result.data.elements[0].id;
@@ -828,7 +828,7 @@ async function HT_GUBUN_DATA(item ) {
     let queryString = {};
     queryString['search'] = "emailAddress='" + email +"'";
 
-    await iam_eloqua.system.users.get(queryString).then((result) => {
+    await lge_eloqua.system.users.get(queryString).then((result) => {
         if(result.data.elements && result.data.elements.length > 0){
             item.ELOQUA_ORGAN = result.data.elements[0].address1;
             item.ID = result.data.elements[0].id;
@@ -867,7 +867,7 @@ router.post('/user_data', async function (req, res, next) {
     for(const item of convert_data){
 
         if(item.gubun == 'CREATE'){
-            iam_eloqua.system.users.create(create_item).then( async (result) => {
+            lge_eloqua.system.users.create(create_item).then( async (result) => {
 
                 if(result.data){
                     console.log(result.data);
@@ -882,7 +882,7 @@ router.post('/user_data', async function (req, res, next) {
             });
         }else if(item.gubun == 'UPDATE'){
             
-            iam_eloqua.system.users.update(item.id, item).then( async (result) => {
+            lge_eloqua.system.users.update(item.id, item).then( async (result) => {
                 if(result.data){
                     console.log(result.data);
                     req_res_logs("create_after", result_data);
@@ -905,7 +905,7 @@ router.post('/test_update', function (req, res, next) {
     req_res_logs("update_convert", convet_data);
  
     for(const create_item of convert_data){
-        iam_eloqua.system.users.create(create_item).then( async (result) => {
+        lge_eloqua.system.users.create(create_item).then( async (result) => {
 
             if(result.data){
                 console.log(result.data);
@@ -940,7 +940,7 @@ router.get('/user/test_getOne/:id', function (req, res, next) {
 
     // console.log(body_data);
 
-    iam_eloqua.system.users.getOne(req.params.id).then((result) => {
+    lge_eloqua.system.users.getOne(req.params.id).then((result) => {
         console.log(result.data);
         res.json(result.data);
     }).catch((err) => {
@@ -967,7 +967,7 @@ router.get('/user/test_Search', function (req, res, next) {
     let queryString = {};
     queryString['search'] = "emailAddress='" + email +"'";
 
-    iam_eloqua.system.users.get(queryString).then((result) => {
+    lge_eloqua.system.users.get(queryString).then((result) => {
         console.log(result.data);
         res.json(result.data);
     }).catch((err) => {
@@ -1005,7 +1005,7 @@ async function securityGroup_Modify(user_id, add_sc_list, res) {
     console.log(result_list);
     res.json(result_list);
     // return;
-    // iam_eloqua.system.users.security_groups_add_remove(body_id, body_user_data).then((result) => {
+    // lge_eloqua.system.users.security_groups_add_remove(body_id, body_user_data).then((result) => {
     //     console.log(result.data);
     //     res.json(result.data);
     // }).catch((err) => {
@@ -1021,7 +1021,7 @@ async function get_user_securityGroup(user_id, res) {
     var return_list = [];
     console.log("get_user_securityGroup user_id : " + user_id);
 
-    // iam_eloqua.system.users.getOne(req.params.id).then((result) => {
+    // lge_eloqua.system.users.getOne(req.params.id).then((result) => {
     //     console.log(result.data);
     //     res.json(result.data);
     // }).catch((err) => {
@@ -1029,7 +1029,7 @@ async function get_user_securityGroup(user_id, res) {
     //     res.json(err);
     // });
 
-    await iam_eloqua.system.users.getOne(user_id, queryString).then(async (result) => {
+    await lge_eloqua.system.users.getOne(user_id, queryString).then(async (result) => {
         if (!result.data.securityGroups) {
             return_list = [];
             console.log(" not data list");
@@ -1083,7 +1083,7 @@ async function securityGroup_Process(user_id, remove_sc_group, add_sc_group) {
             patch.patchMethod = "add";
         }
 
-        await iam_eloqua.system.users.security_groups_add_remove(id, patch).then((result) => {
+        await lge_eloqua.system.users.security_groups_add_remove(id, patch).then((result) => {
             // console.log(process+ " done");
             // console.log("after : remove  , id : " + id);
             result_list.push({
@@ -1112,7 +1112,7 @@ async function securityGroup_Process(user_id, remove_sc_group, add_sc_group) {
 //#region (진행중) IAM USER Update Endpoint 호출 영역
 router.post('/update/:id', function (req, res, next) {
 
-    iam_eloqua.system.users.update(req.params.id, req.body).then((result) => {
+    lge_eloqua.system.users.update(req.params.id, req.body).then((result) => {
         console.log(result.data);
         res.json(result.data);
     }).catch((err) => {
@@ -1124,7 +1124,7 @@ router.post('/update/:id', function (req, res, next) {
 //#region 위험!! (완료) IAM USER Delete Endpoint 호출 영역
 
 // router.delete('/user/delete/:id', function (req, res, next) {
-//     iam_eloqua.system.users.delete(req.params.id).then((result) => {
+//     lge_eloqua.system.users.delete(req.params.id).then((result) => {
 //         console.log(result);
 //         res.json(result);
 //       }).catch((err) => {
@@ -1146,7 +1146,7 @@ router.get('/user/:id', function (req, res, next) {
     //queryString['count'] = 10;
     //queryString['page'] = 1;
 
-    iam_eloqua.system.users.get(queryString).then((result) => {
+    lge_eloqua.system.users.get(queryString).then((result) => {
         console.log(result.data);
         res.json(result.data);
     }).catch((err) => {
@@ -1246,7 +1246,7 @@ router.get('/all_securityGroups', function (req, res, next) {
         //search : search_value,
         depth: "complete" //["minimal", "partial " ,"complete"]
     }
-    iam_eloqua.system.users.security_groups(queryString).then((result) => {
+    lge_eloqua.system.users.security_groups(queryString).then((result) => {
         res.json(result.data);
 
         //console.log(request_data
@@ -1291,7 +1291,7 @@ router.post('/user/create', function (req, res, next) {
 
     console.log(body_data);
     if(essential){
-        iam_eloqua.system.users.create(body_data).then(async (result) => {
+        lge_eloqua.system.users.create(body_data).then(async (result) => {
             console.log(result.data);
             let result_list = await securityGroup_Modify(result.data.id, req.body.add_sc_list, res);
             res.json(result_list);
@@ -1338,7 +1338,7 @@ router.post('/htgubun_data', async function (req, res, next) {
             }
     
             if(item.HTGUBUN != 'M'){
-                iam_eloqua.system.users.update(item.id , item ).then((result) => {
+                lge_eloqua.system.users.update(item.id , item ).then((result) => {
                     res.json(result.data);           
                     //console.log(request_data);
                 }).catch((err) => {

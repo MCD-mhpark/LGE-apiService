@@ -29,7 +29,7 @@ async function get_INTEGRATION_DB_Data(page_index) {
 	queryString['pageSize'] = 1000;
 	queryString['page'] = page_index;
 	queryString['orderBy'] = "createdAt ASC"
-	await csintergration_eloqua.data.contacts.get(queryString).then((result) => {
+	await lge_eloqua.data.contacts.get(queryString).then((result) => {
 		// console.log(result.data);
 		// console.log("true");
 
@@ -71,7 +71,7 @@ async function get_INTEGRATION_DB_ALL_Data() {
 		queryString['depth'] = "complete";
 		queryString['page'] = page_index;
 
-		await csintergration_eloqua.data.contacts.get(queryString).then((result) => {
+		await lge_eloqua.data.contacts.get(queryString).then((result) => {
 			//console.log(result.data);
 			//console.log("true");
 

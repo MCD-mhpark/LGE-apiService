@@ -861,7 +861,7 @@ async function setBant_Update(bant_name, contact_list) {
 		}
 
 
-		await b2bgerp_eloqua.data.contacts.update(contact_list[i].id, contact_list[i]).then((result) => {
+		await lge_eloqua.data.contacts.update(contact_list[i].id, contact_list[i]).then((result) => {
 
 			// console.log(result.data);
 
@@ -957,7 +957,7 @@ async function get_b2bgerp_global_bant_data(_business_name, start_date, end_date
 	queryString['depth'] = "complete";
 	//   queryString['count'] = 1;
 
-	await b2bgerp_eloqua.data.contacts.get(queryString).then((result) => {
+	await lge_eloqua.data.contacts.get(queryString).then((result) => {
 		console.log("business_name : " + business_name + " result data 건수 : " + result.data.total);
 		console.log(result.data);
 		if (result.data.total && result.data.total > 0) {
@@ -1446,7 +1446,7 @@ bant_send = async function (business_name, state_date, end_date) {
 async function mqldata_to_eloqua_send( parent_id , convert_mql_data) {
 	let return_list = [];
 	for (const mqldata of convert_mql_data) {
-		await b2bkr_eloqua.data.customObjects.data.create(parent_id, mqldata).then((result) => {
+		await lge_eloqua.data.customObjects.data.create(parent_id, mqldata).then((result) => {
 			// console.log(result.data);
 			return_list.push(result.data);
 		}).catch((err) => {
@@ -2084,7 +2084,7 @@ router.get('/tester123', async function (req, res, next) {
 // 	let lead_list = req.body;
 // 	let CustomObject_lead_id = 46 
 // 	for(let i = 0 ; i < lead_list.length ; i ++){
-// 		await b2bkr_eloqua.data.customObjects.data.create(CustomObject_lead_id, _customObjectCreateData).then((result) => {
+// 		await lge_eloqua.data.customObjects.data.create(CustomObject_lead_id, _customObjectCreateData).then((result) => {
 // 			console.log(result);
 // 			return_data = result;
 // 		}).catch((err) => {
@@ -2121,7 +2121,7 @@ LeadnumberAPI = async function (){
 	let return_data = [];
 
 	for (let i = 0; i < convert_data_list.length; i++) {
-		await b2bgerp_eloqua.data.customObjects.data.update(parent_id, convert_data_list[i].id, convert_data_list[i]).then((result) => {
+		await lge_eloqua.data.customObjects.data.update(parent_id, convert_data_list[i].id, convert_data_list[i]).then((result) => {
 			// console.log(result);
 			return_data.push({
 				cod_id: convert_data_list[i].id,
@@ -2221,7 +2221,7 @@ async function getLeadNameData(parentID , data_list){
 		
 		//queryString.emailAddress = req.params.email;
 		
-		await b2bkr_eloqua.data.customObjects.data.getOne(parentID, data_list[i].CUSTOMOBJECT_ID , queryString).then((result) => {
+		await lge_eloqua.data.customObjects.data.getOne(parentID, data_list[i].CUSTOMOBJECT_ID , queryString).then((result) => {
 			// console.log(result.data);
 			data_list[i].name = GetCustomObjectValue(499, result.data, "N");
 			
@@ -2488,7 +2488,7 @@ router.post('/customEMAILSearch', async function (req, res, next) {
 
 		// console.log(queryString);
 		// console.log(parent_id);
-		await b2bgerp_eloqua.data.customObjects.data.get(parent_id,queryString).then( async(result) => {
+		await lge_eloqua.data.customObjects.data.get(parent_id,queryString).then( async(result) => {
 			
 			item = { email : email_list[i] , CUSTOMOBJECT_ID : result.data.elements[0].id }
 			console.log(item);
@@ -2526,7 +2526,7 @@ router.post('/customLEADNUMSearch', async function (req, res, next) {
 
 		// console.log(queryString);
 		// console.log(parent_id);
-		await b2bgerp_eloqua.data.customObjects.data.get(parent_id,queryString).then( async(result) => {
+		await lge_eloqua.data.customObjects.data.get(parent_id,queryString).then( async(result) => {
 			
 			console.log(result.data.elements[0]);
 			item = { email : email_list[i] , LEAD_NUMBER :  GetCustomFiledValue(result.data.elements[0].fieldValues, 525) }
@@ -2551,7 +2551,7 @@ router.get('/customIDSearch', async function (req, res, next) {
 	let id = req.query.id;
 
 	console.log(parent_id);
-	await b2bgerp_eloqua.data.customObjects.data.getOne(parent_id,id).then((result) => {
+	await lge_eloqua.data.customObjects.data.getOne(parent_id,id).then((result) => {
 		console.log(result.data);
 		res.json(result.data)
 	}).catch((err) => {
@@ -2571,7 +2571,7 @@ router.get('/customDupleSearch', async function (req, res, next) {
 	console.log("queryString : " + queryString);
 	queryString['search'] = queryString;
 
-	await b2bgerp_eloqua.data.customObjects.data.get(parent_id,queryString).then((result) => {
+	await lge_eloqua.data.customObjects.data.get(parent_id,queryString).then((result) => {
 		console.log(result.data);
 		res.json(result.data)
 	}).catch((err) => {

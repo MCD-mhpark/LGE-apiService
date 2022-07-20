@@ -368,7 +368,7 @@ async function getTransfer_UpdateData(TRANS_KR_LIST , type){
 async function sendTransfer_Update( parentId , KR_DATA_LIST){
 
 	for(let item of KR_DATA_LIST){
-		await b2bkr_eloqua.data.customObjects.data.update(parentId , item.id, item).then((result) => {
+		await lge_eloqua.data.customObjects.data.update(parentId , item.id, item).then((result) => {
 			// console.log(result);
 			return_data = result;
 		}).catch((err) => {
@@ -560,7 +560,7 @@ async function Duple_Custom_Data(parent_id , _req_data , api_name){
 	queryString.depth = "complete";
 
 	console.log(queryString);
-	await b2bkr_eloqua.data.customObjects.data.get(parent_id, queryString ).then((result) => {
+	await lge_eloqua.data.customObjects.data.get(parent_id, queryString ).then((result) => {
 		// console.log(result);
 		return_data = result.data;
 	}).catch((err) => {
@@ -860,7 +860,7 @@ async function SendCreateCustomObjectData(parent_id , _customObjectCreateData) {
 	console.log("SendCreateCustomObjectData");
 	console.log(_customObjectCreateData);
 	//LGE KR 사용자정의 객체 / LGEKR(한영본)_대표사이트B2B_온라인문의 id : 39
-	await b2bkr_eloqua.data.customObjects.data.create(parent_id, _customObjectCreateData).then((result) => {
+	await lge_eloqua.data.customObjects.data.create(parent_id, _customObjectCreateData).then((result) => {
 		// console.log(result);
 		return_data = result;
 	}).catch((err) => {
@@ -879,7 +879,7 @@ async function GetContactData(_email) {
 	if (validateEmail(_email)) {
 		queryString.search = "emailAddress='" + _email+"'";
 		queryString.depth = "complete"; //minimal, partial, complete
-		await b2bkr_eloqua.data.contacts.get(queryString).then((result) => {
+		await lge_eloqua.data.contacts.get(queryString).then((result) => {
 			if (result.status == 200 && result.data.total > 0)
 				return_data = result.data;
 		}).catch((err) => {
@@ -991,7 +991,7 @@ async function InsertContactData(_req_data) {
 	});
 
 
-	await b2bkr_eloqua.data.contacts.create(contact_data).then((result) => {
+	await lge_eloqua.data.contacts.create(contact_data).then((result) => {
 		// console.log(result);
 		return_data = result;
 	}).catch((err) => {
@@ -1097,7 +1097,7 @@ async function InsertContactData_newsLetter(_req_data) {
 	});
 
 
-	await b2bkr_eloqua.data.contacts.create(contact_data).then((result) => {
+	await lge_eloqua.data.contacts.create(contact_data).then((result) => {
 		// console.log(result);
 		return_data = result;
 	}).catch((err) => {
@@ -1188,7 +1188,7 @@ async function UpdateContacData(_contact, _req_data) {
 	//_contact.fieldValues.push( { "id": "100196", "value": "KR" });
 	SetFieldValue(_contact.fieldValues, "100196", "KR");
 
-	await b2bkr_eloqua.data.contacts.update(contact.id, contact).then((result) => {
+	await lge_eloqua.data.contacts.update(contact.id, contact).then((result) => {
 		// console.log(result);
 		return_data = result;
 	}).catch((err) => {
@@ -1285,7 +1285,7 @@ async function UpdateContacData_newsLetter(_contact, _req_data) {
 	SetFieldValue(_contact.fieldValues, "100311", _req_data.cProductCode);
 	//SetFieldValue(_contact.fieldValues, "100311", _req_data.cProductCode);
 
-	await b2bkr_eloqua.data.contacts.update(contact.id, contact).then((result) => {
+	await lge_eloqua.data.contacts.update(contact.id, contact).then((result) => {
 		// console.log(result);
 		return_data = result;
 	}).catch((err) => {
@@ -1314,7 +1314,7 @@ router.get('/customObjectDataSearch/:id', function (req, res, next) {
 	queryString.depth = "complete";
 	//queryString.emailAddress = req.params.email;
 
-	b2bkr_eloqua.data.customObjects.data.get(parentId, queryString).then((result) => {
+	lge_eloqua.data.customObjects.data.get(parentId, queryString).then((result) => {
 		console.log(result.data);
 		res.json(result.data);
 	}).catch((err) => {
@@ -1332,7 +1332,7 @@ router.get('/customObjectDataSearchOne/:parentID/:customObjectID', function (req
 	console.log(parentId)
 	//queryString.emailAddress = req.params.email;
 
-	b2bkr_eloqua.data.customObjects.data.getOne(parentId, id , queryString).then((result) => {
+	lge_eloqua.data.customObjects.data.getOne(parentId, id , queryString).then((result) => {
 		console.log(result.data);
 		res.json(result.data);
 	}).catch((err) => {
@@ -1368,7 +1368,7 @@ router.get('/customQuerySearch/:id', async function (req, res, next) {
 router.get('/customObjectSearch', function (req, res, next) {
 	var queryString = "";
 	queryString.depth = "complete";
-	b2bkr_eloqua.assets.customObjects.get(queryString).then((result) => {
+	lge_eloqua.assets.customObjects.get(queryString).then((result) => {
 		console.log(result.data);
 		res.json(result.data);
 	}).catch((err) => {
@@ -1382,7 +1382,7 @@ router.get('/customObjectSearchOne/:id', function (req, res, next) {
 	var id = req.params.id;
 	var queryString = {};
 	queryString["depth"] = "complete";
-	b2bkr_eloqua.assets.customObjects.getOne(id, queryString).then((result) => {
+	lge_eloqua.assets.customObjects.getOne(id, queryString).then((result) => {
 		console.log(result.data);
 		res.json(result.data);
 	}).catch((err) => {
@@ -1579,7 +1579,7 @@ router.post('/search_online_esti', async function (req, res, next) {
 		queryString.depth = "complete";
 		console.log(item);
 		console.log(queryString);
-		await b2bkr_eloqua.data.customObjects.data.get(parent_id, queryString ).then(async (result) => {
+		await lge_eloqua.data.customObjects.data.get(parent_id, queryString ).then(async (result) => {
 			// console.log(result);
 			console.log(result.data);
 

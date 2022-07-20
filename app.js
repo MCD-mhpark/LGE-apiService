@@ -13,8 +13,7 @@ require('console-stamp')(console, {
     }
 });
 var os = require('os');
-
-
+const apiInfo = require('./config/apiInfo.json');
 
 
 const schedule = require('node-schedule-tz');
@@ -63,54 +62,55 @@ function get_system_foldername()
 
 
 
-// 회사명 : LGElectronicsd
-// 명함앱 : Lg_api.Card - 8001
-// B2B GERP : Lg_api.B2b_global - 8002
-// B2B KR : Lg_api.B2b_kr- 8003
-// 고객통합 : Lg_api.Integrated- 8004
-// IAM : Lg_api.Iam- 8005
-// 전부 비밀번호 :  QWer1234!@
+// // 회사명 : LGElectronicsd
+// // 명함앱 : Lg_api.Card - 8001
+// // B2B GERP : Lg_api.B2b_global - 8002
+// // B2B KR : Lg_api.B2b_kr- 8003
+// // 고객통합 : Lg_api.Integrated- 8004
+// // IAM : Lg_api.Iam- 8005
+// // 전부 비밀번호 :  QWer1234!@
 
-var bscard_eloqua_config = {
-	sitename: 'LGElectronics',
-	username: 'Lg_api.Card',
-	password: 'QWer1234!@'
-};
-var b2bgerp_eloqua_config = {
-	sitename: 'LGElectronics',
-	username: 'Lg_api.B2b_global',
-	password: 'QWert1234!@'
-};
-var b2bkr_eloqua_config = {
-	sitename: 'LGElectronics',
-	username: 'Lg_api.B2b_kr',
-	password: 'QWer1234!@'
-};
-var csintergration_eloqua_config = {
-	sitename: 'LGElectronics',
-	username: 'Lg_api.Integrated',
-	password: 'QWer1234!@'
-};
-var iam_eloqua_config = {
-	sitename: 'LGElectronics',
-	username: 'Lg_api.Iam',
-	password: 'QWer1234!@'
-};
+// var bscard_eloqua_config = {
+// 	sitename: 'LGElectronics',
+// 	username: 'Lg_api.Card',
+// 	password: 'QWer1234!@'
+// };
+// var b2bgerp_eloqua_config = {
+// 	sitename: 'LGElectronics',
+// 	username: 'Lg_api.B2b_global',
+// 	password: 'QWert1234!@'
+// };
+// var b2bkr_eloqua_config = {
+// 	sitename: 'LGElectronics',
+// 	username: 'Lg_api.B2b_kr',
+// 	password: 'QWer1234!@'
+// };
+// var csintergration_eloqua_config = {
+// 	sitename: 'LGElectronics',
+// 	username: 'Lg_api.Integrated',
+// 	password: 'QWer1234!@'
+// };
+// var iam_eloqua_config = {
+// 	sitename: 'LGElectronics',
+// 	username: 'Lg_api.Iam',
+// 	password: 'QWer1234!@'
+// };
 
-var for_old_eloqua_config = {
-	sitename: 'LGElectronics',
-	username: 'Lg_api.Integrated',
-	password: 'QWer1234!@', 
-	restVersion : '1.0'
+// var for_old_eloqua_config = {
+// 	sitename: 'LGElectronics',
+// 	username: 'Lg_api.Integrated',
+// 	password: 'QWer1234!@', 
+// 	restVersion : '1.0'
 
-}
+// }
 
-global.bscard_eloqua = new EloquaApi(bscard_eloqua_config);
-global.b2bgerp_eloqua = new EloquaApi(b2bgerp_eloqua_config);
-global.b2bkr_eloqua = new EloquaApi(b2bkr_eloqua_config);
-global.csintergration_eloqua = new EloquaApi(csintergration_eloqua_config);
-global.iam_eloqua = new EloquaApi(iam_eloqua_config);
-global.old_eloqua = new EloquaApi(for_old_eloqua_config);
+// global.bscard_eloqua = new EloquaApi(bscard_eloqua_config);
+// global.b2bgerp_eloqua = new EloquaApi(b2bgerp_eloqua_config);
+// global.b2bkr_eloqua = new EloquaApi(b2bkr_eloqua_config);
+// global.csintergration_eloqua = new EloquaApi(csintergration_eloqua_config);
+// global.iam_eloqua = new EloquaApi(iam_eloqua_config);
+// global.old_eloqua = new EloquaApi(for_old_eloqua_config);
+
 global.logManager = require('./routes/common/history.js');
 // console.log(process.platform);
 // console.log(dbConfig);
@@ -187,6 +187,56 @@ app.use('/etc_function/', etc_function);
 
 app.use('/iam', iam_system_users);
 
+//============TEST용 Basic인증
+// var b2bgerp_eloqua_config = {
+// 	sitename: 'LGElectronics',
+// 	username: 'Lg_api.B2b_global',
+// 	password: 'QWert1234!@'
+// };
+
+// global.lge_eloqua = new EloquaApi(b2bgerp_eloqua_config);
+//============TEST용 Basic인증
+
+var lge_eloqua_config = apiInfo;
+global.lge_eloqua = {};
+
+app.get('/oauth', function(req, res, next) {
+
+    console.log('oAuth 토큰 발행');
+
+    //이하 임의 1회 통신하여 oAuth 토큰 발행 확인
+	var code = req.query.code;
+	lge_eloqua_config['code'] = code;
+	global.lge_eloqua = new EloquaApi(lge_eloqua_config);
+
+    var queryString = { depth: req.query.depth ? req.query.depth : 'minimal', search: "?name='TEST_LGEKR(한영본)_대표사이트B2B_온라인문의'" }
+
+    lge_eloqua.assets.customObjects.get(queryString).then((result) => {
+        console.log(result.data);
+        res.json(result.data);
+    }).catch((err) => {
+        console.error(err.message);
+        res.json(err);
+    });
+});
+
+// token refresh scheduler
+function schedule_oAuth_Token_Refresh() {
+    let unique_jobs_name = "GERP_OAUTH" +  moment().format('YYYYMMDD_HH');
+	let second = "0";
+    let minutes = "1";
+	let hours = "*/6";
+	let dayofmonth = "*";
+	let month = "*";
+	let weekindex = "*";
+	var schedate = second + ' ' + minutes + ' ' + hours + ' ' + dayofmonth + ' ' + month + ' ' + weekindex;
+    
+    integrated_Pipeline_Jobs = schedule.scheduleJob(unique_jobs_name, schedate, "Asia/Seoul", async function() {
+        await lge_eloqua.refreshToken();
+    });
+}
+
+schedule_oAuth_Token_Refresh();
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

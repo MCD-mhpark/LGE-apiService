@@ -55,7 +55,7 @@ router.get('/:id/:type', function (req, res, next) {
 	// formSubmit
 	// webVisit
   
-  	csintergration_eloqua.data.activities.new_Get(req.params.id , req.params.type,  queryString ).then((result) => {
+	lge_eloqua.data.activities.new_Get(req.params.id , req.params.type,  queryString ).then((result) => {
 		console.log(result.data);
 		res.json(result.data);
 	}).catch((err) => {

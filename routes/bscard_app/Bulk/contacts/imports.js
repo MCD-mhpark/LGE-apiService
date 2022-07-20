@@ -4,7 +4,7 @@ var converters = require('../../../common/converters');
 
 /* Bluk 가져오기 정의에 대한 data 전체 검색 */
 router.get('/', function (req, res, next) {
-    bscard_eloqua.bulk.contacts.imports.get().then((result) => {
+    lge_eloqua.bulk.contacts.imports.get().then((result) => {
     console.log(result.data);
     res.json(result.data);
     }).catch((err) => {
@@ -15,7 +15,7 @@ router.get('/', function (req, res, next) {
 /* Bluk 가져오기 정의에 대한 data 1건 검색 */
 router.get('/one/:id', function (req, res, next) {
     
-    bscard_eloqua.bulk.contacts.imports.getOne(req.params.id).then((result) => {
+    lge_eloqua.bulk.contacts.imports.getOne(req.params.id).then((result) => {
         console.log(result.data);
         res.json(result.data);
     }).catch((err) => {
@@ -40,7 +40,7 @@ router.post('/create/' , function (req,res,next) {
                "isSyncTriggeredOnImport" : "false"
             } */
 
-    bscard_eloqua.bulk.contacts.imports.create(req.body).then((result) => {
+    lge_eloqua.bulk.contacts.imports.create(req.body).then((result) => {
         console.log(result.data);
         res.json(result.data);
     }).catch((err) => {
@@ -66,7 +66,7 @@ router.post('/update/' , function (req,res,next) {
                "isSyncTriggeredOnImport" : "false"
             } */
 
-    bscard_eloqua.bulk.contacts.imports.update(req.body).then((result) => {
+    lge_eloqua.bulk.contacts.imports.update(req.body).then((result) => {
         console.log(result.data);
         res.json(result.data);
     }).catch((err) => {
@@ -116,7 +116,7 @@ router.post('/uploadData/:id' , function (req,res,next) {
     var bulk_data = converters.bulk_bscard(data);
 
     console.log(bulk_data);
-    bscard_eloqua.bulk.contacts.imports.uploadData(req.params.id , bulk_data).then((result) => {
+    lge_eloqua.bulk.contacts.imports.uploadData(req.params.id , bulk_data).then((result) => {
         console.log(result.data);
         res.json(true);
     }).catch((err) => {

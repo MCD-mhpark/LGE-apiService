@@ -18,7 +18,7 @@ router.get('/', function (req, res, next) {
          // type : //event 에 대한 type 지정
     }
     //console.log(queryString);
-    csintergration_eloqua.assets.campaigns.get().then((result) => {
+    lge_eloqua.assets.campaigns.get().then((result) => {
       console.log(result.data);
       res.json(result.data);
     }).catch((err) => {

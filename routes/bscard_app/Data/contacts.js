@@ -24,7 +24,7 @@ async function getContacts(data_list, depth) {
 
     // console.log(queryString);
     var contacts_data;
-    await bscard_eloqua.data.contacts.get(queryString).then((result) => {
+    await lge_eloqua.data.contacts.get(queryString).then((result) => {
         // console.log(result.data);
         // console.log(result.data.total);
 
@@ -55,7 +55,7 @@ async function mappedContacts(bs_data, depth) {
     queryString['depth'] = depth ? depth : "";
     console.log(queryString);
 
-    await bscard_eloqua.data.contacts.get(queryString).then((result) => {
+    await lge_eloqua.data.contacts.get(queryString).then((result) => {
         // console.log(result.data);
         // console.log(result.data.total);
 
@@ -93,7 +93,7 @@ async function origin_mappedContacts(bs_data, depth) {
     queryString['depth'] = depth ? depth : "";
     console.log(queryString);
 
-    await bscard_eloqua.data.contacts.get(queryString).then((result) => {
+    await lge_eloqua.data.contacts.get(queryString).then((result) => {
         // console.log(result.data);
         // console.log(result.data.total);
 
@@ -166,7 +166,7 @@ router.get('/search_one/:id', function (req, res, next) {
 
     console.log(req.params.id);
 
-    bscard_eloqua.data.contacts.getOne(req.params.id, queryString).then((result) => {
+    lge_eloqua.data.contacts.getOne(req.params.id, queryString).then((result) => {
         console.log(result.data);
         res.json(result.data);
         // res.json(true);
@@ -195,7 +195,7 @@ router.post('/search_origin', function (req, res, next) {
 
     console.log(queryString);
 
-    bscard_eloqua.data.contacts.get(queryString).then((result) => {
+    lge_eloqua.data.contacts.get(queryString).then((result) => {
         console.log(result.data);
         res.json(result.data);
         // res.json(true);
@@ -561,7 +561,7 @@ router.post('/create', async function (req, res, next) {
 
 
     for (var i = 0; data.length > i; i++) {
-        await bscard_eloqua.data.contacts.create(data[i]).then((result) => {
+        await lge_eloqua.data.contacts.create(data[i]).then((result) => {
        
             // res.json(result.data);
             result_list.push({
@@ -626,7 +626,7 @@ router.put('/update/', async function (req, res, next) {
         console.log(bs_data[i].id)
         var id = bs_data[i].id;
 
-        await bscard_eloqua.data.contacts.update(id, bs_data[i]).then((result) => {
+        await lge_eloqua.data.contacts.update(id, bs_data[i]).then((result) => {
             console.log(result.data);
             // res.json(result.data);
             result_list.push({
@@ -700,7 +700,7 @@ router.post('/origin_update/', async function (req, res, next) {
         console.log(bs_data[i].id)
         var id = bs_data[i].id;
 
-        await bscard_eloqua.data.contacts.update(id, bs_data[i]).then((result) => {
+        await lge_eloqua.data.contacts.update(id, bs_data[i]).then((result) => {
             console.log(result.data);
             // res.json(result.data);
             result_list.push({
@@ -766,7 +766,7 @@ router.delete('/delete', async function (req, res, next) {
     for (var i = 0; delete_data.length > i; i++) {
         console.log(delete_data[i]);
 
-        await bscard_eloqua.data.contacts.delete(delete_data[i].id).then((result) => {
+        await lge_eloqua.data.contacts.delete(delete_data[i].id).then((result) => {
             // console.log(result);
 
             result_list.push({
@@ -813,7 +813,7 @@ router.post('/specific_search', async function (req, res, next) {
 
 
 
-    bscard_eloqua.data.contacts.get(queryString).then((result) => {
+    lge_eloqua.data.contacts.get(queryString).then((result) => {
         console.log(result.data);
         res.json(result.data);
         // res.json(true);
@@ -855,7 +855,7 @@ router.post('/multi_delete', async function (req, res, next) {
     for (var i = 0; delete_data.length > i; i++) {
         console.log(delete_data[i]);
 
-        await bscard_eloqua.data.contacts.delete(delete_data[i].id).then((result) => {
+        await lge_eloqua.data.contacts.delete(delete_data[i].id).then((result) => {
             // console.log(result);
 
             result_list.push({
@@ -906,7 +906,7 @@ async function KR_LBCS_History_Save(contact_id , req_data) {
     // req_res_logs("reqConvert" , "한국향" , convert_data );
 
 
-    await b2bkr_eloqua.data.customObjects.data.create(parent_id, convert_data).then((result) => {
+    await lge_eloqua.data.customObjects.data.create(parent_id, convert_data).then((result) => {
         console.log(result.data);
         return_data = result;
     }).catch((err) => {
