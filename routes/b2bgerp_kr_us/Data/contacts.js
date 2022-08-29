@@ -743,10 +743,10 @@ function ConvertCustomObjectData(_contact, _req_data) {
 		"id": "267",
 		"value": _req_data.estimationId
 	}); //견적번호	text	text			
-	
-	
-
-
+	convert_data_entity.fieldValues.push({
+		"id": "1904",
+		"value": "B2B사이트(LGE.co.kr)"
+	}); //KR_LeadSource 		
 
 	return convert_data_entity;
 }
@@ -849,6 +849,12 @@ function ConvertCustomObjectData_newsLetter(_contact, _req_data) {
 		"id": "1775",
 		"value" : _req_data.cProductCode
 	}); // KR_Product Category
+
+	convert_data_entity.fieldValues.push({
+		"id": "1969",
+		"value" : "B2B사이트(소식지)"
+	}); // KR_LeadSource
+	
 
 	return convert_data_entity;
 }
@@ -990,6 +996,13 @@ async function InsertContactData(_req_data) {
 		"value": _req_data.cProductCode
 	});
 
+	contact_data.fieldValues.push({
+		"id": "100384",
+		"value": "B2B사이트(LGE.co.kr)"
+	});
+
+	
+
 
 	await lge_eloqua.data.contacts.create(contact_data).then((result) => {
 		// console.log(result);
@@ -1096,6 +1109,11 @@ async function InsertContactData_newsLetter(_req_data) {
 		"value": _req_data.cProductCode
 	});
 
+	//KR_LeadSource
+	contact_data.fieldValues.push({
+		"id": "100384",
+		"value": "B2B사이트(소식지)"
+	});
 
 	await lge_eloqua.data.contacts.create(contact_data).then((result) => {
 		// console.log(result);
@@ -1187,6 +1205,9 @@ async function UpdateContacData(_contact, _req_data) {
 	//Subsidiary GetCustomFiledValue(FieldValues_data, 100196);
 	//_contact.fieldValues.push( { "id": "100196", "value": "KR" });
 	SetFieldValue(_contact.fieldValues, "100196", "KR");
+
+	//KR_LeadSource
+	SetFieldValue(_contact.fieldValues, "100384", "B2B사이트(LGE.co.kr)");
 
 	await lge_eloqua.data.contacts.update(contact.id, contact).then((result) => {
 		// console.log(result);
@@ -1284,6 +1305,9 @@ async function UpdateContacData_newsLetter(_contact, _req_data) {
 	//_contact.fieldValues.push( { "id": "100311", "value": "System Air Conditioner", "IT(Laptop/Desktop/Monitor)" ,"Display(TV, Signage)", "H&A", "Medical Device", "Robot", "Energy", "B2B All Products/Solutions"});
 	SetFieldValue(_contact.fieldValues, "100311", _req_data.cProductCode);
 	//SetFieldValue(_contact.fieldValues, "100311", _req_data.cProductCode);
+
+	//KR_LeadSource
+	SetFieldValue(_contact.fieldValues, "100384", "B2B사이트(소식지)");
 
 	await lge_eloqua.data.contacts.update(contact.id, contact).then((result) => {
 		// console.log(result);
