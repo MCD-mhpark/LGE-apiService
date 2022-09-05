@@ -673,7 +673,7 @@ function ConvertCustomObjectData(_contact, _req_data) {
 	}); //제품설명	text	text			
 	convert_data_entity.fieldValues.push({
 		"id": "282",
-		"value": _req_data.custRemark
+		"value": reConvertXSS(_req_data.custRemark).replace(/(<([^>]+)>)/ig,"")
 	}); //고객요청사항	largeText	textArea			
 	convert_data_entity.fieldValues.push({
 		"id": "281",
@@ -717,7 +717,7 @@ function ConvertCustomObjectData(_contact, _req_data) {
 	}); //상세주소	text	text			
 	convert_data_entity.fieldValues.push({
 		"id": "273",
-		"value": _req_data.baseAddr
+		"value": reConvertXSS(_req_data.baseAddr)
 	}); //기본주소	text	text			
 	convert_data_entity.fieldValues.push({
 		"id": "272",
@@ -913,9 +913,9 @@ async function InsertContactData(_req_data) {
 	//zip
 	contact_data.postalCode = _req_data.postalCode;
 	//address1
-	contact_data.address1 = _req_data.baseAddr;
+	contact_data.address1 = reConvertXSS(_req_data.baseAddr);
 	//address2 / Address3
-	contact_data.address2 = _req_data.detailAddr;
+	contact_data.address2 = reConvertXSS(_req_data.detailAddr);
 	//Business Phone
 	contact_data.businessPhone = _req_data.phoneNo;
 	//FirstName / LastName
@@ -932,7 +932,7 @@ async function InsertContactData(_req_data) {
 	//inqurity to by message 100209
 	contact_data.fieldValues.push({
 		"id": "100209",
-		"value": _req_data.custRemark
+		"value": reConvertXSS(_req_data.custRemark).replace(/(<([^>]+)>)/ig,"")
 	});
 	//KR_Privacy Policy_Collection and Usage
 	contact_data.fieldValues.push({
@@ -1144,9 +1144,9 @@ async function UpdateContacData(_contact, _req_data) {
 	//zip
 	_contact.postalCode = _req_data.postalCode;
 	//address1
-	_contact.address1 = _req_data.baseAddr;
+	_contact.address1 = reConvertXSS(_req_data.baseAddr);
 	//address2 / Address3
-	_contact.address2 = _req_data.detailAddr;
+	_contact.address2 = reConvertXSS(_req_data.detailAddr);
 	//Business Phone
 	_contact.businessPhone = _req_data.phoneNo;
 	//FirstName / LastName
@@ -1160,7 +1160,7 @@ async function UpdateContacData(_contact, _req_data) {
 	_contact.emailAddress = _req_data.contactEmailAddr;
 
 	//inqurity to by message 100209
-	SetFieldValue(_contact.fieldValues, "100209", _req_data.custRemark);
+	SetFieldValue(_contact.fieldValues, "100209", reConvertXSS(_req_data.custRemark).replace(/(<([^>]+)>)/ig,""));
 
 	//KR_Privacy Policy_Collection and Usage
 	//_contact.fieldValues.push( { "id": "100315", "value": _req_data.ppYn == "Y" ? "YES" : "NO" });
