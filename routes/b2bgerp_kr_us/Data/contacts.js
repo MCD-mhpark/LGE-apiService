@@ -183,7 +183,9 @@ function Convert_B2BGERP_KR_DATA(_cod_data) {
 	}
 	return result_data;
 }
-
+// router.get('/dataSearchtest', async function (req, res, next) {
+// 	GetKR_CustomDataSearch(39, 'get')
+// });
 //CustomObject 기간 조회 Eloqua API Version 1.0
 async function GetKR_CustomDataSearch(_parentId , type) {
 	var return_data = {};
@@ -211,12 +213,17 @@ async function GetKR_CustomDataSearch(_parentId , type) {
 
 	await request_promise.get(options, function (error, response, body) {
 		// console.log("data return");
-		// console.log(body);
 		// console.log(response.statusMessage);
 		// console.log(response.statusCode);
-		return_data = JSON.parse(body);
+		//console.log(body);
+		try {
+			return_data = JSON.parse(body);
+		} catch(e) {
+			console.log(">>>>>>>>>>>>>json parse error:" + body);
+			console.log(e);
+		}
+		
 	});
-
 	return return_data;
 }
 
@@ -1673,6 +1680,11 @@ String.prototype.replaceAll = function(org, dest) {
 	console.log(this.split(org).join(dest));
     return this.split(org).join(dest);
 }
+
+router.get('/stringVaildation', async function(req, res, next) {
+	var result = reConvertXSS(req.body.text);
+	res.json(result);
+});
 
 function reConvertXSS(str){
 
