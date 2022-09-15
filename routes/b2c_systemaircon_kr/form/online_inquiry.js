@@ -20,7 +20,7 @@ router.get('/testtest', function (req, res, next) {
 });
 
 //폼 견적문의 데이터 제출
-router.post('/online_inquiryTEST', async (req, res, next) => {
+router.post('/online_inquiry', async (req, res, next) => {
 
 	logger.info("submit B2C online_inquiry");
 	
