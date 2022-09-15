@@ -13,7 +13,8 @@ require('console-stamp')(console, {
     }
 });
 var os = require('os');
-const apiInfo = require('./config/apiInfo.json');
+
+//const apiInfo = require('./config/apiInfo.json');
 
 
 const schedule = require('node-schedule-tz');
@@ -80,11 +81,11 @@ function get_system_foldername()
 // 	username: 'Lg_api.B2b_global',
 // 	password: 'QWert1234!@'
 // };
-// var b2bkr_eloqua_config = {
-// 	sitename: 'LGElectronics',
-// 	username: 'Lg_api.B2b_kr',
-// 	password: 'QWer1234!@'
-// };
+var b2bkr_eloqua_config = {
+	sitename: 'LGElectronics',
+	username: 'Lg_api.B2b_kr',
+	password: 'QWer1234!@'
+};
 // var csintergration_eloqua_config = {
 // 	sitename: 'LGElectronics',
 // 	username: 'Lg_api.Integrated',
@@ -106,7 +107,7 @@ function get_system_foldername()
 
 // global.bscard_eloqua = new EloquaApi(bscard_eloqua_config);
 // global.b2bgerp_eloqua = new EloquaApi(b2bgerp_eloqua_config);
-// global.b2bkr_eloqua = new EloquaApi(b2bkr_eloqua_config);
+global.lge_eloqua = new EloquaApi(b2bkr_eloqua_config);
 // global.csintergration_eloqua = new EloquaApi(csintergration_eloqua_config);
 // global.iam_eloqua = new EloquaApi(iam_eloqua_config);
 // global.old_eloqua = new EloquaApi(for_old_eloqua_config);
@@ -127,10 +128,11 @@ global.logManager = require('./routes/common/history.js');
 // });
 
 var index =  require('./routes/index'); 
-var log =  require('./routes/log'); 
+//var log =  require('./routes/log'); 
 // Data/contacts 만 쓰는 project
 var b2bgerp_global_data_contacts = require('./routes/b2bgerp_global/Data/contacts');
 var b2bgerp_kr_us_data_contacts = require('./routes/b2bgerp_kr_us/Data/contacts');
+var b2c_systemaircon_kr_form = require('./routes/b2c_systemaircon_kr/form/online_inquiry');
 var cs_integration_data_contacts = require('./routes/cs_integration/Data/contacts');
 var cs_integration_data_activities = require('./routes/cs_integration/Data/activities');
 var cs_integration_Assets_campaign = require('./routes/cs_integration/Assets/campaigns');
@@ -171,9 +173,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use('/index', index);
-app.use('/log', log);
+//app.use('/log', log);
 app.use('/b2bgerp_global/contacts', b2bgerp_global_data_contacts);
 app.use('/b2bgerp_kr/contacts', b2bgerp_kr_us_data_contacts);
+app.use('/b2c_systemaircon_kr/form', b2c_systemaircon_kr_form);
 app.use('/cs_integration/contacts', cs_integration_data_contacts);
 app.use('/cs_integration/activities', cs_integration_data_activities);
 app.use('/cs_integration/campaigns', cs_integration_Assets_campaign);
@@ -197,8 +200,8 @@ app.use('/iam', iam_system_users);
 // global.lge_eloqua = new EloquaApi(b2bgerp_eloqua_config);
 //============TEST용 Basic인증
 
-var lge_eloqua_config = apiInfo;
-global.lge_eloqua = {};
+// var lge_eloqua_config = apiInfo;
+// global.lge_eloqua = {};
 
 app.get('/oauth', function(req, res, next) {
 
@@ -206,8 +209,12 @@ app.get('/oauth', function(req, res, next) {
 
     //이하 임의 1회 통신하여 oAuth 토큰 발행 확인
 	var code = req.query.code;
+	
 	lge_eloqua_config['code'] = code;
+	console.log(">>>>>>>>>lge_eloqua:", lge_eloqua);
+
 	global.lge_eloqua = new EloquaApi(lge_eloqua_config);
+	console.log(">>>>>>>>>lge_eloqua:", lge_eloqua);
 
     var queryString = { depth: req.query.depth ? req.query.depth : 'minimal', search: "?name='TEST_LGEKR(한영본)_대표사이트B2B_온라인문의'" }
 
@@ -251,7 +258,7 @@ app.use(function(err, req, res, next) {
 
 	// render the error page
 	res.status(err.status || 500);
-	res.render('error');
+	console.log('error');
 });
 
 
