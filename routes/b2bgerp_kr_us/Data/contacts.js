@@ -183,9 +183,9 @@ function Convert_B2BGERP_KR_DATA(_cod_data) {
 	}
 	return result_data;
 }
-router.get('/dataSearchtest', async function (req, res, next) {
-	GetKR_CustomDataSearch(39, 'get')
-});
+// router.get('/dataSearchtest', async function (req, res, next) {
+// 	GetKR_CustomDataSearch(39, 'get')
+// });
 //CustomObject 기간 조회 Eloqua API Version 1.0
 async function GetKR_CustomDataSearch(_parentId , type) {
 	var return_data = {};
