@@ -1719,7 +1719,7 @@ function CONVERT_B2BGERP_GLOBAL_CUSTOMOBJECT(request_data) {
 
 		mql_data.fieldValues.push({
 			"id": "1984",
-			"value": item.ATTRIBUTE_27
+			"value": utils.timeConverter("GET_UNIX", item.ATTRIBUTE_27)
 		})
 
 		mql_data.fieldValues.push({
@@ -1948,7 +1948,7 @@ function CONVERT_B2BGERP_GLOBAL_SUBSIDIARY_MISSING(request_data) {
 
 		mql_data.fieldValues.push({
 			"id": "1985",
-			"value": item.ATTRIBUTE_27
+			"value": utils.timeConverter("GET_UNIX", item.ATTRIBUTE_27)
 		})
 
 		mql_data.fieldValues.push({
