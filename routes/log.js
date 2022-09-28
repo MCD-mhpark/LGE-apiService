@@ -26,7 +26,7 @@ function dirCreate(){
 	if(!dirExist){
 		var resultDirPath = logs_makeDirectory(today)
 		//console.log("dir Create : " + dirPath)
-        logger.info("dir Create : " + dirPath)
+        console.log("dir Create : " + resultDirPath)
 	}else{
         resultDirPath = "C:/LGE_logs/" + today
     }
