@@ -1377,29 +1377,6 @@ router.get('/test_sender', async function (req, res, next) {
 
 });
 
-router.get('/testtest12', async function (req, res, next) {
-
-	try{
-
-		//let contact_list = await get_b2bgerp_global_bant_data(business_name, state_date, end_date);
-
-		//reqCustomData
-		request_data = req.body
-		business_name = ""
-		//var request_data = await Convert_B2BGERP_GLOBAL_DATA(contact_list, business_name);
-	
-		let mql_customobject_list = await CONVERT_B2BGERP_GLOBAL_CUSTOMOBJECT(request_data);
-			// MQL Data 전송 전 MQL Data List 를 CustomObject 에 적재 update_mql_data은 customobject 적재값임
-		let update_mql_data = await mqldata_to_eloqua_send( 46 , mql_customobject_list);
-
-		res.json(update_mql_data)
-	}catch(err){
-		console.log(err.message)
-		res.json(err.message)
-	}
-
-});
-
 
 // 스케줄러로 BANT DATA 전송을 전체를 하는게 아닌 특정 사업부만 하기위해서 만듬
 router.get('/sender', async function (req, res, next) {

@@ -20,17 +20,22 @@ function logs_makeDirectory(dirPath){
     return dirPath;
 }
 
-let today = moment().tz('Asia/Seoul').format("YYYYMMDD") + "_" + projectName;
+function dirCreate(){
+    let today = moment().tz('Asia/Seoul').format("YYYYMMDD") + "_" + projectName;
 	const dirExist = fs.existsSync("C:/LGE_logs/" + today)
 	if(!dirExist){
-		var dirPath = logs_makeDirectory(today)
-		console.log("dir Create : " + dirPath)
+		var resultDirPath = logs_makeDirectory(today)
+		//console.log("dir Create : " + dirPath)
+        logger.info("dir Create : " + dirPath)
 	}else{
-        dirPath = "C:/LGE_logs/" + today
+        resultDirPath = "C:/LGE_logs/" + today
     }
+    return resultDirPath
+}
+
 
 //로그 파일을 남기는 위치
-const logDir = dirPath;
+const logDir = dirCreate();
 
 const levels = {
     error: 0,
@@ -58,7 +63,7 @@ const format = winston.format.combine(
         (info) => 
         {
             if (typeof info.message === 'object') {
-            info.message = JSON.stringify(info.message)
+            info.message = JSON.stringify(info.message, null, 2)
             }
             return `${info.timestamp} [${info.level}] ▶ ${info.message}`
         }

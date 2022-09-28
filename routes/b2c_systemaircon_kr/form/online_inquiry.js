@@ -23,14 +23,21 @@ router.get('/testtest', function (req, res, next) {
 router.post('/online_inquiry', async (req, res, next) => {
 
 	logger.info("submit B2C online_inquiry");
-	
+
+	let url = req.url
+	logger.info(url);
+
 	let form_id = 5557;
 	let req_data = req.body;
 	logger.info(req_data);
 	
 	try {
 		// 1. Email Validation check
-		validateEmail(req_data.customerEmailAddr);
+		if(req_data.customerEmailAddr !== undefined){
+			validateEmail(req_data.customerEmailAddr)
+		}else{
+			throw new Error(`customerEmailAddr = ${req_data.customerEmailAddr}`) 
+		}
 
 		// 2. req_data -> form_data convert
 		let insertForm = convertData(req_data);
@@ -70,7 +77,7 @@ router.post('/online_inquiry', async (req, res, next) => {
 // Email Validation check
 function validateEmail(email) {
 	const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-	if(!re.test(String(email).toLowerCase())){ throw new Error('이메일 형식이 올바르지 않습니다.') }
+	if(!re.test(String(email).toLowerCase())){ throw new Error(`이메일 형식(${email})이 올바르지 않습니다.`) }
 
 };
 
