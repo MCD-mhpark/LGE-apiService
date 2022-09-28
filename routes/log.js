@@ -8,6 +8,7 @@ let projectName = "B2C_Online_inquiry_KR"
 
 function logs_makeDirectory(dirPath){
 
+    //var OS_TYPE = 'Windows'
     var OS_TYPE = 'Linux'
     if(OS_TYPE === 'Windows'){
         dirPath = "C:/LGE_logs/" + dirPath + "/";
@@ -19,17 +20,22 @@ function logs_makeDirectory(dirPath){
     return dirPath;
 }
 
-let today = moment().tz('Asia/Seoul').format("YYYYMMDD") + "_" + projectName;
+function dirCreate(){
+    let today = moment().tz('Asia/Seoul').format("YYYYMMDD") + "_" + projectName;
 	const dirExist = fs.existsSync("C:/LGE_logs/" + today)
 	if(!dirExist){
-		var dirPath = logs_makeDirectory(today)
-		console.log("dir Create : " + dirPath)
+		var resultDirPath = logs_makeDirectory(today)
+		//console.log("dir Create : " + dirPath)
+        console.log("dir Create : " + resultDirPath)
 	}else{
-        dirPath = "C:/LGE_logs/" + today
+        resultDirPath = "C:/LGE_logs/" + today
     }
+    return resultDirPath
+}
+
 
 //로그 파일을 남기는 위치
-const logDir = dirPath;
+const logDir = dirCreate();
 
 const levels = {
     error: 0,
@@ -50,9 +56,17 @@ const colors = {
 winston.addColors(colors);
 
 const format = winston.format.combine(
+    winston.format.splat(),
+    winston.format.json(),
     winston.format.timestamp({ format: ' YYYY-MM-DD HH:mm:ss ||' }),
     winston.format.printf(
-        (info) => `${info.timestamp} [${info.level}] ▶ ${info.message}`,
+        (info) => 
+        {
+            if (typeof info.message === 'object') {
+            info.message = JSON.stringify(info.message, null, 2)
+            }
+            return `${info.timestamp} [${info.level}] ▶ ${info.message}`
+        }
     ),
 )
 
@@ -67,7 +81,7 @@ const logger = winston.createLogger({
             datePattern: 'YYYY-MM-DD',
             dirname: logDir,
             filename: `%DATE%.log`,
-            zippedArchive: true,	
+            zippedArchive: false,	
             handleExceptions: true,
             //maxFiles: 30,  
         }),
@@ -77,7 +91,7 @@ const logger = winston.createLogger({
             datePattern: 'YYYY-MM-DD',
             dirname: logDir,  
             filename: `%DATE%.error.log`,
-            zippedArchive: true,
+            zippedArchive: false,
             //maxFiles: 30,
         }),
 
@@ -89,7 +103,6 @@ const logger = winston.createLogger({
                 winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms ||' }),
                 winston.format.printf((info) => `${info.timestamp} [${info.level}] ▶ ${info.message}`)
               ),
-
             colorize: true,
             handleExceptions: true,
         })
