@@ -2147,7 +2147,7 @@ router.put('/menual_bant_update', async function (req, res, next) {
 	console.log("menual_bant_update");
 
 	req_res_logs("reqEloqua", req.body.bsname, req.body.elements);
-
+g
 });
 
 router.get('/tester123', async function (req, res, next) {
@@ -2267,13 +2267,13 @@ async function getLeadnumberData() {
 				errorCode: response.statusCode,
 				errorMsg: error.Message
 			}
-			await req_res_logs("Response", "LeadnumberAPI_Error", errorData);
+			lead_req_res_logs("Response", "LeadnumberAPI_Error", errorData);
 		} else if (!error && response.statusCode != 200) {
 			let errorData = {
 				errorCode: response.statusCode,
 				errorMsg: "Not Error & Not Response Code 200"
 			}
-			await req_res_logs("Response", "LeadnumberAPI_Error", errorData);
+			lead_req_res_logs("Response", "LeadnumberAPI_Error", errorData);
 		} else if (!error && response.statusCode == 200) {
 			
 			// console.log(JSON.parse(body));
@@ -2281,7 +2281,7 @@ async function getLeadnumberData() {
 			// b2b GERP 측에서 array 가 아닌 String 형식으로 return 해줌
 			let rev_data = JSON.parse(body);
 			data_list = rev_data.ContentList;
-			await req_res_logs("Response", "LeadnumberAPI", body.ContentList);
+			lead_req_res_logs("Response", "LeadnumberAPI", body.ContentList);
 		}
 	});
 
