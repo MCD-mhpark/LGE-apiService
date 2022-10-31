@@ -275,7 +275,7 @@ function schedule_Request_GLOBAL(){
 	//test data
 	Global_Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,"Asia/Seoul" ,async function(){
 		// let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
-		let bant_list = ["AS" , "CM" , "ID" , "IT" , "Solution"];
+		let bant_list = ["CM" , "CLS"];
 		bant_list.forEach( async BusinessName =>{
 			await b2bgerp_global_data_contacts.bant_send(BusinessName);
 		})
