@@ -1128,13 +1128,17 @@ async function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
 				return result_item.ATTRIBUTE_4.indexOf(sentence) > -1 ? result_item.ATTRIBUTE_4 : null;
 			});
 
-			// for(let k = 0 ; notBant_emailType_List.length > k ; k++){
-			// 	let notBant_item = notBant_emailType_List[k];
-			// 	notBant_item
-			// }
-			// console.log(notBant_email_list.length);
+			let subsidiaryOption = ['LGEAP', 'LGESL', 'LGETH', 'LGECH', 'LGEHK', 'LGEIL', 'LGEIN', 'LGEML', 'LGEPH', 'LGETT', 'LGEVH', 'LGEJP', 'LGEKR', 'LGERA', 'LGEAK', 'LGEUR', 'LGEMK',
+    		'LGEAG', 'LGEBN', 'LGEHS', 'LGECZ', 'LGEDG', 'LGEPL', 'LGEFS', 'LGEUK', 'LGEIS', 'LGEPT', 'LGERO', 'LGEES', 'LGEPS', 'LGEAR', 'LGECL', 'LGESP', 'LGECB', 'LGEMS', 'LGEPR', 'LGEGF',
+    		'LGEAS', 'LGEAF', 'LGESA', 'LGEEF', 'LGEEG', 'LGEIR', 'LGELF', 'LGEYK', 'LGEMC', 'LGESB', 'LGETU', 'LGETK', 'LGECI', 'LGEUS', 'LGEHQ', 'LGESW', 'LGELA', 'LGELV'];
+			let subsidiaryCheck;
+			if(subsidiaryOption.includes(result_item.corporation)){
+				subsidiaryCheck = true;
+			}else{
+				subsidiaryCheck = false;
+			}
 
-			if (result_item.CORPORATION != "" && result_item.CORPORATION != "LGE" && notBant_email_list.length < 1)
+			if (result_item.CORPORATION != "" && result_item.CORPORATION != "LGE" && subsidiaryCheck == true && notBant_email_list.length < 1)
 				result_data.push(result_item);
 		}
 		catch (e) {
