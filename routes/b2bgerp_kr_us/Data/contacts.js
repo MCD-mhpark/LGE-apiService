@@ -596,7 +596,7 @@ function ConvertCustomObjectData(_contact, _req_data) {
 	}); //Subsidiary 고정값 : KR
 	convert_data_entity.fieldValues.push({
 		"id": "317",
-		"value": "KR_LGE.co.kr_OnlineInquiry"
+		"value": "민수SYS_[B2B사이트]"
 	}); //Marketing Event	고정값 : KR_LGE.co.kr_OnlineInquiry				
 	convert_data_entity.fieldValues.push({
 		"id": "318",
@@ -991,7 +991,7 @@ async function InsertContactData(_req_data) {
 	//Marketing Event GetCustomFiledValue(FieldValues_data, 100203);
 	contact_data.fieldValues.push({
 		"id": "100203",
-		"value": "KR_LGE.co.kr_OnlineInquiry"
+		"value": "민수SYS_[B2B사이트]"
 	});
 	//Subsidiary GetCustomFiledValue(FieldValues_data, 100196);
 	contact_data.fieldValues.push({
@@ -1206,8 +1206,8 @@ async function UpdateContacData(_contact, _req_data) {
 	SetFieldValue(_contact.fieldValues, "100202", "LGE.co.kr");
 
 	//Marketing Event GetCustomFiledValue(FieldValues_data, 100203);
-	//_contact.fieldValues.push( { "id": "100203", "value": "KR_LGE.co.kr_OnlineInquiry" });
-	SetFieldValue(_contact.fieldValues, "100203", "KR_LGE.co.kr_OnlineInquiry");
+	//_contact.fieldValues.push( { "id": "100203", "value": "민수SYS_[B2B사이트]" });
+	SetFieldValue(_contact.fieldValues, "100203", "민수SYS_[B2B사이트]");
 
 	//Subsidiary GetCustomFiledValue(FieldValues_data, 100196);
 	//_contact.fieldValues.push( { "id": "100196", "value": "KR" });
