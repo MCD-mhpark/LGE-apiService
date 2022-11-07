@@ -1132,7 +1132,7 @@ async function Convert_B2BGERP_GLOBAL_DATA(contacts_data, business_department) {
     		'LGEAG', 'LGEBN', 'LGEHS', 'LGECZ', 'LGEDG', 'LGEPL', 'LGEFS', 'LGEUK', 'LGEIS', 'LGEPT', 'LGERO', 'LGEES', 'LGEPS', 'LGEAR', 'LGECL', 'LGESP', 'LGECB', 'LGEMS', 'LGEPR', 'LGEGF',
     		'LGEAS', 'LGEAF', 'LGESA', 'LGEEF', 'LGEEG', 'LGEIR', 'LGELF', 'LGEYK', 'LGEMC', 'LGESB', 'LGETU', 'LGETK', 'LGECI', 'LGEUS', 'LGEHQ', 'LGESW', 'LGELA', 'LGELV'];
 			let subsidiaryCheck;
-			if(subsidiaryOption.includes(result_item.corporation)){
+			if(subsidiaryOption.includes(result_item.CORPORATION)){
 				subsidiaryCheck = true;
 			}else{
 				subsidiaryCheck = false;
