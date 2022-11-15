@@ -12,7 +12,7 @@ exports.GetContactData = async function (_email) {
 	var queryString = {};
 	var return_data = undefined;
 	//queryString['search'] = _email;
-	if (Controller.validateEmail(_email)) {
+	if (_email) {
 		queryString.search = "emailAddress='" + _email+"'";
 		queryString.depth = "complete"; //minimal, partial, complete
 		await lge_eloqua.data.contacts.get(queryString).then((result) => {

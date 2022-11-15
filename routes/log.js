@@ -21,7 +21,7 @@ function logs_makeDirectory(dirPath){
 }
 
 function dirCreate(){
-    let today = moment().tz('Asia/Seoul').format("YYYYMMDD") + "_" + projectName;
+    let today = projectName;
 	const dirExist = fs.existsSync("C:/LGE_logs/" + today)
 	if(!dirExist){
 		var resultDirPath = logs_makeDirectory(today)
