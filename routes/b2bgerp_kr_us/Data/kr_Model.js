@@ -295,8 +295,6 @@ exports.Convert_B2BGERP_KR_DATA =  function (_cod_data) {
 
 			result_data.push(result_item);
 
-			seq_cnt++;
-
 		} catch (e) {
 			console.log(e);
 		}

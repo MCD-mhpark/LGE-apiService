@@ -1,4 +1,5 @@
 var Model = require('./kr_Model');
+var utils = require('../../common/utils');
 
 
 //이메일 확인 함수
