@@ -77,11 +77,10 @@ global.logManager = require('./routes/common/history.js');
 // });
 
 var index =  require('./routes/index'); 
-//var log =  require('./routes/log'); 
 // Data/contacts 만 쓰는 project
 var b2bgerp_global_data_contacts = require('./routes/b2bgerp_global/Data/contacts');
 var b2bgerp_kr_us_data_contacts = require('./routes/b2bgerp_kr_us/Data/contacts');
-//var b2c_systemaircon_kr_form = require('./routes/b2c_systemaircon_kr/form/online_inquiry');
+var b2c_systemaircon_kr_form = require('./routes/b2c_systemaircon_kr/form/online_inquiry');
 var cs_integration_data_contacts = require('./routes/cs_integration/Data/contacts');
 var cs_integration_data_activities = require('./routes/cs_integration/Data/activities');
 var cs_integration_Assets_campaign = require('./routes/cs_integration/Assets/campaigns');
@@ -122,10 +121,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use('/index', index);
-//app.use('/log', log);
 app.use('/b2bgerp_global/contacts', b2bgerp_global_data_contacts);
 app.use('/b2bgerp_kr/contacts', b2bgerp_kr_us_data_contacts);
-//app.use('/b2c_systemaircon_kr/form', b2c_systemaircon_kr_form);
+app.use('/b2c_systemaircon_kr/form', b2c_systemaircon_kr_form);
 app.use('/cs_integration/contacts', cs_integration_data_contacts);
 app.use('/cs_integration/activities', cs_integration_data_activities);
 app.use('/cs_integration/campaigns', cs_integration_Assets_campaign);

@@ -1,40 +1,29 @@
 var fs = require("mz/fs");
+var express = require('express');
+var router = express.Router();
 var moment = require('moment-timezone');
 const winston = require('winston');
 require('winston-daily-rotate-file');
 moment.locale('kr');
 
-let projectName = "B2C_Online_inquiry_KR"
-
-function logs_makeDirectory(dirPath){
-
-    //var OS_TYPE = 'Windows'
-    var OS_TYPE = 'Linux'
-    if(OS_TYPE === 'Windows'){
-        dirPath = "C:/LGE_logs/" + dirPath + "/";
-        fs.mkdirSync( dirPath, { recursive: true } );
-    }else if(OS_TYPE === "Linux" ){
-        dirPath = "/home/LGE_logs/" + dirPath + "/";
-        fs.mkdirSync( dirPath, { recursive: true } );
-    }
-    return dirPath;
-}
+//const path = "C:/LGE_logs/"
+const path = "/home/LGE_logs/"
+const today = moment().tz('Asia/Seoul').format("YYYYMMDD");
+const projectName = "_" + "B2C_Online_inquiry_KR" + "/"
 
 function dirCreate(){
-    let today = moment().tz('Asia/Seoul').format("YYYYMMDD") + "_" + projectName;
-	const dirExist = fs.existsSync("C:/LGE_logs/" + today)
+	const dirExist = fs.existsSync(path + today + projectName)
+	//const dirExist = fs.existsSync("/home/LGE_logs/" + today  + "/")
 	if(!dirExist){
-		var resultDirPath = logs_makeDirectory(today)
-		//console.log("dir Create : " + dirPath)
+		var resultDirPath = path + today + projectName;
         console.log("dir Create : " + resultDirPath)
+        fs.mkdirSync( resultDirPath, { recursive: true } )
 	}else{
-        resultDirPath = "C:/LGE_logs/" + today
+        resultDirPath = path + today + projectName
     }
     return resultDirPath
 }
 
-
-//로그 파일을 남기는 위치
 const logDir = dirCreate();
 
 const levels = {
@@ -108,6 +97,5 @@ const logger = winston.createLogger({
         })
     ]
 });
-
 
 module.exports = logger;
