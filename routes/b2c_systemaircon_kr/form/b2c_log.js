@@ -24,9 +24,11 @@ function dirCreate(){
     return resultDirPath
 }
 
-function timeStampFormat() {
-    return moment().format('YYYY-MM-DD HH:mm:ss ||'); 
-};
+const timezoned = () => {
+    return new Date().toLocaleString('ko-KR', {
+        timeZone: 'Asia/Seoul'
+    });
+}
 
 const logDir = dirCreate();
 
@@ -51,7 +53,7 @@ winston.addColors(colors);
 const format = winston.format.combine(
     winston.format.splat(),
     winston.format.json(),
-    winston.format.timestamp({ format: timeStampFormat() }),
+    winston.format.timestamp({ format: timezoned }),
     winston.format.printf(
         (info) => 
         {
@@ -93,7 +95,7 @@ const logger = winston.createLogger({
             level: 'debug',
             format: winston.format.combine(
                 winston.format.colorize({ all: true }),
-                winston.format.timestamp({ format: timeStampFormat() }),
+                winston.format.timestamp({ format: timezoned }),
                 winston.format.printf((info) => `${info.timestamp} [${info.level}] ▶ ${info.message}`)
               ),
             colorize: true,
