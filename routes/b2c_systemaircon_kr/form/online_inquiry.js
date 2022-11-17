@@ -2,22 +2,12 @@ var express = require('express');
 var router = express.Router();
 var moment = require('moment-timezone');
 var fs = require("mz/fs");
-const logger = require('../../log');
+const logger = require('./b2c_log');
+
 
 //=====================================================================================================================
 // 한국영업본부 B2C Online 시스템에어컨 견적문의 API //"B2C_Online_inquiry_KR"  
 //=====================================================================================================================
-
-//로그테스트
-router.get('/testtest', function (req, res, next) {
-	
-	logger.error('error 메시지');
-    logger.warn('warn 메시지');
-    logger.info('info 메시지');
-    logger.http('http 메시지');
-    logger.debug('debug 메시지'); 
-	res.json("성공")
-});
 
 //폼 견적문의 데이터 제출
 router.post('/online_inquiry', async (req, res, next) => {
@@ -400,6 +390,5 @@ router.get('/searchFormId', async (req, res, next) => {
     });
 
 });
-
 
 module.exports = router;

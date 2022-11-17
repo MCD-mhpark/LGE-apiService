@@ -173,7 +173,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use('/index', index);
-//app.use('/log', log);
 app.use('/b2bgerp_global/contacts', b2bgerp_global_data_contacts);
 app.use('/b2bgerp_kr/contacts', b2bgerp_kr_us_data_contacts);
 app.use('/b2c_systemaircon_kr/form', b2c_systemaircon_kr_form);
