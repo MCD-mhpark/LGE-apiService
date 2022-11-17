@@ -24,6 +24,10 @@ function dirCreate(){
     return resultDirPath
 }
 
+function timeStampFormat() {
+    return moment().format('YYYY-MM-DD HH:mm:ss ||'); 
+};
+
 const logDir = dirCreate();
 
 const levels = {
@@ -47,7 +51,7 @@ winston.addColors(colors);
 const format = winston.format.combine(
     winston.format.splat(),
     winston.format.json(),
-    winston.format.timestamp({ format: ' YYYY-MM-DD HH:mm:ss ||' }),
+    winston.format.timestamp({ format: timeStampFormat() }),
     winston.format.printf(
         (info) => 
         {
@@ -89,7 +93,7 @@ const logger = winston.createLogger({
             level: 'debug',
             format: winston.format.combine(
                 winston.format.colorize({ all: true }),
-                winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms ||' }),
+                winston.format.timestamp({ format: timeStampFormat() }),
                 winston.format.printf((info) => `${info.timestamp} [${info.level}] ▶ ${info.message}`)
               ),
             colorize: true,
