@@ -6,6 +6,7 @@ moment.locale('kr');
 var os = require('os'); 
 
 path = "./routes/iam/log/"; 
+// path = "/home/LGE_logs/IAM/"; 
 
 function getDirPath(){
     let today = moment().tz('Asia/Seoul').format("YYYYMMDD");
