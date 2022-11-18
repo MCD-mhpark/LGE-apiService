@@ -680,9 +680,10 @@ async function authRespList(){
     param.gubun = "Q";
     
     // 개발 URL
-    send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/authRespList.do";
+    // send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/authRespList.do";
+    
     // 운영 URL 
-    // send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam_api/api2api/api/v1/authRespList.do";
+    send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam_api/api2api/api/v1/authRespList.do";
 
     let headers = {
         'Content-Type': "application/json",
