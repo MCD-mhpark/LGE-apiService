@@ -1515,3 +1515,4 @@ function validateEmail(email) {
 }
 
 module.exports = router;
+module.exports.authRespList = authRespList;

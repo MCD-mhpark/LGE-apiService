@@ -274,7 +274,7 @@ function schedule_Request_CS_Intergration(){
 function schedule_IAM_AuthRespList(){
 	// 매시 15분 호출
 	let uniqe_jobs_name = "IAM_" +  moment().format('YYYYMMDD'); 
-	iam_authRespList_jobs = schedule.scheduleJob(uniqe_jobs_name,'0 30 * * * *',"Asia/Seoul" ,async function(){
+	iam_authRespList_jobs = schedule.scheduleJob(uniqe_jobs_name,'0 45 * * * *',"Asia/Seoul" ,async function(){
 		await iam_system_users.authRespList();
 	});
 }
