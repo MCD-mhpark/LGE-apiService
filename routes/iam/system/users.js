@@ -15,9 +15,6 @@ const logger = require('./iamLog');   // ../../log
 // IAM USER REPONSIBILITY
 // IAM RESPONSIBILITY
 
-// 2022-10-04 송신 테스트 완료
-var testemail = "emailAddress='jong.park@lge.com'emailAddress='damien.leite@lge.com'emailAddress='zen.wong@lge.com'emailAddress='danai.ar@lge.com'emailAddress='Woeiliang.Chong@lge.com'";
-
 // 2022-10-12 전달사항
 // ELOQUA => IAM으로 송신 변경이 있는 경우만 송신
 // IAM => ELOQUA로 수신 매시 15분에 호출
@@ -45,7 +42,7 @@ function IAM_IF_USER_ENTITY(){
     this.positionName = null;
     this.sodExceptionFlag = null;
     this.sodExceptionReasonDesc = null;
-    this.effectiveStartYyyymmdd = null;		// NULL 
+    this.effectiveStartYyyymmdd = null;     // NULL 
     this.effectiveEndYyyymmdd = null;       // NULL 
     this.remarks = null;
     this.useFlag = "";
@@ -97,7 +94,7 @@ function IAM_IF_USER_ENTITY(){
 }
 
 function IAM_IF_USER_RESPONSIBILITY_ENTITY(){
-	this.systemCode = "ELOQUA";
+    this.systemCode = "ELOQUA";
     this.userCode = "";                     // 사번
     this.userAffiliateCode = null;
     this.userCorporationCode = null;
@@ -254,20 +251,20 @@ function ELOQUA_USER_ENTITY(){
     this.senderEmailAddress = "";
     this.zipCode = "";
 
-    this.crmUsername = "";				
+    this.crmUsername = "";              
     this.currentStatus = "";
     this.defaultAccountViewId = "";
     this.defaultContactViewId = "";
     this.description = "";
-    this.digitalSignatureId = "";		// 사용자 서명
-    this.federationId = "";				// 사번
+    this.digitalSignatureId = "";       // 사용자 서명
+    this.federationId = "";             // 사번
     this.folderId = "";
     this.isDeleted = "";
     this.isUsingBrightenTemplate = "";
     this.scheduledFor = "";
     this.sendWelcomeEmail = "";
     this.sourceTemplateId = "";
-    this.state = "";					// 시/도
+    this.state = "";                    // 시/도
     this.type = "";
     this.preferences = { "type": "UserPreferences", "timezoneId": "40" };  //시간 한국 시간 설정
 
@@ -280,13 +277,13 @@ function ELOQUA_USER_ENTITY(){
 
 // #region IAM User Endpoint Endpoint 호출 영역
 function CONVERT_IAM_USER_DATA(_eloqua_items) {
-    var result = [];
-    var items = _eloqua_items;
+    let result = [];
+    let items = _eloqua_items;
 
     if (items != null && items.total > 0) {
-        for (var i = 0; i < items.elements.length; i++) {
-            var item = items.elements[i];
-            var data = new IAM_IF_USER_ENTITY();
+        for (let i = 0; i < items.elements.length; i++) {
+            let item = items.elements[i];
+            let data = new IAM_IF_USER_ENTITY();
             
             data.systemCode = "ELOQUA";         // 고정값 "ELOQUA"
             data.userCode = item.federationId;  // 사번
@@ -321,24 +318,24 @@ function CONVERT_IAM_USER_DATA(_eloqua_items) {
 router.get('/user', function (req, res, next){
     logger.info("[USER] user call");
     console.log("[USER] user call");
-    var send_url = "";
-    var searchEmail = "";
+    let send_url = "";
+    let searchEmail = "";
 
-    var queryString = {};
+    let queryString = {};
     queryString['depth'] = "complete";
     
     if(req.body.data != undefined){
-        for(var i in req.body.data) 
+        for(let i in req.body.data) 
             searchEmail += "emailAddress='" + req.body.data[i].email + "'";
         queryString['search'] = searchEmail;
     }else{
-        queryString['search'] = "emailAddress='*@lgepartner.com'emailAddress='*@lge.com'";
+        queryString['search'] = "emailAddress='*@lgepartner.com'emailAddress='*@lge.com'";  //
     }
     
     lge_eloqua.system.users.get(queryString).then(async (result) => {
         logger.debug(result.data);
-        var return_data = {};
-        var user_data = CONVERT_IAM_USER_DATA(result.data); 
+        let return_data = {};
+        let user_data = CONVERT_IAM_USER_DATA(result.data); 
 
         if (user_data.length > 0) {
 
@@ -349,12 +346,12 @@ router.get('/user', function (req, res, next){
             logger.info("[USER] user_data : " + JSON.stringify(user_data));
 
             // 개발 URL
-            send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/saveIamIfUser.do"
+            // send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/saveIamIfUser.do"
 
             // 운영 URL
-            // send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam_api/api2api/api/v1/saveIamIfUser.do"
+            send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam_api/api2api/api/v1/saveIamIfUser.do"
 
-            var headers = {
+            let headers = {
                 'Content-Type': "application/json",
                 'x-Gateway-APIKey': "da7d5553-5722-4358-91cd-9d89859bc4a0"
             }
@@ -367,7 +364,7 @@ router.get('/user', function (req, res, next){
                 json: true
             };
             
-            var result = await request(options, async function (error, response, body) {
+            let result = await request(options, async function (error, response, body) {
                 console.log(response);
                 if (error) {
                     console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
@@ -379,37 +376,40 @@ router.get('/user', function (req, res, next){
                 }
 
                 if (!error && response.statusCode == 200) {
-                    res.json(body);
                     logger.info("[USER] " + JSON.stringify(body)); 
+                    res.json(body);
                 }
             });
         }
         else {
             logger.info("[USER] user data length : 0"); 
+            res.json(body);
         }
     }).catch((err) => {
         console.error(err);
         logger.error("[USER] RESPONSE ERROR : " + err);
+        res.json(err);
     }); 
 });
 
 
 // #region IAM User Responsibility Endpoint 호출 영역
 function CONVERT_IAM_USER_RESPONSIBILITY_DATA(_eloqua_items) {
-    var result = [];
-    var items = _eloqua_items; 
-    var transId = 1;    // transmisionId 값
+    let result = [];
+    let items = _eloqua_items; 
+    let transId = 1;    // transmisionId 값
 
     if (items != null && items.total > 0) { 
-        for (var i = 0; i < items.elements.length; i++) { 
-            var item = items.elements[i];
+        for (let i = 0; i < items.elements.length; i++) { 
+            let item = items.elements[i];
             // console.log("사번 " + item.federationId + " : " + JSON.stringify(item.securityGroups));
 
-            for (var j = 0; j < item.securityGroups.length; j++) {
-                var security_data = item.securityGroups[j];                 
-                if (security_data.name.split('_').length != 3) continue;    // AS_MC_Marketer 형식만 전달
+            for (let j = 0; j < item.securityGroups.length; j++) {
+                let security_data = item.securityGroups[j];                 
+                if (security_data.name.split('_').length != 3) 
+                    continue;    // AS_MC_Marketer 형식만 전달
 
-                var data = new IAM_IF_USER_RESPONSIBILITY_ENTITY();
+                let data = new IAM_IF_USER_RESPONSIBILITY_ENTITY();
                 data.systemCode = "ELOQUA";
                 data.userCode =  item.federationId;             // 사번
                 data.responsibilityCode = security_data.name.split('_')[2];
@@ -437,17 +437,16 @@ function CONVERT_IAM_USER_RESPONSIBILITY_DATA(_eloqua_items) {
 
 // 2) 사용자 권한
 router.get('/user_responsibility', function (req, res, next) {
-    logger.info("[USER RESPONSIBILITY] call user reponsibilty ");
+    logger.info("call user reponsibilty !");
     console.log("call user reponsibilty !");
 
-    var send_url = "";
-    var searchEmail = "";
-    var queryString = {};
+    let send_url = "";
+    let queryString = {};
     queryString['depth'] = "complete";
+    
     if(req.body.data != undefined){
-        // logger.info(JSON.stringify(req.body.data));
-        console.log(req.body.data);
-        for(var i in req.body.data) 
+        let searchEmail = "";
+        for(let i in req.body.data)
             searchEmail += "emailAddress='" + req.body.data[i].email + "'";
         queryString['search'] = searchEmail;
     }else{
@@ -455,13 +454,11 @@ router.get('/user_responsibility', function (req, res, next) {
     }
 
     lge_eloqua.system.users.get(queryString).then(async (result) => {
-        var return_data = {};
+        let return_data = {};
 
-        var user_responsibility_data = CONVERT_IAM_USER_RESPONSIBILITY_DATA(result.data);
-        // console.log(user_responsibility_data); 
+        let user_responsibility_data = CONVERT_IAM_USER_RESPONSIBILITY_DATA(result.data);
         
-        // 각 row 의 transmissionCount 를 전체 row 를 맞게 다시 세팅
-        user_responsibility_data =  await get_IAM_USER_RESPONSIBILITY_SET_TOTAL_COUNT(user_responsibility_data);
+        user_responsibility_data =  await get_IAM_USER_RESPONSIBILITY_SET_TOTAL_COUNT(user_responsibility_data);  // 각 row 의 transmissionCount 를 전체 row 를 맞게 다시 세팅
 
         if (user_responsibility_data.length > 0) {
             return_data['systemId'] = "ELOQUA";
@@ -470,11 +467,12 @@ router.get('/user_responsibility', function (req, res, next) {
             return_data['data'] = user_responsibility_data;
 
             // 개발 URL
-            send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/saveIamIfUserResponsibility.do";
+            // send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/saveIamIfUserResponsibility.do";
+            
             // 운영 URL
-            // send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam_api/api2api/api/v1/saveIamIfUserResponsibility.do";
+            send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam_api/api2api/api/v1/saveIamIfUserResponsibility.do";
 
-            var headers = {
+            let headers = {
                 'Content-Type': "application/json",
                 'x-Gateway-APIKey': "da7d5553-5722-4358-91cd-9d89859bc4a0"
             }
@@ -487,24 +485,25 @@ router.get('/user_responsibility', function (req, res, next) {
                 json: true
             }; 
 
-            var result = await request(options, async function (error, response, body) { 
+            let result = await request(options, async function (error, response, body) { 
                 if (error) {
                     logger.error("[USER RESPONSIBILITY] RESPONSE ERROR : " + error);
                     // console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
                     console.log(error);
                 }
                 if (!error && response.statusCode == 200) {
-                    console.log(body);
                     logger.info("[USER RESPONSIBILITY] " + body); 
+                    res.json(body);
                 }
             });
         }
         else {
             logger.error("[USER RESPONSIBILITY] data length : 0");
+            res.json(body);
         }
     }).catch((err) => {
         logger.error("[USER RESPONSIBILITY] RESPONSE ERROR : " + err);
-        console.error(err);
+        res.json(err);
     });
 });
 
@@ -520,14 +519,14 @@ function get_IAM_USER_RESPONSIBILITY_SET_TOTAL_COUNT(user_responsibility_data){
 
 //#region IAM Responsibility Endpoint 호출 영역
 function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items) {
-    var result = [];
-    var items = _eloqua_items; 
+    let result = [];
+    let items = _eloqua_items; 
     
     if (items != null && items.total > 0) {
-        for (var i = 0; i < items.elements.length; i++) {
-            var item = items.elements[i];
+        for (let i = 0; i < items.elements.length; i++) {
+            let item = items.elements[i];
 
-            var data = new IAM_IF_RESPONSIBILITY_ENTITY();
+            let data = new IAM_IF_RESPONSIBILITY_ENTITY();
 
             if(item.name.split('_').length != 3) {
                 delete items.elements[i]; 
@@ -548,8 +547,7 @@ function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items) {
             data.transferFlag = "N";
             data.transferDate = moment().tz('Asia/Seoul').format('YYYY-MM-DD hh:mm:ss');  // 전송일자
 
-            // 사업부별 관리자 사번 전달
-            switch (data.responsibilityCode) {  // "attribute4": "306166" : 승인자 사번
+            switch (data.responsibilityCode) {  // "attribute4": 승인자 사번 >> 사업부별 관리자 사번 전달
                 case "ID":
                 case "IT":
                     data.attribute4 = "268965" //  // ID / IT : 서판규 선임 268965
@@ -572,8 +570,8 @@ function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items) {
                     break;
             }
 
-            data.attribute6 = item.name.split('_')[0];            // "attribute6": "LGEKR" [0]
-            data.attribute7 = item.name.split('_')[1];         // "attribute7": "HQ" [1] 
+            data.attribute6 = item.name.split('_')[0];
+            data.attribute7 = item.name.split('_')[1];
 
             result.push(data);
             console.log(item.name);
@@ -591,22 +589,20 @@ function get_IAM_RESPONSIBILITY_SET_TOTAL_COUNT(responsibility_data){
     return responsibility_data;
 } 
 
-// 3) 권한 (보안그룹) -> IT_CH_Agency 형식만 전달해야 함
+// 3) 권한 (보안그룹) : 운영 최초 전달 22-11-17 권한 전체 전송 (614건)
 router.get('/responsibility', async function (req, res, next) {
     console.log('call responsibility !');
     logger.info("[RESPONSIBILITY] call reponsibilty");
 
-    var queryString = {
-        depth: "complete" //["minimal", "partial " ,"complete"]
-        // ,count: 100
+    let queryString = {
+        depth: "complete"  //["minimal", "partial " ,"complete"] 
     };
 
     lge_eloqua.system.users.security_groups(queryString).then(async (result) => {
-        var send_url = "";
-        res.json(result.data);
-        var return_data = {};
-        var responsibility_data = CONVERT_IAM_RESPONSIBILITY_DATA(result.data);
-        var responsibility_data = get_IAM_RESPONSIBILITY_SET_TOTAL_COUNT(responsibility_data);
+        let send_url = ""; 
+        let return_data = {};
+        let responsibility_data = CONVERT_IAM_RESPONSIBILITY_DATA(result.data);
+        responsibility_data = get_IAM_RESPONSIBILITY_SET_TOTAL_COUNT(responsibility_data);
 
         if (responsibility_data.length > 0) {
 
@@ -614,15 +610,15 @@ router.get('/responsibility', async function (req, res, next) {
             return_data['x-apikey'] = "X1";
             return_data['gubun'] = "Q";
             return_data['data'] = responsibility_data;
-            res.json(return_data);
+            // res.json(return_data);
 
             // 개발 URL
-            send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/saveIamIfResponsibility.do";
+            // send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/saveIamIfResponsibility.do";
 
             // 운영 URL
-            // send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam_api/api2api/api/v1/saveIamIfResponsibility.do";
+            send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam_api/api2api/api/v1/saveIamIfResponsibility.do";
 
-            var headers = {
+            let headers = {
                 'Content-Type': "application/json",
                 'x-Gateway-APIKey': "da7d5553-5722-4358-91cd-9d89859bc4a0"
             }
@@ -635,7 +631,7 @@ router.get('/responsibility', async function (req, res, next) {
                 json: true
             }; 
 
-            var result = await request(options, async function (error, response, body) {
+            let result = await request(options, async function (error, response, body) {
                 console.log(response);
                 if (error) {
                     logger.error("[RESPONSIBILITY] RESPONSE ERROR : " + error);
@@ -646,14 +642,13 @@ router.get('/responsibility', async function (req, res, next) {
                     result = body; 
                     console.log(body);
                     logger.info("[RESPONSIBILITY] RESPONSE : " + body.msg); 
+                    res.json(body);
                 }
             })
         }
         else {
             logger.info("[RESPONSIBILITY] data length : 0");
-            // return_data.page = result.data.page;
-            // return_data.pageSize = result.data.pageSize;
-            // return_data.total = result.data.total;
+            res.json(body);
         }
     }).catch((err) => {
         logger.error("[RESPONSIBILITY] RESPONSE ERROR : " + err);
@@ -667,27 +662,29 @@ router.get('/responsibility', async function (req, res, next) {
 // 운영 -> 매시 15분마다 하기
 // ================================================================================================
 router.get('/authResponseList', async function (req, res, next) {
+    await authRespList();            
+});
 
-    // 매시 15분마다 호출 
+async function authRespList(){ 
     logger.info("call authResponseList ! ");
     console.log("call authResponseList ! ");
 
     let convert_user_data = "";
     let patchMethod = "";
     let response_data = [];
-    var send_url = "";
+    let send_url = "";
 
-    var param = {};
+    let param = {};
     param['systemId'] = "ELOQUA";
     param['x-apikey'] = "X1";
     param.gubun = "Q";
     
     // 개발 URL
     send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/authRespList.do";
-    // 운영 URL
+    // 운영 URL 
     // send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam_api/api2api/api/v1/authRespList.do";
 
-    var headers = {
+    let headers = {
         'Content-Type': "application/json",
         'x-Gateway-APIKey': "da7d5553-5722-4358-91cd-9d89859bc4a0"
     }
@@ -700,8 +697,7 @@ router.get('/authResponseList', async function (req, res, next) {
         json: true
     };
 
-    var result = request(options, async function (error, response, body) {
-        
+    let result = request(options, async function (error, response, body) {
         if (error) { 
             logger.error("[AUTH_RESPONSE] ERROR : " + body); 
         }
@@ -709,215 +705,111 @@ router.get('/authResponseList', async function (req, res, next) {
             logger.error("[AUTH_RESPONSE] ERROR : " + body);
         }
 
-        // 정상
         if (!error && response.statusCode == 200) {
-            // var response_data = await eloqua_process(body);
-            // var result = await return_result(response_data);
-
-            logger.info("[AUTH_RESPONSE] " + JSON.stringify(body));
-            for(var i = 0; i < body.data.length; i++){ 
-                var result_msg = '';
-                var eloqua_id = await getEloquaUserId(body.data[i].mailAddr);   // body.data[i].empNo ?
-                
-                if(body.data[i].suspResignFlag === 'RT' & eloqua_id != 0){
-                    // 퇴직자 삭제
-                    await lge_eloqua.system.users.delete(eloqua_id).then((rs)=>{
-                        result_msg = 'S'; 
-                    }).catch((err)=>{
-                        result_msg = 'F';
-                        logger.error("[ERROR] user delete : " + err.message);
-                        logger.error(JSON.stringify(body.data[i]));
-                    });
-
-                }else{
-                    convert_user_data = await CONVERT_ELOQUA_USER(body.data[i]); 
-
-                    // 생성 구분 -  NEW DELETE UNCHANGE 
-                    switch(body.data[i].dtlRespReqTypeCd){
-                        case 'NEW':
-                            if (eloqua_id == 0){
-                                // 유저 정보가 없을 경우 생성 후 권한 추가
-                                await lge_eloqua.system.users.create(convert_user_data).then(async (result) => {
-                                    patchMethod = "add";
-                                    result_msg = await addSecurityGroups(patchMethod, result.data.id, convert_user_data.securityGroups[0].id);
-                                }).catch((err) => {
-                                    result_msg = 'F';
-                                    logger.info('[ERROR] CREATE USER ERROR : ' + err.message);
-                                });
-                            }else{ 
-                                // patchMethod = "add";
-                                // result_msg = await addSecurityGroups(patchMethod, eloqua_id, convert_user_data.securityGroups[0].id);
-                                await lge_eloqua.system.users.update(eloqua_id, convert_user_data).then(async (result) => {
-                                    console.log(result.data);
-                                    patchMethod = "add";
-                                    result_msg = await addSecurityGroups(patchMethod, eloqua_id, convert_user_data.securityGroups[0].id);
-                                }).catch((err) => {
-                                    result_msg = 'F';
-                                    logger.info('[ERROR] CREATE USER ERROR : ' + err.message);
-                                });
-                            }
-                            break;
-
-                        case 'UNCHANGE': 
-                            result_msg = 'S';
-                            // logger.info("[UNCHANGE] data : " + JSON.stringify(body.data[i]));   // 변경X
-                            break;
-
-                        case 'DELETE':
-                            if (eloqua_id === 0) continue;  // 유저 정보가 없을 경우 삭제 진행 X
-                            patchMethod = "remove";
-                            result_msg = await addSecurityGroups(patchMethod, eloqua_id, convert_user_data.securityGroups[0].id);
-                            break; 
+            // logger.info("[AUTH_RESPONSE] " + JSON.stringify(body));
+            if(body.data.length > 0){
+                for(let i = 0; i < body.data.length; i++){ 
+                    let result_msg = '';
+                    let eloqua_id = await getEloquaUserId(body.data[i].mailAddr); 
+                    
+                    if(body.data[i].suspResignFlag === 'RT' & eloqua_id != 0){ 
+                        // 퇴직자 삭제
+                        logger.info("[AUTH_RESPONSE] 퇴직자 : " + body.data[i].mailAddr);
+                        
+                        await lge_eloqua.system.users.delete(eloqua_id).then((rs)=>{
+                            result_msg = 'S'; 
+                        }).catch((err)=>{
+                            result_msg = 'F';
+                            logger.error("[ERROR] user delete : " + err.message);
+                            logger.error(JSON.stringify(body.data[i]));
+                        });
+    
+                    }else{
+                        convert_user_data = await CONVERT_ELOQUA_USER(body.data[i]); 
+    
+                        // 생성 구분 -  NEW DELETE UNCHANGE 
+                        switch(body.data[i].dtlRespReqTypeCd){
+                            case 'NEW':
+                                if (eloqua_id == 0){
+                                    // 유저 정보가 없을 경우 생성 후 권한 추가
+                                    await lge_eloqua.system.users.create(convert_user_data).then(async (result) => {
+                                        patchMethod = "add";
+                                        result_msg = await addSecurityGroups(patchMethod, result.data.id, convert_user_data.securityGroups[0].id);
+                                    }).catch((err) => {
+                                        result_msg = 'F';
+                                        logger.info('[ERROR] CREATE USER ERROR : ' + err.message);
+                                    });
+                                }else{
+                                    await lge_eloqua.system.users.update(eloqua_id, convert_user_data).then(async (result) => {
+                                        patchMethod = "add";
+                                        result_msg = await addSecurityGroups(patchMethod, eloqua_id, convert_user_data.securityGroups[0].id);
+                                    }).catch((err) => {
+                                        result_msg = 'F';
+                                        logger.info('[ERROR] CREATE USER ERROR : ' + err.message);
+                                    });
+                                }
+                                break;
+    
+                            case 'UNCHANGE': 
+                                // logger.info("[UNCHANGE] data : " + JSON.stringify(body.data[i]));   // 변경X
+                                result_msg = 'S';
+                                break;
+    
+                            case 'DELETE':
+                                if (eloqua_id === 0) continue;  // 유저 정보가 없을 경우 삭제 진행 X
+                                patchMethod = "remove";
+                                result_msg = await addSecurityGroups(patchMethod, eloqua_id, convert_user_data.securityGroups[0].id);
+                                break; 
+                        } 
                     }
-
+    
+                    if(result_msg === 'F') logger.info("[AUTH_RESPONSE] return 'F' : " + JSON.stringify(body.data[i]));  // 실패 데이터 로그
+                    response_data.push({
+                        'id' : body.data[i].id,
+                        'result' : result_msg
+                    });
                 }
-
-                if(result_msg === 'F') logger.info("[AUTH_RESPONSE] ERROR : " + JSON.stringify(body.data[i]));
-                response_data.push({
-                    'id' : body.data[i].id,
-                    'result' : result_msg
-                });
+    
+                // 유관 시스템이 요청한 권한 승인 데이터 송신 결과 회신
+                if(response_data.length > 0){
+                    let return_param = {};
+                    return_param['systemId'] = "ELOQUA";
+                    return_param['x-apikey'] = "X1";
+                    return_param.gubun = "S";
+                    return_param.data = response_data; 
+    
+                    return_options = {
+                        url: send_url,
+                        method: "POST",
+                        headers: headers,
+                        body: return_param,
+                        json: true
+                    };
+    
+                    let return_result = request(return_options, async function (error, response, body){
+                        if (error) { 
+                            logger.error("[AUTH_RESPONSE] ERROR : " + body); 
+                        }
+                        if (response.statusCode != 200) {
+                            logger.error("[AUTH_RESPONSE] ERROR : " + body);
+                        }
+                        if (!error && response.statusCode == 200) {
+                            console.log(body);
+                            logger.info("[AUTH_RESPONSE] 송신 결과 회신 : " + JSON.stringify(body));
+                            res.json(body);
+                        }
+                    }); 
+                } 
+            }else{
+                logger.info("[AUTH_RESPONSE] 데이터 없음  " + JSON.stringify(body));
             }
-
-            // 유관 시스템이 요청한 권한 승인 데이터 송신 결과 회신
-            var return_param = {};
-            return_param['systemId'] = "ELOQUA";
-            return_param['x-apikey'] = "X1";
-            return_param.gubun = "S";
-            return_param.data = response_data; 
-
-            return_options = {
-                url: send_url,
-                method: "POST",
-                headers: headers,
-                body: return_param,
-                json: true
-            };
-
-            var return_result = request(return_options, async function (error, response, body){
-                if (error) { 
-                    logger.error("[AUTH_RESPONSE] ERROR : " + body); 
-                }
-                if (response.statusCode != 200) {
-                    logger.error("[AUTH_RESPONSE] ERROR : " + body);
-                }
-                if (!error && response.statusCode == 200) {
-                    console.log(body);
-                    logger.info("[AUTH_RESPONSE] 송신 결과 회신 : " + JSON.stringify(body));
-                }
-            }); 
         }
-    });
-
-    logger.info(result);
-});
-
-async function eloqua_process(body){
-    logger.info("[AUTH_RESPONSE] " + JSON.stringify(body));
-
-    let convert_user_data = "";
-    let patchMethod = "";
-    let response_data = [];
-    
-    for(var i = 0; i < body.data.length; i++){
-        
-        convert_user_data = await CONVERT_ELOQUA_USER(body.data[i]);
-        var result_msg = '';
-
-        var eloqua_email = convert_user_data.emailAddress;
-        var eloqua_id = await getEloquaUserId(eloqua_email);   // 유저가 없을 때 0
-
-        // 생성 구분 -  NEW DELETE UNCHANGE 
-        switch(body.data[i].dtlRespReqTypeCd){
-            case 'NEW':
-                if (eloqua_id == 0){
-                    // 유저 정보가 없을 경우 생성 후 권한 추가
-                    await lge_eloqua.system.users.create(convert_user_data).then(async (result) => {
-                        patchMethod = "add";
-                        result_msg = await addSecurityGroups(patchMethod, result.data.id, convert_user_data.securityGroups[0].id);
-                    }).catch((err) => {
-                        result_msg = 'F';
-                        logger.info('[ERROR] CREATE USER ERROR : ' + err.message);
-                    });
-                }else{ 
-                    // patchMethod = "add";
-                    // result_msg = await addSecurityGroups(patchMethod, eloqua_id, convert_user_data.securityGroups[0].id);
-                    await lge_eloqua.system.users.update(eloqua_id, convert_user_data).then(async (result) => {
-                        console.log(result.data);
-                        patchMethod = "add";
-                        result_msg = await addSecurityGroups(patchMethod, eloqua_id, convert_user_data.securityGroups[0].id);
-                    }).catch((err) => {
-                        result_msg = 'F';
-                        logger.info('[ERROR] CREATE USER ERROR : ' + err.message);
-                    });
-                }
-                break;
-
-            case 'UNCHANGE': 
-                result_msg = 'S';
-                // logger.info("[UNCHANGE] data : " + JSON.stringify(body.data[i]));   // 변경X
-                break;
-
-            case 'DELETE':
-                if (eloqua_id === 0) continue;  // 유저 정보가 없을 경우 삭제 진행 X
-                patchMethod = "remove";
-                result_msg = await addSecurityGroups(patchMethod, eloqua_id, convert_user_data.securityGroups[0].id);
-                break; 
-        }
-
-        if(result_msg === 'F') logger.info("[AUTH_RESPONSE] ERROR : " + JSON.stringify(body.data[i]));
-        response_data.push({
-            'id' : body.data[i].id,
-            'result' : result_msg
-        });
-    }
-    return response_data;
+    }); 
 }
 
-async function return_result(response_data){
-    
-    // 개발URL
-    send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/authRespList.do";
-
-    var headers = {
-        'Content-Type': "application/json",
-        'x-Gateway-APIKey': "da7d5553-5722-4358-91cd-9d89859bc4a0"
-    }
-
-    // 유관 시스템이 요청한 권한 승인 데이터 송신 결과 회신
-    var return_param = {};
-    return_param['systemId'] = "ELOQUA";
-    return_param['x-apikey'] = "X1";
-    return_param.gubun = "S";
-    return_param.data = response_data; 
-
-    return_options = {
-        url: send_url,
-        method: "POST",
-        headers: headers,
-        body: return_param,
-        json: true
-    };
-    
-    var return_result = request(return_options, async function (error, response, body){
-        if (error) { 
-            logger.error("[AUTH_RESPONSE] ERROR : " + body); 
-        }
-        if (response.statusCode != 200) {
-            logger.error("[AUTH_RESPONSE] ERROR : " + body);
-        }
-        if (!error && response.statusCode == 200) {
-            console.log(body);
-            logger.info("[AUTH_RESPONSE] 송신 결과 회신 : " + JSON.stringify(body));
-        }
-    });
-
-    return return_result;
-}
- 
 // 권한 추가 및 삭제 
 async function addSecurityGroups(patchMethod, user_id, security_id){ 
-    var returnMsg = '';
+    let returnMsg = '';
     let user = {};
     user = {
         "patchMethod" : patchMethod,
@@ -940,7 +832,7 @@ async function addSecurityGroups(patchMethod, user_id, security_id){
 // 엘로코아 데이터 형식으로 변환
 async function CONVERT_ELOQUA_USER(item){
     // 하나씩 변환 
-    var data = new ELOQUA_USER_ENTITY();
+    let data = new ELOQUA_USER_ENTITY();
     data.ssoOnly = "True";
     data.isDisabled = "False";
     data.passwordExpires = "False" ;     // 넘어온 데이터에 상관없이 추가적으로 들어가야 할 필드
@@ -987,7 +879,7 @@ async function getEloquaUserId(email){
 
     queryString['search'] = "emailAddress='" + email + "'";
     await lge_eloqua.system.users.get(queryString).then((rs) => {
-        logger.info('[USER] ' + JSON.stringify(rs.data));
+        // logger.info('[USER] ' + JSON.stringify(rs.data));
         if(rs.data.elements && rs.data.elements.length > 0){
             eloqua_user_id = rs.data.elements[0].id;
         }else{
@@ -1009,11 +901,9 @@ async function getSecuritygroupId(name){
         'search' : "name='" + name + "'"
     };
 
-    await lge_eloqua.system.users.security_groups(queryString).then((rs)=>{
-        console.log(rs.data);
+    await lge_eloqua.system.users.security_groups(queryString).then((rs)=>{ 
         responsibilityId = rs.data.elements[0].id;
     }).catch((err)=>{
-        // req_res_logs("iam_user_security_error", {"msg": err.message} );
         console.error(err.message);
     }); 
     return responsibilityId;
@@ -1227,8 +1117,8 @@ router.post('/user/securityGroup', async function (req, res, next) {
 // }
 
 //   {
-// 	  "user_id" : 248 ,
-// 	  "security_groupID" : 67 
+//    "user_id" : 248 ,
+//    "security_groupID" : 67 
 //   }
 
 async function securityGroup_Modify(user_id, add_sc_list, res) {
@@ -1617,8 +1507,8 @@ function GetDataValue(contacts_fieldvalue) {
 
 //이메일 확인 함수
 function validateEmail(email) {
-	const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-	return re.test(String(email).toLowerCase());
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
 }
 
 module.exports = router;
