@@ -700,11 +700,11 @@ async function authRespList(){
     let result = request(options, async function (error, response, body) {
         if (error) { 
             logger.error("[AUTH_RESPONSE] ERROR : " + body); 
-            res.json(body);
+            // res.json(body);
         }
         if (response.statusCode != 200) {
             logger.error("[AUTH_RESPONSE] ERROR : " + body);
-            res.json(body);
+            // res.json(body);
         }
 
         if (!error && response.statusCode == 200) {
@@ -798,13 +798,13 @@ async function authRespList(){
                         if (!error && response.statusCode == 200) {
                             console.log(body);
                             logger.info("[AUTH_RESPONSE] 송신 결과 회신 : " + JSON.stringify(body));
-                            res.json(body);
+                            // res.json(body);
                         }
                     }); 
                 } 
             }else{
                 logger.info("[AUTH_RESPONSE] data length : 0 => " + JSON.stringify(body));
-                res.json(body);
+                // res.json(body);
             }
         }
     }); 
