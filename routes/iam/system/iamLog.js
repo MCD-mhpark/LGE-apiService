@@ -13,7 +13,7 @@ function getDirPath(){
     let dirExist = fs.existsSync(path + today);
 
     if(!dirExist){
-        var logPath = path + today;
+        var dirPath = path + today;
         fs.mkdirSync( logPath, { recursive: true } ); 
     }else{
         dirPath = path + today;

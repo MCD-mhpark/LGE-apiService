@@ -38,8 +38,6 @@ function req_res_logs(filename, business_name, data) {
 }
 
 
-
-
 function lpad(str, padLen, padStr) {
 	if (padStr.length > padLen) {
 		console.log("오류 : 채우고자 하는 문자열이 요청 길이보다 큽니다");
