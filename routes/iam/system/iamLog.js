@@ -14,7 +14,7 @@ function getDirPath(){
 
     if(!dirExist){
         var dirPath = path + today;
-        fs.mkdirSync( logPath, { recursive: true } ); 
+        fs.mkdirSync( dirPath, { recursive: true } ); 
     }else{
         dirPath = path + today;
     }
