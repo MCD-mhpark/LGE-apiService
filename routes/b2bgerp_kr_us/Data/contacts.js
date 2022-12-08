@@ -20,7 +20,7 @@ moment.locale('kr');
 
 
 //랜딩 페이지 테스트
-router.post('/langPageTest', multipartMiddleware, function (req, res, next) {
+router.post('/langPageTest', function (req, res, next) {
 	var body = req.body;
     console.log(body);
 
