@@ -30,7 +30,7 @@ router.post('/online_inquiry', async (req, res, next) => {
 		}
 
 		// 2. req_data -> form_data convert
-		let insertForm = convertData(req_data);
+		let insertForm = await convertData(req_data);
 
 		// 3. send form_data 
 		try{
@@ -92,7 +92,15 @@ async function sendFormData(form_id, insertForm){
 	}
 
 // req_data -> form_data convert
-function convertData(data) {
+async function convertData(data) {
+
+	//리드 네임 변경
+	let leadSourcesName;
+	if(data.managerCompany == "BEST SHOP"){
+		leadSourcesName = "B2C사이트(하이프라자)"
+	}else{
+		leadSourcesName = "B2C사이트(일반)"
+	}
 
 	let resultform = {};
 	resultform.type = "FormData";
@@ -290,11 +298,12 @@ function convertData(data) {
             "value": data.unifyId
 		},
 
+		// managerCompany에 따라 리드소스 명 변경 => B2C사이트(하이프라자) or B2C사이트(일반)
 		{
 			"type": "FieldValue",
             "id": "105247",
             "name": "KR_Lead Sources",
-            "value": data.leadSourcesName
+            "value": leadSourcesName
 		},
 
 		{

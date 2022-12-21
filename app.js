@@ -13,7 +13,7 @@ require('console-stamp')(console, {
     }
 });
 var os = require('os');
-
+const cors = require('cors');
 //const apiInfo = require('./config/apiInfo.json');
 
 
@@ -151,6 +151,10 @@ const dbconfig = require('./config/dbconfig.js');
 const { url } = require('inspector');
 
 var app = express();
+
+app.use(cors({
+    origin: '*', // 모든 출처 허용 옵션. true 를 써도 된다.
+}));
 
 var module_files = path.join(process.cwd(), '../modules');
 app.use(methodOverride('_method'));

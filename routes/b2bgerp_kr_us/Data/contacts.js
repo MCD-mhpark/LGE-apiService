@@ -13,9 +13,24 @@ var fs = require("mz/fs");
 var dirPath = "KR_TEST";
 var Model = require('./kr_Model');
 var Controller = require('./kr_Controller');
-
+var multipart = require('connect-multiparty');
+var multipartMiddleware = multipart();
 
 moment.locale('kr');
+
+
+//랜딩 페이지 테스트
+router.post('/langPageTest', function (req, res, next) {
+	var body = req.body;
+    console.log(body);
+
+    var files = req.files;
+    console.log(files);
+
+    res.send('ㅇㅅㅇ');
+});
+
+
 //=====================================================================================================================
 // 한국영업본부 LOG 함수
 //=====================================================================================================================
@@ -36,8 +51,6 @@ function req_res_logs(filename, business_name, data) {
 		}
 	});
 }
-
-
 
 
 function lpad(str, padLen, padStr) {
