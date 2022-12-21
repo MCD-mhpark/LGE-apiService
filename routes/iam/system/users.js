@@ -715,18 +715,27 @@ async function authRespList(){
                     let result_msg = '';
                     let eloqua_id = await getEloquaUserId(body.data[i].mailAddr); 
                     
-                    if(body.data[i].suspResignFlag === 'RT' & eloqua_id != 0){ 
-                        // 퇴직자 삭제
-                        logger.info("[AUTH_RESPONSE] 퇴직자 : " + body.data[i].mailAddr);
+                    if(body.data[i].suspResignFlag === 'RT'){ 
+                        logger.info("[AUTH_RESPONSE] DELETE USER : " + body.data[i].mailAddr);
                         
-                        await lge_eloqua.system.users.delete(eloqua_id).then((rs)=>{
-                            result_msg = 'S'; 
-                        }).catch((err)=>{
-                            result_msg = 'F';
-                            logger.error("[ERROR] user delete : " + err.message);
-                            logger.error(JSON.stringify(body.data[i]));
-                        });
-    
+                        if(eloqua_id === 0){
+                            result_msg = "S";
+                            logger.info(JSON.stringify(body.data[i]))
+                        }else{
+                            await lge_eloqua.system.users.delete(eloqua_id).then((rs)=>{
+                                result_msg = 'S'; 
+                            }).catch((err)=>{
+                                
+                                if (err.message.includes("Dependencies Found")){
+                                    result_msg = 'S';
+                                    logger.error("[Dependencies Found] 활성화 유저 : " + JSON.stringify(body.data[i]));
+                                }else{
+                                    result_msg = 'F';
+                                    logger.error("[ERROR] user delete : " + err.message);
+                                    logger.error(JSON.stringify(body.data[i]));
+                                }
+                            });
+                        }
                     }else{
                         convert_user_data = await CONVERT_ELOQUA_USER(body.data[i]); 
     
@@ -1065,10 +1074,6 @@ router.get('/user/test_getOne/:id', function (req, res, next) {
     //   "lastName": "User"
     // }
 
-    // var body_data = Convert_IAM_TO_ELOQUA_DATA(req.body);
-
-    // console.log(body_data);
-
     lge_eloqua.system.users.getOne(req.params.id).then((result) => {
         console.log(result.data);
         res.json(result.data);
@@ -1080,23 +1085,35 @@ router.get('/user/test_getOne/:id', function (req, res, next) {
 
 router.get('/user/test_Search', function (req, res, next) {
 
-    //예시 Request body 참고 URL : https://docs.oracle.com/en/cloud/saas/marketing/eloqua-rest-api/op-api-rest-2.0-system-user-post.html
-    // {
-    //   "name": "API User",
-    //   "emailAddress": "api.user@oracle.com", 
-    //   "loginName": "api.user",
-    //   "firstName": "API",
-    //   "lastName": "User"
-    // }
-
-    // var body_data = Convert_IAM_TO_ELOQUA_DATA(req.body);
-
-    // console.log(body_data);
-    let email = req.query.email ;
+    // Request body 참고 URL : https://docs.oracle.com/en/cloud/saas/marketing/eloqua-rest-api/op-api-rest-2.0-system-user-post.html
+    console.log("/user/test_Search");
+    let email = req.query.email;
     let queryString = {};
     queryString['search'] = "emailAddress='" + email +"'";
+    queryString['search'] = "isDisabled='True'";
+    queryString['depth'] = "minimal";   // minimal complete
 
     lge_eloqua.system.users.get(queryString).then((result) => {
+        console.log(result.data);
+        res.json(result.data);
+    }).catch((err) => {
+        console.error(err);
+        res.json(err);
+    });
+});
+
+router.get('/user/test_enabled', function (req, res, next) {
+
+    // Request body 참고 URL : https://docs.oracle.com/en/cloud/saas/marketing/eloqua-rest-api/op-api-rest-2.0-system-user-id-enabled-put.html
+    console.log("/user/test_enabled");
+
+    let id = 49;
+    let email = req.query.email;
+    let enabled = {
+        "enabled": false
+    }
+
+    lge_eloqua.system.users.userEnabled(id, enabled).then((result) => {
         console.log(result.data);
         res.json(result.data);
     }).catch((err) => {
