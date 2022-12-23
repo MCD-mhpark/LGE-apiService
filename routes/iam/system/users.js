@@ -731,14 +731,14 @@ async function authRespList(){
                                     logger.error("[Dependencies Found] 활성화 유저 : " + JSON.stringify(body.data[i]));
                                 }else{
                                     result_msg = 'F';
-                                    logger.error("[ERROR] user delete : " + JSON.stringify(err.message));
+                                    logger.error("[ERROR] user delete : " + err.message);
                                     logger.error(JSON.stringify(body.data[i]));
                                 }
                             });
                         }
                     }else{
                         convert_user_data = await CONVERT_ELOQUA_USER(body.data[i]); 
-    
+     
                         // 생성 구분 -  NEW DELETE UNCHANGE 
                         switch(body.data[i].dtlRespReqTypeCd){
                             case 'NEW':
@@ -749,7 +749,7 @@ async function authRespList(){
                                         result_msg = await addSecurityGroups(patchMethod, result.data.id, convert_user_data.securityGroups[0].id);
                                     }).catch((err) => {
                                         result_msg = 'F';
-                                        logger.info('[ERROR] CREATE USER ERROR : ' + JSON.stringify(err.message));
+                                        logger.info('[ERROR] CREATE USER ERROR : ' + err.message);
                                     });
                                 }else{
                                     await lge_eloqua.system.users.update(eloqua_id, convert_user_data).then(async (result) => {
@@ -757,12 +757,12 @@ async function authRespList(){
                                         result_msg = await addSecurityGroups(patchMethod, eloqua_id, convert_user_data.securityGroups[0].id);
                                     }).catch((err) => {
                                         result_msg = 'F';
-                                        logger.info('[ERROR] CREATE USER ERROR : ' + JSON.stringify(err.message));
+                                        logger.info('[ERROR] CREATE USER ERROR : ' + err.message);
                                     });
                                 }
                                 break;
     
-                            case 'UNCHANGE': 
+                            case 'UNCHANGED': 
                                 // logger.info("[UNCHANGE] data : " + JSON.stringify(body.data[i]));   // 변경X
                                 result_msg = 'S';
                                 break;
