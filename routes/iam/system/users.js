@@ -738,7 +738,7 @@ async function authRespList(){
                         }
                     }else{
                         convert_user_data = await CONVERT_ELOQUA_USER(body.data[i]); 
-    
+     
                         // 생성 구분 -  NEW DELETE UNCHANGE 
                         switch(body.data[i].dtlRespReqTypeCd){
                             case 'NEW':
@@ -762,7 +762,7 @@ async function authRespList(){
                                 }
                                 break;
     
-                            case 'UNCHANGE': 
+                            case 'UNCHANGED': 
                                 // logger.info("[UNCHANGE] data : " + JSON.stringify(body.data[i]));   // 변경X
                                 result_msg = 'S';
                                 break;
