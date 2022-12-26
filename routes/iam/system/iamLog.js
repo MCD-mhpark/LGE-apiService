@@ -3,24 +3,24 @@ var moment = require('moment-timezone');
 const winston = require('winston');
 require('winston-daily-rotate-file');
 moment.locale('kr');
-var os = require('os'); 
+var os = require('os');
 
-path = "./routes/iam/log/"; 
+path = "./routes/iam/log/";
 // path = "/home/LGE_logs/IAM/"; 
 
-function getDirPath(){
+function getDirPath() {
     let today = moment().tz('Asia/Seoul').format("YYYYMMDD");
     let dirExist = fs.existsSync(path + today);
-
-    if(!dirExist){
-        var dirPath = path + today;
-        fs.mkdirSync( dirPath, { recursive: true } ); 
-    }else{
+    let dirPath = "";
+    if (!dirExist) {
+        dirPath = path + today;
+        fs.mkdirSync(dirPath, { recursive: true });
+    } else {
         dirPath = path + today;
     }
     // console.log("dir Create : " + dirPath);
     return dirPath;
-} 
+}
 
 const logDir = getDirPath();
 
@@ -47,10 +47,9 @@ const format = winston.format.combine(
     winston.format.json(),
     winston.format.timestamp({ format: ' YYYY-MM-DD HH:mm:ss ||' }),
     winston.format.printf(
-        (info) => 
-        {
+        (info) => {
             if (typeof info.message === 'object') {
-            info.message = JSON.stringify(info.message)
+                info.message = JSON.stringify(info.message)
             }
             return `${info.timestamp} [${info.level}] ▶ ${info.message}`
         }
@@ -67,7 +66,7 @@ const logger = winston.createLogger({
             datePattern: 'YYYY-MM-DD',
             dirname: logDir,
             filename: `%DATE%.log`,
-            zippedArchive: true,	
+            zippedArchive: true,
             handleExceptions: true,
             //maxFiles: 30,  
         }),
@@ -75,11 +74,11 @@ const logger = winston.createLogger({
         new winston.transports.DailyRotateFile({
             level: 'error',
             datePattern: 'YYYY-MM-DD',
-            dirname: logDir,  
+            dirname: logDir,
             filename: `%DATE%.error.log`,
             zippedArchive: true,
             //maxFiles: 30,
-        }), 
+        }),
     ]
 });
 
