@@ -5,6 +5,7 @@ var request = require('request');
 var router = express.Router();
 var fs = require("mz/fs"); 
 const logger = require('./iamLog');   // ../../log 
+const mailSender = require('../../mail');
 // const { reset } = require('nodemon');
 // const e = require('express'); 
 
@@ -731,6 +732,17 @@ async function authRespList(){
                                 
                                 if (err.message.includes("Dependencies Found")){
                                     result_msg = 'S';
+                                    const maillist = [
+                                        'hjmoon@goldenplanet.co.kr',
+                                        'jhbae@goldenplanet.co.kr',
+                                        'jwyi@goldenplanet.co.kr',
+                                    ];
+                                    let mailParam = {
+                                        toEmail: maillist,
+                                        subject: '[IAM-Eloqua] Eloqua User Deletion Error',
+                                        text: 'Check dependency references of the user for user deletion. User info : ' + JSON.stringify(body.data[i])
+                                    }
+                                    mailSender.sendGmail(mailParam);
                                     logger.error("[Dependencies Found] 활성화 유저 : " + JSON.stringify(body.data[i]));
                                 }else{
                                     result_msg = 'F';
@@ -741,7 +753,7 @@ async function authRespList(){
                         }
                     }else{
                         convert_user_data = await CONVERT_ELOQUA_USER(body.data[i]); 
-    
+     
                         // 생성 구분 -  NEW DELETE UNCHANGE 
                         switch(body.data[i].dtlRespReqTypeCd){
                             case 'NEW':
@@ -765,7 +777,7 @@ async function authRespList(){
                                 }
                                 break;
     
-                            case 'UNCHANGE': 
+                            case 'UNCHANGED': 
                                 // logger.info("[UNCHANGE] data : " + JSON.stringify(body.data[i]));   // 변경X
                                 result_msg = 'S';
                                 break;
