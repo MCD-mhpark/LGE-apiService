@@ -548,23 +548,26 @@ function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items) {
             data.transferDate = moment().tz('Asia/Seoul').format('YYYY-MM-DD hh:mm:ss');  // 전송일자
 
             switch (data.responsibilityCode) {  // "attribute4": 승인자 사번 >> 사업부별 관리자 사번 전달
+                case "KR":
+                    data.attribute4 = "304994" // 김민지 304994 KR
+                    break;
+
+                case "CLS":
+                case "CM":
+                case "AS":
+                    data.attribute4 = "306713" // 윤예지 306713 AS, CLS, CM
+                    break;
+
                 case "ID":
                 case "IT":
-                    data.attribute4 = "268965" //  // ID / IT : 서판규 선임 268965
-                    break;
-
+                case "LED":
                 case "Solar":
-                case "CM":
-                case "CLS":
-                    data.attribute4 = "261922" // Solar / CM / CLS / Solution  김효진 선임 261922
+                case "RBZ":
+                case "Solution":
+                case "VS":
+                    data.attribute4 = "268965" // 서판규 선임 268965 ID, IT, LED, RBZ, Solar, Solution, VS
                     break;
-
-                case "AS":
-                    data.attribute4 = "255147" // AS : 김정준 선임 255147
-                    break;
-
-                case "KR":
-                    data.attribute4 = "239827" // KR : 박종명 책임 239827 
+                    
                 default:
                     data.attribute4 = "268965" // HQ 서판규 선임 268965
                     break;
