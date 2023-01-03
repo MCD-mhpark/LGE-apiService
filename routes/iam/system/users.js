@@ -556,7 +556,8 @@ function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items) {
                 case "CLS":
                 case "CM":
                 case "AS":
-                    data.attribute4 = "306713" // 윤예지 306713 AS, CLS, CM
+                case "ESS":
+                    data.attribute4 = "306713" // 윤예지 306713 AS, CLS, CM, ESS
                     break;
 
                 case "ID":
@@ -614,6 +615,7 @@ router.get('/responsibility', async function (req, res, next) {
             return_data['x-apikey'] = "X1";
             return_data['gubun'] = "Q";
             return_data['data'] = responsibility_data;
+            logger.info("[RESPONSIBILITY] responsibility length : " + responsibility_data.length);
             // res.json(return_data);
 
             // 개발 URL
