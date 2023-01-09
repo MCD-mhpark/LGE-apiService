@@ -13,8 +13,8 @@ var fs = require("mz/fs");
 var dirPath = "KR_TEST";
 var Model = require('./kr_Model');
 var Controller = require('./kr_Controller');
-var multipart = require('connect-multiparty');
-var multipartMiddleware = multipart();
+// var multipart = require('connect-multiparty');
+// var multipartMiddleware = multipart();
 
 moment.locale('kr');
 

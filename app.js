@@ -13,7 +13,7 @@ require('console-stamp')(console, {
     }
 });
 var os = require('os');
-const cors = require('cors');
+// const cors = require('cors');
 //const apiInfo = require('./config/apiInfo.json');
 
 
@@ -81,21 +81,21 @@ function get_system_foldername()
 // 	username: 'Lg_api.B2b_global',
 // 	password: 'QWert1234!@'
 // };
-var b2bkr_eloqua_config = {
-	sitename: 'LGElectronics',
-	username: 'Lg_api.B2b_kr',
-	password: 'QWer1234!@'
-};
+// var b2bkr_eloqua_config = {
+// 	sitename: 'LGElectronics',
+// 	username: 'Lg_api.B2b_kr',
+// 	password: 'QWer1234!@'
+// };
 // var csintergration_eloqua_config = {
 // 	sitename: 'LGElectronics',
 // 	username: 'Lg_api.Integrated',
 // 	password: 'QWer1234!@'
 // };
-// var iam_eloqua_config = {
-// 	sitename: 'LGElectronics',
-// 	username: 'Lg_api.Iam',
-// 	password: 'QWer1234!@'
-// };
+var iam_eloqua_config = {
+	sitename: 'LGElectronics',
+	username: 'Lg_api.Iam',
+	password: 'QWer1234!@'
+};
 
 // var for_old_eloqua_config = {
 // 	sitename: 'LGElectronics',
@@ -107,7 +107,7 @@ var b2bkr_eloqua_config = {
 
 // global.bscard_eloqua = new EloquaApi(bscard_eloqua_config);
 // global.b2bgerp_eloqua = new EloquaApi(b2bgerp_eloqua_config);
-global.lge_eloqua = new EloquaApi(b2bkr_eloqua_config);
+global.lge_eloqua = new EloquaApi(iam_eloqua_config);
 // global.csintergration_eloqua = new EloquaApi(csintergration_eloqua_config);
 // global.iam_eloqua = new EloquaApi(iam_eloqua_config);
 // global.old_eloqua = new EloquaApi(for_old_eloqua_config);
@@ -152,9 +152,9 @@ const { url } = require('inspector');
 
 var app = express();
 
-app.use(cors({
-    origin: '*', // 모든 출처 허용 옵션. true 를 써도 된다.
-}));
+// app.use(cors({
+//     origin: '*', // 모든 출처 허용 옵션. true 를 써도 된다.
+// }));
 
 var module_files = path.join(process.cwd(), '../modules');
 app.use(methodOverride('_method'));
@@ -200,7 +200,7 @@ app.use('/iam', iam_system_users);
 // 	password: 'QWert1234!@'
 // };
 
-// global.lge_eloqua = new EloquaApi(b2bgerp_eloqua_config);
+// global.lge_elqoua = new EloquaApi(b2bgerp_eloqua_config);
 //============TEST용 Basic인증
 
 // var lge_eloqua_config = apiInfo;

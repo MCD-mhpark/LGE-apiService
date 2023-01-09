@@ -546,7 +546,9 @@ function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items) {
             data.transferFlag = "N";
             data.transferDate = moment().tz('Asia/Seoul').format('YYYY-MM-DD hh:mm:ss'); // 전송일자
 
-            switch (data.responsibilityCode) {  // "attribute4": 승인자 사번 >> 사업부별 관리자 사번 전달
+            data.attribute6 = item.name.split('_')[0];
+            data.attribute7 = item.name.split('_')[1];
+            switch (data.attribute6) {  // "attribute4": 승인자 사번 >> 사업부별 관리자 사번 전달
                 case "KR":
                     data.attribute4 = "304994" // KR : 김민지 304994 
                     break;
@@ -554,7 +556,8 @@ function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items) {
                 case "CLS":
                 case "CM":
                 case "AS":
-                    data.attribute4 = "306713" // AS : 윤예지 306713 AS, CLS, CM
+                case "ESS":
+                    data.attribute4 = "306713" // AS : 윤예지 306713 AS, CLS, CM, ESS
                     break;
 
                 case "ID":
@@ -571,9 +574,6 @@ function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items) {
                     data.attribute4 = "268965" // HQ 서판규 선임 268965
                     break;
             }
-
-            data.attribute6 = item.name.split('_')[0];
-            data.attribute7 = item.name.split('_')[1];
 
             result.push(data);
             console.log(item.name);
@@ -612,7 +612,6 @@ router.get('/responsibility', async function(req, res, next) {
             return_data['x-apikey'] = "X1";
             return_data['gubun'] = "Q";
             return_data['data'] = responsibility_data;
-            // res.json(return_data);
 
             // 개발 URL
             // send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/saveIamIfResponsibility.do";
@@ -663,10 +662,10 @@ router.get('/responsibility', async function(req, res, next) {
 // 운영 -> 매시 15분마다 하기
 // ================================================================================================
 router.get('/authResponseList', async function(req, res, next) {
-    await authRespList();
+    await authRespList(req, res);
 });
 
-async function authRespList() {
+async function authRespList(req, res) {
     logger.info("call authResponseList ! ");
     console.log("call authResponseList ! ");
 
@@ -702,15 +701,15 @@ async function authRespList() {
     let result = request(options, async function(error, response, body) {
         if (error) {
             logger.error("[AUTH_RESPONSE] ERROR : " + body);
-            // res.json(body);
+            res.json(body);
         }
         if (response.statusCode != 200) {
             logger.error("[AUTH_RESPONSE] ERROR : " + body);
-            // res.json(body);
+            res.json(body);
         }
 
         if (!error && response.statusCode == 200) {
-            // logger.info("[AUTH_RESPONSE] " + JSON.stringify(body));
+            logger.info("[AUTH_RESPONSE] " + JSON.stringify(body));
             if (body.data.length > 0) {
                 for (let i = 0; i < body.data.length; i++) {
                     let result_msg = '';
@@ -826,7 +825,7 @@ async function authRespList() {
                 }
             } else {
                 logger.info("[AUTH_RESPONSE] data length : 0 => " + JSON.stringify(body));
-                // res.json(body);
+                res.json(body);
             }
         }
     });
@@ -911,6 +910,7 @@ async function getEloquaUserId(email) {
             eloqua_user_id = 0;
         }
     }).catch((err) => {
+        console.error("[ERROR] get user id : " + err);
         console.error(err);
     });
     return eloqua_user_id;
