@@ -65,32 +65,47 @@ async function GetKR_CustomDataSearch(_parentId , type) {
 
 	// var queryString = "?search=" + "CreatedAt<'" + end_date + "'CreatedAt>'" + start_date + "'";
 	// var queryString = "?search=483='N'";
-	var queryString = "";
+	// var queryString = "";
 	
-	if(type == 'get') queryString += "?search=B2B_GERP_KR_____1=''"
-	if(type == 'init')  queryString += "?search=B2B_GERP_KR_____1='Y'"
+	// if(type == 'get') queryString += "?search=B2B_GERP_KR_____1=''"
+	// if(type == 'init')  queryString += "?search=B2B_GERP_KR_____1='Y'"
 
-	// Get 요청하기 http://www.google.com 
-	const options = {
-		uri: "https://secure.p03.eloqua.com/api/REST/1.0/data/customObject/" + parentId + queryString
-		, headers: {
-			'Authorization': 'Basic ' + 'TEdFbGVjdHJvbmljc1xMZ19hcGkuQjJiX2tyOlFXZXIxMjM0IUA='
-		}
-	};
+	// // Get 요청하기 http://www.google.com 
+	// const options = {
+	// 	uri: "https://secure.p03.eloqua.com/api/REST/1.0/data/customObject/" + parentId + queryString
+	// 	, headers: {
+	// 		'Authorization': 'Basic ' + 'TEdFbGVjdHJvbmljc1xMZ19hcGkuQjJiX2tyOlFXZXIxMjM0IUA='
+	// 	}
+	// };
 
-	await request_promise.get(options, function (error, response, body) {
-		// console.log("data return");
-		// console.log(response.statusMessage);
-		// console.log(response.statusCode);
-		//console.log(body);
-		try {
-			return_data = JSON.parse(body);
-		} catch(e) {
-			console.log(">>>>>>>>>>>>>json parse error:" + body);
-			console.log(e);
-		}
+	// await request_promise.get(options, function (error, response, body) {
+	// 	// console.log("data return");
+	// 	// console.log(response.statusMessage);
+	// 	// console.log(response.statusCode);
+	// 	//console.log(body);
+	// 	try {
+	// 		return_data = JSON.parse(body);
+	// 	} catch(e) {
+	// 		console.log(">>>>>>>>>>>>>json parse error:" + body);
+	// 		console.log(e);
+	// 	}
 		
-	});
+	// });
+
+	var queryString = {};
+
+	if(type == 'get') queryString['search'] =  "?B2B_GERP_KR_____1=''"
+	if(type == 'init')  queryString['search'] =  "?B2B_GERP_KR_____1='Y'"
+	
+	await lge_eloqua.data.customObjects.data.get(_parentId, queryString).then((result) => {
+		if (result.data && result.data.total > 0) {
+			return_data = result.data;
+		}
+	}).catch((err) => {
+		console.log(">>>>>>>>>>>>>GetKR_CustomDataSearch:" + result);
+		console.log(err);
+	})
+	
 	return return_data;
 }
 
