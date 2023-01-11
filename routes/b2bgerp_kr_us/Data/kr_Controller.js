@@ -65,9 +65,10 @@ exports.getTransfer_UpdateData = async function (TRANS_KR_LIST , type){
 		for(let i = 0 ; i <  kr_data.fieldValues.length ; i++){
 			if(kr_data.fieldValues[i].id == "483") { kr_data.fieldValues[i].value = trans_check }
 			
-			if(kr_data.fieldValues[i].id == "301" || kr_data.fieldValues[i].id == "300" || kr_data.fieldValues[i].id == "299" || kr_data.fieldValues[i].id == "298"){ 
-			 	kr_data.fieldValues[i].value = utils.timeConverter("GET_UNIX" , kr_data.fieldValues[i].value ) 
-			}
+			//앞 단에서 convert 해줌 
+			// if(kr_data.fieldValues[i].id == "301" || kr_data.fieldValues[i].id == "300" || kr_data.fieldValues[i].id == "299" || kr_data.fieldValues[i].id == "298"){ 
+			//  	kr_data.fieldValues[i].value = utils.timeConverter("GET_UNIX" , kr_data.fieldValues[i].value ) 
+			// }
 
 			//{ type: 'FieldValue', id:  '301', value: '4/18/2021 12:00:00 AM' },
 			// { type: 'FieldValue', id: '300', value: '4/18/2021 12:00:00 AM' },
