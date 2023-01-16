@@ -77,40 +77,47 @@ async function GetKR_CustomDataSearch(_parentId , type) {
 	// var end_date = moment(_end_date).subtract(13, 'Hour').format("YYYY-MM-DD HH:mm:ss");
 
 	// var queryString = "?search=" + "CreatedAt<'" + end_date + "'CreatedAt>'" + start_date + "'";
-	// var queryString = "?search=483='N'";
-	var queryString = "";
-	
-	if(type == 'get') queryString += "?search=B2B_GERP_KR_____1=''"
-	if(type == 'init')  queryString += "?search=B2B_GERP_KR_____1='Y'"
+	// 
+	// if(type == 'get') queryString['search'] =  "?B2B_GERP_KR_____1=''"
+	// if(type == 'init')  queryString['search'] =  "?B2B_GERP_KR_____1='Y'"
 
-	// Get 요청하기 http://www.google.com 
-	const options = {
-		uri: "https://secure.p03.eloqua.com/api/REST/1.0/data/customObject/" + parentId + queryString
-		, headers: {
-			'Authorization': 'Basic ' + 'TEdFbGVjdHJvbmljc1xMZ19hcGkuQjJiX2tyOlFXZXIxMjM0IUA='
-		}
-	};
+	// console.log(_parentId);
+	// console.log(queryString);
+	// await lge_eloqua.data.customObjects.data.get(_parentId, queryString).then((result) => {
+	// 	if (result.data && result.data.total > 0) {
+	// 		return_data = result.data;
+	// 	}
+	// }).catch((err) => {
+	// 	console.log(err);
+	// })
+	var queryString = {};
 
-	await request_promise.get(options, function (error, response, body) {
-		// console.log("data return");
-		// console.log(response.statusMessage);
-		// console.log(response.statusCode);
-		//console.log(body);
-		try {
-			return_data = JSON.parse(body);
-		} catch(e) {
-			console.log(">>>>>>>>>>>>>json parse error:" + body);
-			console.log(e);
+	// return return_data;
+	if(type == 'get') 
+	queryString['search'] =  "?B2B_GERP_KR_____1=''"
+	queryString['depth'] = "complete"
+	if(type == 'init')  queryString['search'] =  "?B2B_GERP_KR_____1='Y'"
+
+	console.log(_parentId);
+	//console.log(queryString);
+	await lge_eloqua.data.customObjects.data.get(_parentId, queryString).then((result) => {
+		if (result.data && result.data.total > 0) {
+			return_data = result.data;
 		}
-		
-	});
+	}).catch((err) => {
+		console.log(err);
+	})
+
 	return return_data;
+
+	
 }
 
 router.get('/trans_gubun_init', async function (req, res, next) {
 	var parentId = 39;  // 한국영업본부 온라인 견적문의 커스텀 오브젝트 ID
 	var COD_list = await GetKR_CustomDataSearch(parentId ,"init");
 	let trans_up_list = await Controller.getTransfer_UpdateData( COD_list.elements , "init");
+	console.log(COD_list.elements.length);
 	console.log(COD_list.elements.length);
 
 	await Controller.sendTransfer_Update(parentId , trans_up_list);
@@ -218,6 +225,45 @@ async function senderToB2BGERP_KR(){
 //=====================================================================================================================
 // 한국영업본부 CO.KR 견적문의 API
 //=====================================================================================================================
+router.post('/testcustomObjectDataCreate', async function (req, res, next) {
+	console.log("call customObjectDataCreate");
+	//var customObjectCreateData = req.body;
+	var customObjectCreateData = {
+		"fieldValues": [
+		  {
+			"id": "1383",
+			"value": moment().tz('Asia/Seoul').unix()
+		  },
+		  {
+			"id":'1362',
+			"value":'test@naver.com'
+		  }
+		  //   {
+		// 	"id": "1382",
+		// 	"value": moment().tz('Asia/Seoul').unix()
+		//   },
+		//   {
+		// 	"id": "1381",
+		// 	"value": moment().tz('Asia/Seoul').unix()
+		//   },
+		//   {
+		// 	"id": "1380",
+		// 	"value": moment().tz('Asia/Seoul').unix()
+		 // }
+		],
+		isMapped: 'Yes'
+	  }
+	let parent_id = 149;
+
+	var customObject_result = await Controller.SendCreateCustomObjectData(parent_id , customObjectCreateData);
+	
+	if(customObject_result){
+		res.json({
+			"Result": "success"
+		});
+	}
+
+})
 
 //커스텀 오브젝트 데이터 추가
 router.post('/customObjectDataCreate', async function (req, res, next) {
@@ -647,8 +693,10 @@ router.get('/customQuerySearch/:id', async function (req, res, next) {
 
 	// var queryText =  "lastUpdatedAt>2021-05-10";
 	let parent_id = req.params.id;
-	let response_data = await GetKR_CustomDataSearch("2021-05-17", "2021-05-18", parent_id);
-
+	let response_data = await GetKR_CustomDataSearch(parent_id, "get");
+	console.log(response_data);
+	
+	return;
 	var B2B_GERP_KR_DATA = Model.Convert_B2BGERP_KR_DATA(cod_json);
 
 	var send_data = {

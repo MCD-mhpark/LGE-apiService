@@ -76,16 +76,16 @@ function get_system_foldername()
 // 	username: 'Lg_api.Card',
 // 	password: 'QWer1234!@'
 // };
-// var b2bgerp_eloqua_config = {
-// 	sitename: 'LGElectronics',
-// 	username: 'Lg_api.B2b_global',
-// 	password: 'QWert1234!@'
-// };
-var b2bkr_eloqua_config = {
+var b2bgerp_eloqua_config = {
 	sitename: 'LGElectronics',
-	username: 'Lg_api.B2b_kr',
-	password: 'QWer1234!@'
+	username: 'Lg_api.B2b_global',
+	password: 'QWert1234!@'
 };
+// var b2bkr_eloqua_config = {
+// 	sitename: 'LGElectronics',
+// 	username: 'Lg_api.B2b_kr',
+// 	password: 'QWer1234!@'
+// };
 // var csintergration_eloqua_config = {
 // 	sitename: 'LGElectronics',
 // 	username: 'Lg_api.Integrated',
@@ -107,7 +107,7 @@ var b2bkr_eloqua_config = {
 
 // global.bscard_eloqua = new EloquaApi(bscard_eloqua_config);
 // global.b2bgerp_eloqua = new EloquaApi(b2bgerp_eloqua_config);
-global.lge_eloqua = new EloquaApi(b2bkr_eloqua_config);
+global.lge_eloqua = new EloquaApi(b2bgerp_eloqua_config);
 // global.csintergration_eloqua = new EloquaApi(csintergration_eloqua_config);
 // global.iam_eloqua = new EloquaApi(iam_eloqua_config);
 // global.old_eloqua = new EloquaApi(for_old_eloqua_config);
