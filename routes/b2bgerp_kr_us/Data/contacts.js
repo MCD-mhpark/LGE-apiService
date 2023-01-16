@@ -13,8 +13,14 @@ var fs = require("mz/fs");
 var dirPath = "KR_TEST";
 var Model = require('./kr_Model');
 var Controller = require('./kr_Controller');
-var multipart = require('connect-multiparty');
-var multipartMiddleware = multipart();
+
+const path = require('path');
+var {Storage} = require('@google-cloud/storage');
+const Dotenv = require('dotenv');
+const multer = require('multer');
+// var multipart = require('connect-multiparty');
+// var multipartMiddleware = multipart();
+Dotenv.config();
 
 moment.locale('kr');
 
@@ -29,6 +35,78 @@ router.post('/langPageTest', function (req, res, next) {
 
     res.send('ㅇㅅㅇ');
 });
+
+//=====================================================================================================================
+
+//const bucket = storage.bucket(process.env.GCLOUD_STORAGE_BUCKET);
+
+const storage = new Storage({
+	keyFilename: path.join(__dirname, '../../../tousflux-cloud.json')
+});
+
+const uploadImage = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+        fileSize: 2 * 1024 * 1024, 
+    },
+	//여기서 파일이름 컨트롤 가능
+});
+
+const tousfluxBucket = storage.bucket('tousflux_test')
+const today = new Date().toISOString().substring(0,10).replace(/-/g,'');	
+
+router.post('/GCSTest', function (req, res, next){
+
+	//listBuckets();
+	// storage.getBuckets('tousflux_test')
+	// .then(x => console.log(x));
+	console.log(storage.bucket('tousflux_test'))
+	res.send('success')
+
+});
+
+router.post('/ImageGCSTest', uploadImage.single('image'), (req, res) => {
+	try{
+		//console.log(req)
+		console.log(req.file)
+		const blob = tousfluxBucket.file(
+			`${today}/${Date.now()}-${req.file.originalname}`
+		);
+		const blobStream = blob.createWriteStream();
+		
+		blobStream.on('error', err => {
+			next(err);
+		});
+
+		blobStream.on('finish', () => {
+			res.status(200).send('성공')
+		});
+
+		blobStream.end(req.file.buffer);
+
+	}catch (error){
+		res.status(500).send(error);
+	}
+
+});
+
+async function uploadFile() {
+	
+
+	await storage.bucket('tousflux_test').upload(filePath, {
+		destination: `/${today}/${fileData.filename}`,
+	  });
+	console.log(`${filePath} uploaded to ${bucketName}`);
+}
+
+
+async function listBuckets() {
+	const [buckets] = await storage.getBuckets();
+	console.log('Buckets:');
+	buckets.forEach(bucket => {
+	  console.log(bucket.name);
+	});
+}
 
 
 //=====================================================================================================================
@@ -77,29 +155,29 @@ async function GetKR_CustomDataSearch(_parentId , type) {
 	// var end_date = moment(_end_date).subtract(13, 'Hour').format("YYYY-MM-DD HH:mm:ss");
 
 	// var queryString = "?search=" + "CreatedAt<'" + end_date + "'CreatedAt>'" + start_date + "'";
-	// 
-	// if(type == 'get') queryString['search'] =  "?B2B_GERP_KR_____1=''"
-	// if(type == 'init')  queryString['search'] =  "?B2B_GERP_KR_____1='Y'"
 
-	// console.log(_parentId);
-	// console.log(queryString);
-	// await lge_eloqua.data.customObjects.data.get(_parentId, queryString).then((result) => {
-	// 	if (result.data && result.data.total > 0) {
-	// 		return_data = result.data;
+	// var queryString = "?search=483='N'";
+	//var queryString = "";
+	
+	// if(type == 'get') queryString += "?search=B2B_GERP_KR_____1=''"
+	// if(type == 'init')  queryString += "?search=B2B_GERP_KR_____1='Y'"
+
+	// // Get 요청하기 http://www.google.com 
+	// const options = {
+	// 	uri: "https://secure.p03.eloqua.com/api/REST/1.0/data/customObject/" + parentId + queryString
+	// 	, headers: {
+	// 		'Authorization': 'Basic ' + 'TEdFbGVjdHJvbmljc1xMZ19hcGkuQjJiX2tyOlFXZXIxMjM0IUA='
 	// 	}
-	// }).catch((err) => {
-	// 	console.log(err);
-	// })
+	// };
+
 	var queryString = {};
 
-	// return return_data;
-	if(type == 'get') 
-	queryString['search'] =  "?B2B_GERP_KR_____1=''"
-	queryString['depth'] = "complete"
+	if(type == 'get') queryString['search'] =  "?B2B_GERP_KR_____1=''"
 	if(type == 'init')  queryString['search'] =  "?B2B_GERP_KR_____1='Y'"
 
 	console.log(_parentId);
-	//console.log(queryString);
+	console.log(queryString);
+
 	await lge_eloqua.data.customObjects.data.get(_parentId, queryString).then((result) => {
 		if (result.data && result.data.total > 0) {
 			return_data = result.data;
@@ -109,8 +187,6 @@ async function GetKR_CustomDataSearch(_parentId , type) {
 	})
 
 	return return_data;
-
-	
 }
 
 router.get('/trans_gubun_init', async function (req, res, next) {
@@ -121,6 +197,115 @@ router.get('/trans_gubun_init', async function (req, res, next) {
 	console.log(COD_list.elements.length);
 
 	await Controller.sendTransfer_Update(parentId , trans_up_list);
+});
+//=====================================================================================================================
+// 한국영업본부 AWS 컨텍 조회 
+//=====================================================================================================================
+router.get('/TestContactDataSearch', async function (req, res, next) {
+	/*{
+		startDate = '2023-01-01',
+		endDate = '2023-01-01',
+		depth = 'complete'
+
+	}*/
+	let queryString = {}
+	let queryText = "";
+
+	let start_date = req.query.startDate
+	let end_date = req.query.endDate
+
+	let createDt_Object = utils.yesterday_getDateTime();
+	start_date ? createDt_Object.start = start_date : null;
+	end_date ? createDt_Object.end = end_date : null;
+
+	//C_DateModified
+	//C_DateCreated
+	//queryText = "emailAddress='jtlim@goldenplanet.co.kr'";
+	if(start_date != null && end_date != null){
+		queryText = "C_DateCreated>" + "'" + createDt_Object.start + " 00:00:00'" + "C_DateCreated<" + "'" + createDt_Object.end + " 23:59:59'";
+		queryString['search'] = queryText;
+	}
+	queryString['depth'] = req.query.depth;
+	
+	console.log("queryText : " + queryText);
+	await lge_eloqua.data.contacts.get(queryString).then((result) => {
+		console.log(" result data 건수 : " + result.data.total);
+		//console.log(result.data);
+		if (result.data.total && result.data.total > 0) {
+			contacts_data = result.data;
+			res.send({
+				"ResultCode": "success",
+				"Contact Count" : result.data.total,
+				"Result" : contacts_data,
+			})
+		}else{
+			res.send({
+				"ResultCode": "success",
+				"Result" : "No corresponding date data",
+			})
+		}
+	}).catch((err) => {
+		console.error(err);
+		res.send({
+			"ResultCode": "fail",
+			"ErrorMessage" : err.message,
+		});
+	});
+
+});
+
+
+//Account 조회
+
+router.get('/TestAccountDataSearch', async function (req, res, next) {
+/*{
+		startDate = '2023-01-01',
+		endDate = '2023-01-01',
+		depth = 'complete' ,'minimal', 'complete'
+
+	}*/
+	let queryString = {}
+	let queryText = "";
+
+	let start_date = req.query.startDate
+	let end_date = req.query.endDate
+
+	let createDt_Object = utils.yesterday_getDateTime();
+	start_date ? createDt_Object.start = start_date : null;
+	end_date ? createDt_Object.end = end_date : null;
+
+	if(start_date != null && end_date != null){
+		queryText = "M_DateCreated>" + "'" + createDt_Object.start + " 00:00:00'" + "M_DateCreated<" + "'" + createDt_Object.end + " 23:59:59'";
+		queryString['search'] = queryText;
+	}
+	queryString['depth'] = req.query.depth;
+
+	//partial 
+	console.log("queryText : " + queryText);
+	await lge_eloqua.data.accounts.get(queryString).then((result) => {
+		console.log(" result data 건수 : " + result.data.total);
+		//console.log(result.data);
+		if (result.data.total && result.data.total > 0) {
+			contacts_data = result.data;
+			res.send({
+				"ResultCode": "success",
+				"Contact Count" : result.data.total,
+				"Result" : contacts_data,
+			})
+		}else{
+			res.send({
+				"ResultCode": "success",
+				"Result" : "No corresponding date data",
+			})
+		}
+	}).catch((err) => {
+		console.error(err);
+		res.send({
+			"ResultCode": "fail",
+			"ErrorMessage" : err.message,
+		});
+	});
+
 });
 
 
@@ -693,10 +878,9 @@ router.get('/customQuerySearch/:id', async function (req, res, next) {
 
 	// var queryText =  "lastUpdatedAt>2021-05-10";
 	let parent_id = req.params.id;
+
 	let response_data = await GetKR_CustomDataSearch(parent_id, "get");
 	console.log(response_data);
-	
-	return;
 	var B2B_GERP_KR_DATA = Model.Convert_B2BGERP_KR_DATA(cod_json);
 
 	var send_data = {

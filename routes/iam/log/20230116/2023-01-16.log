@@ -1,0 +1,30 @@
+ 2023-01-16 13:34:53 || [error] ▶ uncaughtException: Internal request error making post request to https://login.eloqua.com/auth/oauth2/token
+Error: Internal request error making post request to https://login.eloqua.com/auth/oauth2/token
+    at Eloqua._throwError (D:\LG\LG-GERP\LG-Eloqua-APIService\public\modules\eloqua-sdk\dist\Eloqua.js:177:15)
+    at Eloqua.refreshToken (D:\LG\LG-GERP\LG-Eloqua-APIService\public\modules\eloqua-sdk\dist\Eloqua.js:349:18)
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)
+    at async Job.job (D:\LG\LG-GERP\LG-Eloqua-APIService\app.js:245:9)
+ 2023-01-16 13:41:04 || [error] ▶ uncaughtException: start_date is not defined
+ReferenceError: start_date is not defined
+    at D:\LG\LG-GERP\LG-Eloqua-APIService\routes\b2bgerp_kr_us\Data\contacts.js:216:2
+    at Layer.handle [as handle_request] (D:\LG\LG-GERP\LG-Eloqua-APIService\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\LG\LG-GERP\LG-Eloqua-APIService\node_modules\express\lib\router\route.js:137:13)
+    at Route.dispatch (D:\LG\LG-GERP\LG-Eloqua-APIService\node_modules\express\lib\router\route.js:112:3)
+    at Layer.handle [as handle_request] (D:\LG\LG-GERP\LG-Eloqua-APIService\node_modules\express\lib\router\layer.js:95:5)
+    at D:\LG\LG-GERP\LG-Eloqua-APIService\node_modules\express\lib\router\index.js:281:22
+    at Function.process_params (D:\LG\LG-GERP\LG-Eloqua-APIService\node_modules\express\lib\router\index.js:335:12)
+    at next (D:\LG\LG-GERP\LG-Eloqua-APIService\node_modules\express\lib\router\index.js:275:10)
+    at Function.handle (D:\LG\LG-GERP\LG-Eloqua-APIService\node_modules\express\lib\router\index.js:174:3)
+    at router (D:\LG\LG-GERP\LG-Eloqua-APIService\node_modules\express\lib\router\index.js:47:12)
+    at Layer.handle [as handle_request] (D:\LG\LG-GERP\LG-Eloqua-APIService\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (D:\LG\LG-GERP\LG-Eloqua-APIService\node_modules\express\lib\router\index.js:317:13)
+    at D:\LG\LG-GERP\LG-Eloqua-APIService\node_modules\express\lib\router\index.js:284:7
+    at Function.process_params (D:\LG\LG-GERP\LG-Eloqua-APIService\node_modules\express\lib\router\index.js:335:12)
+    at next (D:\LG\LG-GERP\LG-Eloqua-APIService\node_modules\express\lib\router\index.js:275:10)
+    at SendStream.error (D:\LG\LG-GERP\LG-Eloqua-APIService\node_modules\serve-static\index.js:121:7)
+    at SendStream.emit (node:events:527:28)
+    at SendStream.error (D:\LG\LG-GERP\LG-Eloqua-APIService\node_modules\send\index.js:270:17)
+    at SendStream.onStatError (D:\LG\LG-GERP\LG-Eloqua-APIService\node_modules\send\index.js:421:12)
+    at next (D:\LG\LG-GERP\LG-Eloqua-APIService\node_modules\send\index.js:736:16)
+    at onstat (D:\LG\LG-GERP\LG-Eloqua-APIService\node_modules\send\index.js:725:14)
+    at FSReqCallback.oncomplete (node:fs:198:21)
