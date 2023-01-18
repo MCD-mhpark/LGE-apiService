@@ -117,6 +117,62 @@ router.get('/trans_gubun_init', async function (req, res, next) {
 
 	await Controller.sendTransfer_Update(parentId , trans_up_list);
 });
+//=====================================================================================================================
+// 한국영업본부 AWS 컨텍 조회 
+//=====================================================================================================================
+router.get('/TestContactDataSearch', async function (req, res, next) {
+	/*{
+		startDate = '2023-01-01',
+		endDate = '2023-01-01',
+		depth = 'complete'
+
+	}*/
+	let queryString = {}
+	let queryText = "";
+
+	let start_date = req.body.startDate
+	let end_date = req.body.endDate
+	let gubun = req.body.gubun
+
+	let createDt_Object = utils.yesterday_getDateTime();
+	start_date ? createDt_Object.start = start_date : null;
+	end_date ? createDt_Object.end = end_date : null;
+
+	//C_DateModified
+	//C_DateCreated
+	//queryText = "emailAddress='jtlim@goldenplanet.co.kr'";
+	if(start_date != null && end_date != null){
+		queryText = gubun+">" + "'" + createDt_Object.start + " 00:00:00'" + gubun+"<" + "'" + createDt_Object.end + " 23:59:59'";
+		queryString['search'] = queryText;
+	}
+	queryString['depth'] = req.body.depth;
+	
+	console.log("queryText : " + queryText);
+	await lge_eloqua.data.contacts.get(queryString).then((result) => {
+		console.log(" result data 건수 : " + result.data.total);
+		//console.log(result.data);
+		if (result.data.total && result.data.total > 0) {
+			contacts_data = result.data;
+			res.send({
+				"ResultCode": "success",
+				"Contact Count" : result.data.total,
+				"Result" : contacts_data,
+			})
+		}else{
+			res.send({
+				"ResultCode": "success",
+				"Result" : "No corresponding date data",
+			})
+		}
+	}).catch((err) => {
+		console.error(err);
+		res.send({
+			"ResultCode": "fail",
+			"ErrorMessage" : err.message,
+		});
+	});
+
+});
 
 
 //=====================================================================================================================
