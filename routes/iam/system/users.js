@@ -319,7 +319,6 @@ function CONVERT_IAM_USER_DATA(_eloqua_items) {
 router.get('/user', function(req, res, next) {
     logger.info("[USER] user call");
     console.log("[USER] user call");
-    let send_url = "";
     let searchEmail = "";
 
     let queryString = {};
@@ -347,17 +346,17 @@ router.get('/user', function(req, res, next) {
             logger.info("[USER] user_data : " + JSON.stringify(user_data));
 
             // 개발 URL
-            // send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/saveIamIfUser.do"
+            // const send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/saveIamIfUser.do"
 
             // 운영 URL
-            send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam_api/api2api/api/v1/saveIamIfUser.do"
+            const send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam_api/api2api/api/v1/saveIamIfUser.do"
 
-            let headers = {
+            const headers = {
                 'Content-Type': "application/json",
                 'x-Gateway-APIKey': "da7d5553-5722-4358-91cd-9d89859bc4a0"
             }
 
-            options = {
+            const options = {
                 url: send_url,
                 method: "POST",
                 headers: headers,
@@ -365,7 +364,7 @@ router.get('/user', function(req, res, next) {
                 json: true
             };
 
-            let result = await request(options, async function(error, response, body) {
+            const result = await request(options, async function(error, response, body) {
                 console.log(response);
                 if (error) {
                     console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
@@ -440,7 +439,6 @@ router.get('/user_responsibility', function(req, res, next) {
     logger.info("call user reponsibilty !");
     console.log("call user reponsibilty !");
 
-    let send_url = "";
     let queryString = {};
     queryString['depth'] = "complete";
 
@@ -467,17 +465,17 @@ router.get('/user_responsibility', function(req, res, next) {
             return_data['data'] = user_responsibility_data;
 
             // 개발 URL
-            // send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/saveIamIfUserResponsibility.do";
+            // const send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/saveIamIfUserResponsibility.do";
 
             // 운영 URL
-            send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam_api/api2api/api/v1/saveIamIfUserResponsibility.do";
+            const send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam_api/api2api/api/v1/saveIamIfUserResponsibility.do";
 
-            let headers = {
+            const headers = {
                 'Content-Type': "application/json",
                 'x-Gateway-APIKey': "da7d5553-5722-4358-91cd-9d89859bc4a0"
             }
 
-            options = {
+            const options = {
                 url: send_url,
                 method: "POST",
                 headers: headers,
@@ -485,10 +483,9 @@ router.get('/user_responsibility', function(req, res, next) {
                 json: true
             };
 
-            let result = await request(options, async function(error, response, body) {
+            const result = await request(options, async function(error, response, body) {
                 if (error) {
                     logger.error("[USER RESPONSIBILITY] RESPONSE ERROR : " + error);
-                    // console.log("에러에러(wise 점검 및 인터넷 연결 안됨)");
                     console.log(error);
                 }
                 if (!error && response.statusCode == 200) {
@@ -550,14 +547,14 @@ function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items) {
             data.attribute7 = item.name.split('_')[1];
             switch (data.attribute6) {  // "attribute4": 승인자 사번 >> 사업부별 관리자 사번 전달
                 case "KR":
-                    data.attribute4 = "304994" // KR : 김민지 304994 
+                    data.attribute4 = "304994" // 김민지 304994 
                     break;
 
                 case "CLS":
                 case "CM":
                 case "AS":
                 case "ESS":
-                    data.attribute4 = "306713" // AS : 윤예지 306713 AS, CLS, CM, ESS
+                    data.attribute4 = "306713" // 윤예지 306713 AS, CLS, CM, ESS
                     break;
 
                 case "ID":
@@ -567,11 +564,11 @@ function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items) {
                 case "RBZ":
                 case "Solution":
                 case "VS":
-                    data.attribute4 = "268965" //  // ID / IT : 서판규 선임 268965 ID, IT, LED, RBZ, Solar, Solution, VS
+                    data.attribute4 = "268965" // 서판규 268965 ID, IT, LED, RBZ, Solar, Solution, VS
                     break;
                     
                 default:
-                    data.attribute4 = "268965" // HQ 서판규 선임 268965
+                    data.attribute4 = "268965" // 서판규 268965 HQ
                     break;
             }
 
@@ -594,14 +591,23 @@ function get_IAM_RESPONSIBILITY_SET_TOTAL_COUNT(responsibility_data) {
 // 3) 권한 (보안그룹) : 운영 최초 전달 22-11-17 권한 전체 전송 (614건)
 router.get('/responsibility', async function(req, res, next) {
     console.log('call responsibility !');
-    logger.info("[RESPONSIBILITY] call reponsibilty");
+    // logger.info("[RESPONSIBILITY] call reponsibilty");
 
     let queryString = {
-        depth: "complete" //["minimal", "partial " ,"complete"] 
+        depth: "complete"    // ["minimal", "partial " ,"complete"] 
     };
 
+    // MC 요청 시 특정 권한의 이름 받아 송신
+    if (req.body.data != undefined) {
+        let data = req.body.data;
+        let query_name = "";
+        for (let i = 0; i < data.length; i++){
+            query_name += `name='${data[i]['name']}'`;
+        }
+        queryString['search'] = query_name;
+    }
+    
     lge_eloqua.system.users.security_groups(queryString).then(async(result) => {
-        let send_url = "";
         let return_data = {};
         let responsibility_data = CONVERT_IAM_RESPONSIBILITY_DATA(result.data);
         responsibility_data = get_IAM_RESPONSIBILITY_SET_TOTAL_COUNT(responsibility_data);
@@ -614,17 +620,17 @@ router.get('/responsibility', async function(req, res, next) {
             return_data['data'] = responsibility_data;
 
             // 개발 URL
-            // send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/saveIamIfResponsibility.do";
+            // const send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/saveIamIfResponsibility.do";
 
             // 운영 URL
-            send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam_api/api2api/api/v1/saveIamIfResponsibility.do";
+            const send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam_api/api2api/api/v1/saveIamIfResponsibility.do";
 
-            let headers = {
+            const headers = {
                 'Content-Type': "application/json",
                 'x-Gateway-APIKey': "da7d5553-5722-4358-91cd-9d89859bc4a0"
             }
 
-            options = {
+            const options = {
                 url: send_url,
                 method: "POST",
                 headers: headers,
@@ -632,7 +638,7 @@ router.get('/responsibility', async function(req, res, next) {
                 json: true
             };
 
-            let result = await request(options, async function(error, response, body) {
+            const result = await request(options, async function(error, response, body) {
                 console.log(response);
                 if (error) {
                     logger.error("[RESPONSIBILITY] RESPONSE ERROR : " + error);
@@ -672,25 +678,25 @@ async function authRespList(req, res) {
     let convert_user_data = "";
     let patchMethod = "";
     let response_data = [];
-    let send_url = "";
 
-    let param = {};
-    param['systemId'] = "ELOQUA";
-    param['x-apikey'] = "X1";
-    param.gubun = "Q";
+    const param = {
+        "systemId" : "ELOQUA",
+        "x-apikey" : "X1",
+        "gubun" : "Q"
+    };
 
     // 개발 URL
-    // send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/authRespList.do";
+    // const send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/authRespList.do";
 
     // 운영 URL 
-    send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam_api/api2api/api/v1/authRespList.do";
+    const send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam_api/api2api/api/v1/authRespList.do";
 
-    let headers = {
+    const headers = {
         'Content-Type': "application/json",
         'x-Gateway-APIKey': "da7d5553-5722-4358-91cd-9d89859bc4a0"
     }
 
-    options = {
+    const options = {
         url: send_url,
         method: "POST",
         headers: headers,
@@ -698,11 +704,12 @@ async function authRespList(req, res) {
         json: true
     };
 
-    let result = request(options, async function(error, response, body) {
+    const result = request(options, async function(error, response, body) {
         if (error) {
             logger.error("[AUTH_RESPONSE] ERROR : " + body);
             res.json(body);
         }
+        
         if (response.statusCode != 200) {
             logger.error("[AUTH_RESPONSE] ERROR : " + body);
             res.json(body);
@@ -710,6 +717,7 @@ async function authRespList(req, res) {
 
         if (!error && response.statusCode == 200) {
             logger.info("[AUTH_RESPONSE] " + JSON.stringify(body));
+
             if (body.data.length > 0) {
                 for (let i = 0; i < body.data.length; i++) {
                     let result_msg = '';
@@ -795,13 +803,14 @@ async function authRespList(req, res) {
 
                 // 유관 시스템이 요청한 권한 승인 데이터 송신 결과 회신
                 if (response_data.length > 0) {
-                    let return_param = {};
-                    return_param['systemId'] = "ELOQUA";
-                    return_param['x-apikey'] = "X1";
-                    return_param.gubun = "S";
-                    return_param.data = response_data;
+                    const return_param = {
+                        'systemId' : 'ELOQUA',
+                        'x-apikey' : 'X1',
+                        'gubun' : 'S',
+                        'data' : response_data
+                    };
 
-                    return_options = {
+                    const return_options = {
                         url: send_url,
                         method: "POST",
                         headers: headers,
@@ -809,7 +818,7 @@ async function authRespList(req, res) {
                         json: true
                     };
 
-                    let return_result = request(return_options, async function(error, response, body) {
+                    const return_result = request(return_options, async function(error, response, body) {
                         if (error) {
                             logger.error("[AUTH_RESPONSE] ERROR : " + body);
                         }
