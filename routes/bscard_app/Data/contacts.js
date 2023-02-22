@@ -409,10 +409,11 @@ async function Convert_BS_CARD_DATA_SEARCH(body_data) {
     return result_data;
 }
 
-function Convert_BS_CARD_DATA(body_data, status) {
+async function Convert_BS_CARD_DATA(body_data, status) {
 
     var items = body_data;
     var result_data = [];
+    const regex = /[^0-9]/gi;
 
     for (var i = 0; items.length > i; i++) {
 
@@ -430,8 +431,8 @@ function Convert_BS_CARD_DATA(body_data, status) {
 
             //ba_card_data.? = item.rank; //"rank": "이사/MBA", | Eloqua 필드 정보 없음 _ job title 예상
 
-            bs_card_data.mobilePhone = item.hp; //"hp": "010.9241.9080",
-            bs_card_data.businessPhone = item.tel; //"tel": "03q.252.9127",
+            bs_card_data.mobilePhone = item.hp.replace(regex, "");      //"hp": "010.9241.9080",
+            bs_card_data.businessPhone = item.tel.replace(regex, "");   //"tel": "03q.252.9127",
             bs_card_data.fax = item.fax; //"fax": "fax11",
             bs_card_data.address1 = item.addr1; //"addr1": "수원시 영통구",
             bs_card_data.address2 = item.addr2; //"addr2": "서초구 양재",
@@ -441,7 +442,6 @@ function Convert_BS_CARD_DATA(body_data, status) {
             bs_card_data.fieldValues.push({ "id": "100252", "value": item.homepage });
             bs_card_data.fieldValues.push({ "id": "100292", "value": item.rank });
             bs_card_data.fieldValues.push({ "id": "100202", "value": "LBCS" });
-
 
             bs_card_data.country = item.country; // "country": "Netherlands Antilles",
 
@@ -456,8 +456,6 @@ function Convert_BS_CARD_DATA(body_data, status) {
 
 
             if (item.krMkt == 'Y') {
-
-
                 if (status === "create") {
                     //들어온 값이 없어도 자동으로 업데이트 해야하는 동의 여부 및 동의 날짜 필드
                     // KR_Privacy Policy_Optin || 한영본 메일 발송 동의 여부 || 100318
@@ -474,17 +472,15 @@ function Convert_BS_CARD_DATA(body_data, status) {
                     // KR_Privacy Policy_Transfer PI Aborad || (현재 동의여부 필드만 있고, 데이트 관련 필드 없음) || 100317
                     bs_card_data.fieldValues.push({ "id": "100317", "value": "Yes" });
                 }
+                
                 //100196 Subsidiary custom field//"userCode": "LGEVU"
                 // krMkt Y인 경우 Subsidiary를 KR로 찍고 N인 경우 Global 이기에 Country 값을 봐도 되기 떄문에 빈값으로 찍는다.
                 bs_card_data.fieldValues.push({ "id": "100196", "value": "KR" });
-
 
                 // KR_Product Category || 한영본 customer product || 100311
                 bs_card_data.fieldValues.push({ "id": "100311", "value": item.customerProduct });
 
             } else {
-
-
                 if (status === "create") {
                     // DirectMarketing_EM_TXT_SNS || 글로벌 메일 발송 동의 여부 || 100211
                     bs_card_data.fieldValues.push({ "id": "100211", "value": "Yes" });
@@ -499,10 +495,10 @@ function Convert_BS_CARD_DATA(body_data, status) {
                     // TransferOutsideCountry_AgreedDate || 개인정보 국외이전 동의 날짜 || 100208
                     bs_card_data.fieldValues.push({ "id": "100208", "value": moment().tz('Asia/Seoul').unix() });
                 }
+
                 //100196 Subsidiary custom field//"userCode": "LGEVU"
                 // krMkt Y인 경우 Subsidiary를 KR로 찍고 N인 경우 Global 이기에 Country 값을 봐도 되기 떄문에 빈값으로 찍는다.
                 bs_card_data.fieldValues.push({ "id": "100196", "value": "" });
-
 
                 // LBCS_customerProduct || Global customer product || 100366
                 bs_card_data.fieldValues.push({ "id": "100366", "value": item.customerProduct });
@@ -522,58 +518,52 @@ router.post('/create', async function (req, res, next) {
 
     console.log("create call");
     //body 예시
-    // req.body =   {
-    //"userId": "jbpark",
-    //"userCode": "LGEVU",
-    //"product": "IT_B2B_Cloud",
-    //"firstName": "진범",
-    //"lastName": "박",
-    //"company": "인텔리코드",
-    //"rank": "이사/MBA",
-    //"hp": "010.9241.9080",
-    //"tel": "03q.252.9127",
-    //"fax": "fax11",
-    //"addr1": "수원시 영통구",
-    //"addr2": "서초구 양재",
-    //"email": "jbpark@intellicode.co.kr",
-    //"homepage": "",
-    //"etc1": "메모 남김",
-    //"mailingDate": "2021-01-30 19:10:15",
-    //"subscriptionDate": "2021-01-30 19:11:22",
-    //"campaignName": "",
-    //"campaignDate": "2031-01-01 00:00:00",
-    //"customerProduct": "as",
-    //"krMkt": "N",
-    //"country": "Netherlands Antilles",
-    //"updatedDate": "2021-02-01 10:26:01"
-    //}
-    var data = Convert_BS_CARD_DATA(req.body, "create");
+    // req.body = {
+    //     "userId": "jbpark",
+    //     "userCode": "LGEVU",
+    //     "product": "IT_B2B_Cloud",
+    //     "firstName": "진범",
+    //     "lastName": "박",
+    //     "company": "인텔리코드",
+    //     "rank": "이사/MBA",
+    //     "hp": "010.9241.9080",
+    //     "tel": "03q.252.9127",
+    //     "fax": "fax11",
+    //     "addr1": "수원시 영통구",
+    //     "addr2": "서초구 양재",
+    //     "email": "jbpark@intellicode.co.kr",
+    //     "homepage": "",
+    //     "etc1": "메모 남김",
+    //     "mailingDate": "2021-01-30 19:10:15",
+    //     "subscriptionDate": "2021-01-30 19:11:22",
+    //     "campaignName": "",
+    //     "campaignDate": "2031-01-01 00:00:00",
+    //     "customerProduct": "as",
+    //     "krMkt": "N",
+    //     "country": "Netherlands Antilles",
+    //     "updatedDate": "2021-02-01 10:26:01"
+    // }
 
-    // console.log(data);
-    // console.log(typeof(data));
+    var data = await Convert_BS_CARD_DATA(req.body, "create");
+    // console.log(req.body); 
 
     var form = {};
     var success_count = 0;
     var failed_count = 0;
     var result_list = [];
-
-
-
-
+    
     for (var i = 0; data.length > i; i++) {
         await lge_eloqua.data.contacts.create(data[i]).then((result) => {
-       
-            // res.json(result.data);
             result_list.push({
                 email: data[i].emailAddress,
                 status: 200,
                 message: "success"
             });
             success_count++;
-
-
+            
             //CustomObject 에 Create 데이터 적재 (단 create 나 update 가 성공했을 경우에만)
             if(req.body[i].krMkt === 'Y') KR_LBCS_History_Save(result.data.id , req.body[i]);
+
         }).catch((err) => {
             // console.log(data[i].fieldValues);
             // console.log(err);
@@ -586,7 +576,6 @@ router.post('/create', async function (req, res, next) {
             });
             failed_count++;
         });
-
     }
 
     console.log("total count : " + data.length + "  ::: success_count : " + success_count + "  ::: failed_count : " + failed_count);
@@ -608,7 +597,7 @@ router.put('/update/', async function (req, res, next) {
     // console.log(1);
     // console.log(bs_data);
 
-    bs_data = Convert_BS_CARD_DATA(bs_data, "update");
+    bs_data = await Convert_BS_CARD_DATA(bs_data, "update");
     // console.log(2);
     // console.log(bs_data);
 
