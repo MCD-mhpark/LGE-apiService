@@ -480,7 +480,7 @@ function regex_phone(number){
         return null; 
 }
 
-async function Convert_BS_CARD_DATA(body_data, status) {
+function Convert_BS_CARD_DATA(body_data, status) {
 
     var items = body_data;
     var result_data = [];
@@ -500,7 +500,7 @@ async function Convert_BS_CARD_DATA(body_data, status) {
 
             //ba_card_data.? = item.rank; //"rank": "이사/MBA", | Eloqua 필드 정보 없음 _ job title 예상
 
-            bs_card_data.mobilePhone = await regex_phone(item.hp);      // "hp": "010.9241.9080",
+            bs_card_data.mobilePhone = regex_phone(item.hp);      // "hp": "010.9241.9080",
             console.log(`${item.hp} >> ${bs_card_data.mobilePhone}`);
             bs_card_data.businessPhone = item.tel;                      // "tel": "03q.252.9127",
             bs_card_data.fax = item.fax;                                // "fax": "031.629,7826",
