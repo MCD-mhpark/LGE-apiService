@@ -409,6 +409,52 @@ async function Convert_BS_CARD_DATA_SEARCH(body_data) {
     return result_data;
 }
 
+function regex_phone(number){
+    const regex = /[^0-9]/gi;
+    const phoneRegex = /^\d{2,3}\d{3,4}\d{4}/;
+
+    // 1. 번호를 제외한 특수기호, 공백 제거
+    let phone = number.replace(regex, "");
+    
+    // 2) 테스트 데이터일 경우 null : 데이터 리스트 전달 예정
+    if (phone.startsWith("0000") || phone.startsWith("1111")) return null;
+    switch (phone){
+        case "1111":
+        case "0000":
+        case "00000000000":
+        case "01000000000":
+        case "01011111111":
+        case "1000000000":
+        case "8201000000000":
+        case "821000000000":
+            return null;
+    }
+
+    if (phone.length == 11 && phone.startsWith("010") && phone.match(phoneRegex)) return phone;  // 형식 맞을 경우 리턴
+
+    // 9) 데이터가 8자 미만일 경우 null
+    if (phone.length < 8) return null;
+
+    // 3) 국가코드 제외
+    if (phone.startsWith('8210')) phone = "0" + phone.slice(2);
+    if (phone.startsWith('82010')) phone = phone.slice(2);
+    
+    // 5) 011 016, 017, 018, 019 + 7) 8) 지역번호
+    start_numbers = ["010","011","016","017","018","017","02","031","032","033","041","042","043","044","051","052","053","054","054","055","061","062","063","064"];
+    start_numbers.forEach(ele => {
+        if (phone.startsWith(ele) && phone.match(phoneRegex))
+            return phone;
+    });
+    
+    // 4) 10으로 시작 // 0010으로 시작 // 008210으로 시작하는 경우에만 제일 앞에를 010으로 치환
+    if (phone.startsWith("10") && phone.length < 11) phone = "0" + phone;
+    if (phone.startsWith("0010") && phone.length > 11) phone = phone.slice(1);
+    if (phone.startsWith("008210") && phone.length > 11) phone = "0" + phone.slice(4);
+
+    if (phone.match(phoneRegex)) return phone;
+    else return null; 
+}
+
 function Convert_BS_CARD_DATA(body_data, status) {
 
     var items = body_data;
@@ -430,7 +476,9 @@ function Convert_BS_CARD_DATA(body_data, status) {
 
             //ba_card_data.? = item.rank; //"rank": "이사/MBA", | Eloqua 필드 정보 없음 _ job title 예상
 
-            bs_card_data.mobilePhone = item.hp; //"hp": "010.9241.9080",
+            bs_card_data.mobilePhone = regex_phone(item.hp); //"hp": "010.9241.9080",
+            console.log(`${item.hp} >> ${bs_card_data.mobilePhone}`);
+
             bs_card_data.businessPhone = item.tel; //"tel": "03q.252.9127",
             bs_card_data.fax = item.fax; //"fax": "fax11",
             bs_card_data.address1 = item.addr1; //"addr1": "수원시 영통구",
