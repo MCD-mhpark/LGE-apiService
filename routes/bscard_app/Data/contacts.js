@@ -409,11 +409,81 @@ async function Convert_BS_CARD_DATA_SEARCH(body_data) {
     return result_data;
 }
 
+router.get('/phone_test', async function (req, res, next){
+    console.log("test");
+    let test_data = req.body;
+
+    let origin_data = [];
+    let return_data = [];
+
+    test_data.forEach(ele => {
+        var rs = regex_phone(ele.tel);
+        origin_data.push(ele.tel);
+        return_data.push(rs);
+    });
+
+    console.log(origin_data.length);
+    for (let i = 0; i < origin_data.length; i++){
+        console.log(`${origin_data[i]} >> ${return_data[i]}`);
+    }
+    
+});
+
+function regex_phone(number){
+    const regex = /[^0-9]/gi;
+    const phoneRegex = /^\d{2,3}\d{3,4}\d{4}/;
+
+    // 1. 번호를 제외한 특수기호, 공백 제거
+    let phone = number.replace(regex, "");
+    
+    // 2) 테스트 데이터일 경우 null : 데이터 리스트 전달 예정
+    if (phone.startsWith("0000") || phone.startsWith("1111")) return null;
+    switch (phone){
+        case "1111":
+        case "0000":
+        case "00000000000":
+        case "01000000000":
+        case "01011111111":
+        case "1000000000":
+        case "8201000000000":
+        case "821000000000":
+            return null;
+    }
+
+    if (phone.length == 11 && phone.startsWith("010") && phone.match(phoneRegex)) return phone;  // 형식 맞을 경우 리턴
+
+    // 9) 데이터가 8자 미만일 경우 null
+    if (phone.length < 8) return null;
+
+    // 6) 7~8자리만 있는 경우 제일 앞에 010으로 입력 (Mobile Phone 필드이기 때문에 데이터 역시 휴대폰번호로 가정) >> 제외
+    // if (phone.length == 8 || phone.length == 7) phone = "010" + phone;
+
+    // 3) 국가코드 제외
+    if (phone.startsWith('8210')) phone = "0" + phone.slice(2);
+    if (phone.startsWith('82010')) phone = phone.slice(2);
+    
+    // 5) 011 016, 017, 018, 019 + 7) 8) 지역번호
+    start_numbers = ["010","011","016","017","018","017","02","031","032","033","041","042","043","044","051","052","053","054","054","055","061","062","063","064"];
+    start_numbers.forEach(ele => {
+        if (phone.startsWith(ele) && phone.match(phoneRegex))
+            return phone;
+    });
+    
+    // 4) 10으로 시작 // 0010으로 시작 // 008210으로 시작하는 경우에만 제일 앞에를 010으로 치환
+    if (phone.startsWith("10") && phone.length < 11) phone = "0" + phone;
+    if (phone.startsWith("0010") && phone.length > 11) phone = phone.slice(1);
+    if (phone.startsWith("008210") && phone.length > 11) phone = "0" + phone.slice(4);
+
+    if (phone.match(phoneRegex))
+        return phone;
+    else
+        return null; 
+}
+
 async function Convert_BS_CARD_DATA(body_data, status) {
 
     var items = body_data;
     var result_data = [];
-    const regex = /[^0-9]/gi;
 
     for (var i = 0; items.length > i; i++) {
 
@@ -424,16 +494,17 @@ async function Convert_BS_CARD_DATA(body_data, status) {
             bs_card_data.id = item.id;              // update 와 delete 의 데이터 처리를 위해 Eloqua 의 id값
             bs_card_data.salesPerson = item.userId; //"userId": "jbpark",
 
-
             bs_card_data.firstName = item.firstName; //"firstName": "진범",
             bs_card_data.lastName = item.lastName; //"lastName": "박",
             bs_card_data.accountname = item.company; //"company": "인텔리코드",
 
             //ba_card_data.? = item.rank; //"rank": "이사/MBA", | Eloqua 필드 정보 없음 _ job title 예상
 
-            bs_card_data.mobilePhone = item.hp.replace(regex, "");      //"hp": "010.9241.9080",
-            bs_card_data.businessPhone = item.tel.replace(regex, "");   //"tel": "03q.252.9127",
-            bs_card_data.fax = item.fax; //"fax": "fax11",
+            bs_card_data.mobilePhone = await regex_phone(item.hp);      // "hp": "010.9241.9080",
+            console.log(`${item.hp} >> ${bs_card_data.mobilePhone}`);
+            bs_card_data.businessPhone = item.tel;                      // "tel": "03q.252.9127",
+            bs_card_data.fax = item.fax;                                // "fax": "031.629,7826",
+
             bs_card_data.address1 = item.addr1; //"addr1": "수원시 영통구",
             bs_card_data.address2 = item.addr2; //"addr2": "서초구 양재",
             bs_card_data.emailAddress = item.email; //"email": "jbpark@intellicode.co.kr",
@@ -508,7 +579,7 @@ async function Convert_BS_CARD_DATA(body_data, status) {
             result_data.push(bs_card_data);
         }
         catch (e) {
-            console.log(e);
+            console.log(`[ERROR] Convert_BS_CARD_DATA - ${e}`);
         }
     }
     return result_data;
@@ -545,7 +616,6 @@ router.post('/create', async function (req, res, next) {
     // }
 
     var data = await Convert_BS_CARD_DATA(req.body, "create");
-    // console.log(req.body); 
 
     var form = {};
     var success_count = 0;
@@ -588,29 +658,21 @@ router.post('/create', async function (req, res, next) {
 
 });
 
-router.put('/update/', async function (req, res, next) {
-
-
+router.put('/update', async function (req, res, next) {
     console.log("update_call");
-    // console.log(req.body);
+
     var bs_data = await mappedContacts(req.body, "partial");
-    // console.log(1);
-    // console.log(bs_data);
+    // console.log(`(1) ${bs_data}`);
 
     bs_data = await Convert_BS_CARD_DATA(bs_data, "update");
-    // console.log(2);
-    // console.log(bs_data);
-
-
-
-
+    // console.log(`(2) ${bs_data}`);
+    
     var form = {};
     var success_count = 0;
     var failed_count = 0;
     var result_list = [];
 
-    // console.log("bs_data.length");
-    // console.log(bs_data.length);
+    console.log(`bs_data length : ${bs_data.length}`);
     for (var i = 0; bs_data.length > i; i++) {
         console.log(bs_data[i].id)
         var id = bs_data[i].id;
@@ -623,7 +685,6 @@ router.put('/update/', async function (req, res, next) {
                 status: 200,
                 message: "success"
             });
-
             success_count++;
 
             //CustomObject 에 Create 데이터 적재 (단 create 나 update 가 성공했을 경우에만)
@@ -657,8 +718,6 @@ router.put('/update/', async function (req, res, next) {
     form.result_list = result_list;
 
     res.json(form);
-
-
 
 });
 
