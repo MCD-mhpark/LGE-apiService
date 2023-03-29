@@ -723,10 +723,11 @@ async function authRespList(){
                     
                     if(body.data[i].suspResignFlag === 'RT'){ 
                         logger.info("[AUTH_RESPONSE] DELETE USER : " + body.data[i].mailAddr);
+                        console.log("[AUTH_RESPONSE] DELETE USER : " + JSON.stringify(body.data[i]));
                         
                         if(eloqua_id === 0){
                             result_msg = "S";
-                            logger.info(JSON.stringify(body.data[i]))
+                            logger.info(JSON.stringify(body.data[i]));
                         }else{
                             await lge_eloqua.system.users.delete(eloqua_id).then((rs)=>{
                                 result_msg = 'S'; 
@@ -766,8 +767,38 @@ async function authRespList(){
                                         result_msg = await addSecurityGroups(patchMethod, result.data.id, convert_user_data.securityGroups[0].id);
                                     }).catch((err) => {
                                         result_msg = 'F';
-                                        logger.info('[ERROR] CREATE USER ERROR : ' + err.message);
+                                        logger.info(`[ERROR] CREATE USER ERROR : ${JSON.stringify(err)}`);
+                                        console.log(`[ERROR] CREATE USER ERROR : ${JSON.stringify(err)}`);
+
+                                        // 409 error 처리 (2023/03/29)
+                                        if(err.response.status === 409 && err.response.data[0].property === 'loginName'){
+                                            convert_user_data.loginName = convert_user_data.loginName + '2';
+                                            console.log(JOSN.stringify(convert_user_data));
+                                            logger.info(JOSN.stringify(convert_user_data));
+
+                                            lge_eloqua.system.users.create(convert_user_data).then(async(result) => {
+                                                logger.info('[SUCCESS] CREATE USER LOGIN NAME + 2');
+                                                patchMethod = "add";
+                                                result_msg = await addSecurityGroups(patchMethod, result.data.id, convert_user_data.securityGroups[0].id);
+                                            }).catch((err) => {
+                                                result_msg = 'F';
+                                                logger.info('[ERROR] CREATE USER ERROR 2 : ' + JSON.stringify(err));
+                                            });
+                                        }
+
+                                        // const mailList = ['hjmoon@goldenplanet.co.kr', 'jhbae@goldenplanet.co.kr'];
+                                        const mailList = ['jihyunpark@goldenplanet.co.kr'];
+                                        if(err.response.status === 400 || err.response.status === 409){
+                                            let mailParam = {
+                                                toEmail: mailList,
+                                                subject: '[IAM-Eloqua] Eloqua User Create Error',
+                                                text: `Error Message : ${JSON.stringify(err.response.data[0])} \n  `
+                                                        + `User Info : ${JSON.stringify(convert_user_data)}`
+                                            }
+                                            mailSender.sendGmail(mailParam);
+                                        }
                                     });
+
                                 }else{
                                     await lge_eloqua.system.users.update(eloqua_id, convert_user_data).then(async (result) => {
                                         patchMethod = "add";
