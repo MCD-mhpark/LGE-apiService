@@ -777,10 +777,10 @@ async function authRespList() {
                                             convert_user_data.loginName = convert_user_data.loginName + '2';
                                             console.log(JSON.stringify(convert_user_data));
                                             logger.info(JSON.stringify(convert_user_data));
-                                            lge_eloqua.system.users.create(convert_user_data).then(async(result) => {
+                                            lge_eloqua.system.users.create(convert_user_data).then((result) => {
                                                 logger.info('[SUCCESS] CREATE USER LOGIN NAME + 2 >> ' + convert_user_data.emailAddress);
                                                 patchMethod = "add";
-                                                result_msg = await addSecurityGroups(patchMethod, result.data.id, convert_user_data.securityGroups[0].id);
+                                                result_msg = addSecurityGroups(patchMethod, result.data.id, convert_user_data.securityGroups[0].id);
                                             }).catch((err) => {
                                                 result_msg = 'F';
                                                 logger.info('[ERROR] CREATE USER ERROR 2 : ' + err.message);
@@ -797,6 +797,7 @@ async function authRespList() {
                                             mailSender.sendGmail(mailParam);
                                         }
                                     });
+                                    
                                 } else {
                                     await lge_eloqua.system.users.update(eloqua_id, convert_user_data).then(async(result) => {
                                         patchMethod = "add";
