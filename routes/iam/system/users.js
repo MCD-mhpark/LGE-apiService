@@ -716,7 +716,7 @@ async function authRespList(req, res) {
         }
 
         if (!error && response.statusCode == 200) {
-            // logger.info("[AUTH_RESPONSE] " + JSON.stringify(body));
+            logger.info("[AUTH_RESPONSE] " + JSON.stringify(body));
             if (body.data.length > 0) {
                 for (let i = 0; i < body.data.length; i++) {
                     let result_msg = '';
@@ -787,15 +787,15 @@ async function authRespList(req, res) {
                                         //     });
                                         // }
                                         
-                                        // const mailList = ['hjmoon@goldenplanet.co.kr', 'jhbae@goldenplanet.co.kr'];
-                                        // if(err.response.status === 400){
-                                        //     let mailParam = {
-                                        //         toEmail: mailList,
-                                        //         subject: '[IAM-Eloqua] Eloqua User Create Error',
-                                        //         text: `Error Message : ${JSON.stringify(err.response.data[0])}`
-                                        //     }
-                                        //     mailSender.sendGmail(mailParam);
-                                        // }
+                                        const mailList = ['hjmoon@goldenplanet.co.kr', 'jhbae@goldenplanet.co.kr'];
+                                        if(err.response.status === 400){
+                                            let mailParam = {
+                                                toEmail: mailList,
+                                                subject: '[IAM-Eloqua] Eloqua User Create Error',
+                                                text: `Error Message : ${JSON.stringify(err.response.data[0])}`
+                                            }
+                                            mailSender.sendGmail(mailParam);
+                                        }
                                     });
                                 } else {
                                     await lge_eloqua.system.users.update(eloqua_id, convert_user_data).then(async(result) => {
