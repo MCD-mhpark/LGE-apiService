@@ -668,10 +668,10 @@ router.get('/responsibility', async function (req, res, next) {
 // 운영 -> 매시 15분마다 하기
 // ================================================================================================
 router.get('/authResponseList', async function(req, res, next) {
-    await authRespList(req, res);
+    await authRespList();
 });
 
-async function authRespList(req, res) {
+async function authRespList() {
     logger.info("call authResponseList ! ");
     console.log("call authResponseList ! ");
 
