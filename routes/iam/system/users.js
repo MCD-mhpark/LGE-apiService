@@ -773,26 +773,26 @@ async function authRespList(req, res) {
                                         console.log('[ERROR] CREATE USER ERROR : ' + JSON.stringify(err));
                                         
                                         // loginName 오류의 경우 2 붙여서 생성 (2023/03/29)
-                                        // if(err.response.status === 409 && err.response.data[0].type === 'ObjectValidationError' && err.response.data[0].property === 'loginName'){
-                                        //     convert_user_data.loginName = convert_user_data.loginName + '2';
-                                        //     console.log(JOSN.stringify(convert_user_data));
-                                        //     logger.info(JOSN.stringify(convert_user_data));
-                                        //     lge_eloqua.system.users.create(convert_user_data).then(async(result) => {
-                                        //         logger.info(`[SUCCESS] CREATE USER LOGIN NAME + 2 / ${JOSN.stringify(convert_user_data )}`);
-                                        //         patchMethod = "add";
-                                        //         result_msg = await addSecurityGroups(patchMethod, result.data.id, convert_user_data.securityGroups[0].id);
-                                        //     }).catch((err) => {
-                                        //         result_msg = 'F';
-                                        //         logger.info('[ERROR] CREATE USER ERROR 2 : ' + err.message);
-                                        //     });
-                                        // }
+                                        if(err.response.status === 409 && err.response.data[0].type === 'ObjectValidationError' && err.response.data[0].property === 'loginName'){
+                                            convert_user_data.loginName = convert_user_data.loginName + '2';
+                                            console.log(JOSN.stringify(convert_user_data));
+                                            logger.info(JOSN.stringify(convert_user_data));
+                                            lge_eloqua.system.users.create(convert_user_data).then(async(result) => {
+                                                logger.info('[SUCCESS] CREATE USER LOGIN NAME + 2 >> ' + convert_user_data.emailAddress);
+                                                patchMethod = "add";
+                                                result_msg = await addSecurityGroups(patchMethod, result.data.id, convert_user_data.securityGroups[0].id);
+                                            }).catch((err) => {
+                                                result_msg = 'F';
+                                                logger.info('[ERROR] CREATE USER ERROR 2 : ' + err.message);
+                                            });
+                                        }
                                         
                                         const mailList = ['hjmoon@goldenplanet.co.kr', 'jhbae@goldenplanet.co.kr'];
                                         if(err.response.status === 400){
                                             let mailParam = {
                                                 toEmail: mailList,
                                                 subject: '[IAM-Eloqua] Eloqua User Create Error',
-                                                text: `Error Message : ${JSON.stringify(err.response.data[0])}`
+                                                text: 'Error Message : ' + err.response.data[0]
                                             }
                                             mailSender.sendGmail(mailParam);
                                         }
