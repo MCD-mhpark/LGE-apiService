@@ -775,8 +775,8 @@ async function authRespList() {
                                         // loginName 오류의 경우 2 붙여서 생성 (2023/03/29)
                                         if(err.response.status === 409 && err.response.data[0].type === 'ObjectValidationError' && err.response.data[0].property === 'loginName'){
                                             convert_user_data.loginName = convert_user_data.loginName + '2';
-                                            console.log(JOSN.stringify(convert_user_data));
-                                            logger.info(JOSN.stringify(convert_user_data));
+                                            console.log(JSON.stringify(convert_user_data));
+                                            logger.info(JSON.stringify(convert_user_data));
                                             lge_eloqua.system.users.create(convert_user_data).then(async(result) => {
                                                 logger.info('[SUCCESS] CREATE USER LOGIN NAME + 2 >> ' + convert_user_data.emailAddress);
                                                 patchMethod = "add";
