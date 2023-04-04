@@ -32,3 +32,4 @@ yarn-error.log*
 
 # Eloqua user password files
 config/*info.json
+**/iam/log
