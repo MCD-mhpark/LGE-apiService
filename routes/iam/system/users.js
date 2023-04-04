@@ -769,33 +769,33 @@ async function authRespList(req, res) {
                                         result_msg = await addSecurityGroups(patchMethod, result.data.id, convert_user_data.securityGroups[0].id);
                                     }).catch((err) => {
                                         result_msg = 'F';
-                                        logger.info(`[ERROR] CREATE USER ERROR : ${JSON.stringify(err)}`);
-                                        console.log(`[ERROR] CREATE USER ERROR : ${JSON.stringify(err)}`);
+                                        logger.info('[ERROR] CREATE USER ERROR : ' + JSON.stringify(err));
+                                        console.log('[ERROR] CREATE USER ERROR : ' + JSON.stringify(err));
                                         
                                         // loginName 오류의 경우 2 붙여서 생성 (2023/03/29)
-                                        if(err.response.status === 409 && err.response.data[0].type === 'ObjectValidationError' && err.response.data[0].property === 'loginName'){
-                                            convert_user_data.loginName = convert_user_data.loginName + '2';
-                                            console.log(JOSN.stringify(convert_user_data));
-                                            logger.info(JOSN.stringify(convert_user_data));
-                                            lge_eloqua.system.users.create(convert_user_data).then(async(result) => {
-                                                logger.info(`[SUCCESS] CREATE USER LOGIN NAME + 2 / ${JOSN.stringify(convert_user_data )}`);
-                                                patchMethod = "add";
-                                                result_msg = await addSecurityGroups(patchMethod, result.data.id, convert_user_data.securityGroups[0].id);
-                                            }).catch((err) => {
-                                                result_msg = 'F';
-                                                logger.info('[ERROR] CREATE USER ERROR 2 : ' + err.message);
-                                            });
-                                        }
+                                        // if(err.response.status === 409 && err.response.data[0].type === 'ObjectValidationError' && err.response.data[0].property === 'loginName'){
+                                        //     convert_user_data.loginName = convert_user_data.loginName + '2';
+                                        //     console.log(JOSN.stringify(convert_user_data));
+                                        //     logger.info(JOSN.stringify(convert_user_data));
+                                        //     lge_eloqua.system.users.create(convert_user_data).then(async(result) => {
+                                        //         logger.info(`[SUCCESS] CREATE USER LOGIN NAME + 2 / ${JOSN.stringify(convert_user_data )}`);
+                                        //         patchMethod = "add";
+                                        //         result_msg = await addSecurityGroups(patchMethod, result.data.id, convert_user_data.securityGroups[0].id);
+                                        //     }).catch((err) => {
+                                        //         result_msg = 'F';
+                                        //         logger.info('[ERROR] CREATE USER ERROR 2 : ' + err.message);
+                                        //     });
+                                        // }
                                         
-                                        const mailList = ['hjmoon@goldenplanet.co.kr', 'jhbae@goldenplanet.co.kr'];
-                                        if(err.response.status === 400){
-                                            let mailParam = {
-                                                toEmail: mailList,
-                                                subject: '[IAM-Eloqua] Eloqua User Create Error',
-                                                text: `Error Message : ${JSON.stringify(err.response.data[0])}`
-                                            }
-                                            mailSender.sendGmail(mailParam);
-                                        }
+                                        // const mailList = ['hjmoon@goldenplanet.co.kr', 'jhbae@goldenplanet.co.kr'];
+                                        // if(err.response.status === 400){
+                                        //     let mailParam = {
+                                        //         toEmail: mailList,
+                                        //         subject: '[IAM-Eloqua] Eloqua User Create Error',
+                                        //         text: `Error Message : ${JSON.stringify(err.response.data[0])}`
+                                        //     }
+                                        //     mailSender.sendGmail(mailParam);
+                                        // }
                                     });
                                 } else {
                                     await lge_eloqua.system.users.update(eloqua_id, convert_user_data).then(async(result) => {
@@ -970,33 +970,6 @@ async function getSecuritygroupId(name){
 }
 
 // ================================================================================================ end
-
-// [송신] 삭제된 권한에 대한 정보 테스트  >>  삭제된 권한에 대한 정보 XX
-
-router.get('/securityDeleteUserTest', async function (req, res, next) {
-    var testEmail = "minhee.jung@lge.com"; 
-    console.log(testEmail);
-
-    await logs_test("log_test", testEmail);
-
-    let queryString = {};
-    queryString = {
-        'depth' : 'complete',
-        'search' : "emailAddress='" + testEmail + "'"
-    };
-
-    await lge_eloqua.system.users.get(queryString).then(async (result) => {
-        addSecurityGroups("remove", result.data.elements[0].id, 36)
-        console.log(result.data);
-    }).catch((err)=>{
-        console.log(err);
-    });
-});
-
-// ================================================================================================
-
-
-
 
 
 //====================================================
