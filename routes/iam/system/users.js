@@ -760,6 +760,8 @@ async function authRespList(req, res) {
                             });
                         }
                     } else {
+                        // if (body.data[i].mailAddr === null){}
+
                         convert_user_data = await CONVERT_ELOQUA_USER(body.data[i]);
 
                         // 생성 구분 -  NEW DELETE UNCHANGE 
@@ -774,6 +776,7 @@ async function authRespList(req, res) {
                                     }).catch((err) => {
                                         result_msg = 'F';
                                         logger.info('[ERROR] CREATE USER ERROR : ' + err.message);
+                                        console.log('[ERROR] CREATE USER ERROR : ' + err.message);
                                         
                                         // loginName 오류의 경우 2 붙여서 생성 (2023/03/29)
                                         if(err.response.status === 409 && err.response.data[0].type === 'ObjectValidationError' && err.response.data[0].property === 'loginName'){
@@ -790,16 +793,16 @@ async function authRespList(req, res) {
                                         }
                                         
                                         // const mailList = ['hjmoon@goldenplanet.co.kr', 'jhbae@goldenplanet.co.kr'];
-                                        const mailList = ['jihyunpark@goldenplanet.co.kr']
-                                        if(err.response.status === 400 || err.response.status === 409){
-                                            let mailParam = {
-                                                toEmail: mailList,
-                                                subject: '[IAM-Eloqua] Eloqua User Create Error',
-                                                text: `Error Message : ${JSON.stringify(err.response.data[0])} \n  `
-                                                        + `User Info : ${JSON.stringify(convert_user_data)}`
-                                            }
-                                            mailSender.sendGmail(mailParam);
-                                        }
+                                        // const mailList = ['jihyunpark@goldenplanet.co.kr']
+                                        // if(err.response.status === 400 || err.response.status === 409){
+                                        //     let mailParam = {
+                                        //         toEmail: mailList,
+                                        //         subject: '[IAM-Eloqua] Eloqua User Create Error',
+                                        //         text: `Error Message : ${JSON.stringify(err.response.data[0])} \n  `
+                                        //                 + `User Info : ${JSON.stringify(convert_user_data)}`
+                                        //     }
+                                        //     mailSender.sendGmail(mailParam);
+                                        // }
                                     });
                                 } else {
                                     await lge_eloqua.system.users.update(eloqua_id, convert_user_data).then(async(result) => {
@@ -813,7 +816,7 @@ async function authRespList(req, res) {
                                 break;
 
                             case 'UNCHANGED':
-                                // logger.info("[UNCHANGE] data : " + JSON.stringify(body.data[i]));   // 변경X
+                                logger.info("[UNCHANGE] data : " + JSON.stringify(body.data[i]));   // 변경X
                                 result_msg = 'S';
                                 break;
 
@@ -859,7 +862,7 @@ async function authRespList(req, res) {
                         if (!error && response.statusCode == 200) {
                             console.log(body);
                             logger.info("[AUTH_RESPONSE] 송신 결과 회신 : " + JSON.stringify(body));
-                            // res.json(body);
+                            res.json(body);
                         }
                     });
                 }
