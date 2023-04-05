@@ -778,16 +778,6 @@ async function authRespList(){
                                                 logger.info('[ERROR] CREATE USER ERROR 2 : ' + err.message);
                                             });
                                         }
-
-                                        const mailList = ['hjmoon@goldenplanet.co.kr', 'jhbae@goldenplanet.co.kr'];
-                                        if(err.response.status === 400 || err.response.status === 409){
-                                            let mailParam = {
-                                                toEmail: mailList,
-                                                subject: '[IAM-Eloqua] Eloqua User Create Error',
-                                                text: 'Error Message : ' + JSON.stringify(err.response.data[0])
-                                            }
-                                            mailSender.sendGmail(mailParam);
-                                        }
                                     });
                                 }else{
                                     await lge_eloqua.system.users.update(eloqua_id, convert_user_data).then(async (result) => {
