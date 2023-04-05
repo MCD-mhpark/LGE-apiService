@@ -679,10 +679,11 @@ async function authRespList(){
     let patchMethod = "";
     let response_data = []; 
 
-    let param = {};
-    param['systemId'] = "ELOQUA";
-    param['x-apikey'] = "X1";
-    param.gubun = "Q";
+    const param = {
+        "systemId" : "ELOQUA",
+        "x-apikey" : "X1",
+        "gubun" : "Q"
+    };
     
     // 개발 URL
     // const send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/authRespList.do";
@@ -760,9 +761,33 @@ async function authRespList(){
                                     await lge_eloqua.system.users.create(convert_user_data).then(async (result) => {
                                         patchMethod = "add";
                                         result_msg = await addSecurityGroups(patchMethod, result.data.id, convert_user_data.securityGroups[0].id);
-                                    }).catch((err) => {
+                                    }).catch(async (err) => {
                                         result_msg = 'F';
                                         logger.info('[ERROR] CREATE USER ERROR : ' + err.message);
+
+                                        // loginName 오류의 경우 2 붙여서 생성 (2023/03/29)
+                                        if(err.response.status === 409 && err.response.data[0].type === 'ObjectValidationError' && err.response.data[0].property === 'loginName'){
+                                            convert_user_data.loginName = convert_user_data.loginName + '2';
+                                            await lge_eloqua.system.users.create(convert_user_data).then(async(result) => {
+                                                // logger.info(`[SUCCESS] CREATE USER LOGIN NAME + 2 / ${convert_user_data}`);
+                                                logger.info('[AUTH_RESPONSE] CREATE USER LOGIN NAME 2' + convert_user_data.loginName);
+                                                patchMethod = "add";
+                                                result_msg = await addSecurityGroups(patchMethod, result.data.id, convert_user_data.securityGroups[0].id);
+                                            }).catch((err) => {
+                                                result_msg = 'F';
+                                                logger.info('[ERROR] CREATE USER ERROR 2 : ' + err.message);
+                                            });
+                                        }
+
+                                        const mailList = ['hjmoon@goldenplanet.co.kr', 'jhbae@goldenplanet.co.kr'];
+                                        if(err.response.status === 400 || err.response.status === 409){
+                                            let mailParam = {
+                                                toEmail: mailList,
+                                                subject: '[IAM-Eloqua] Eloqua User Create Error',
+                                                text: 'Error Message : ' + JSON.stringify(err.response.data[0])
+                                            }
+                                            mailSender.sendGmail(mailParam);
+                                        }
                                     });
                                 }else{
                                     await lge_eloqua.system.users.update(eloqua_id, convert_user_data).then(async (result) => {
