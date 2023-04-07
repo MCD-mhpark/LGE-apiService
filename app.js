@@ -303,22 +303,23 @@ function schedule_Request_GLOBAL_LEADNUMBER(){
 	});
 }
 
-function schedule_Request_KR(){
-	let uniqe_jobs_name = "B2B GERP KR" +  moment().format('YYYYMMDD');
-	let second = "0";
-	let minutes = "*/10";
-	let hours = "*";
-	let dayofmonth = "*";
-	let month = "*";
-	let weekindex = "*";
-	var schedate = second + ' ' + minutes + ' ' + hours + ' ' + dayofmonth + ' ' + month + ' ' + weekindex;
+// 2023-04-07 MCD 요청으로 인하여 B2B GERP KR MAT 전송 중지 
+// function schedule_Request_KR(){
+// 	let uniqe_jobs_name = "B2B GERP KR" +  moment().format('YYYYMMDD');
+// 	let second = "0";
+// 	let minutes = "*/10";
+// 	let hours = "*";
+// 	let dayofmonth = "*";
+// 	let month = "*";
+// 	let weekindex = "*";
+// 	var schedate = second + ' ' + minutes + ' ' + hours + ' ' + dayofmonth + ' ' + month + ' ' + weekindex;
 
-	//test data
-	KR_Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,"Asia/Seoul" ,async function(){
-		// let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
-		await b2bgerp_kr_us_data_contacts.senderToB2BGERP_KR();
-	});
-}
+// 	//test data
+// 	KR_Jobs = schedule.scheduleJob(uniqe_jobs_name,schedate,"Asia/Seoul" ,async function(){
+// 		// let bant_list = ["AS" , "CLS" , "CM" , "ID" , "IT" , "Solution"];
+// 		await b2bgerp_kr_us_data_contacts.senderToB2BGERP_KR();
+// 	});
+// }
 
 function schedule_Request_CS_Intergration(){
 	let uniqe_jobs_name = "CS Intergration" +  moment().format('YYYYMMDD');
@@ -358,10 +359,11 @@ if(__dirname == "/home/opc/LGE/b2bgerp_global"){
 	schedule_Request_GLOBAL_LEADNUMBER();
 } 
 
-if(__dirname == "/home/opc/LGE/b2bgerp_kr"){
-	console.log("B2B GERP KR SCHEDULER REG");
-	schedule_Request_KR();
-} 
+// 2023-04-07 MCD 요청으로 인하여 B2B GERP KR MAT 전송 중지 
+// if(__dirname == "/home/opc/LGE/b2bgerp_kr"){
+// 	console.log("B2B GERP KR SCHEDULER REG");
+// 	schedule_Request_KR();
+// } 
 
 
 if(__dirname == "/home/opc/LGE/cs_integration"){
