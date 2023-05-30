@@ -100,6 +100,27 @@ exports.i_ConvertB2BKRContact = function (_req_data) {
 		"id": "100384",
 		"value": "B2B사이트(LGE.co.kr)"
 	});
+	
+	contact_data.fieldValues.push({
+		"id": "100398",
+		"value": _req_data.bizRegisterNo
+	}); // KR_Business_Registration_Number
+	contact_data.fieldValues.push({
+		"id": "100399",
+		"value": _req_data.jobFunction
+	}); // KR_Job_Function
+	contact_data.fieldValues.push({
+		"id": "100400",
+		"value": _req_data.seniority
+	}); // KR_Seniority
+	contact_data.fieldValues.push({
+		"id": "100401",
+		"value": _req_data.budget
+	}); // KR_Budget
+	contact_data.fieldValues.push({
+		"id": "100402",
+		"value": _req_data.purchaseTiming
+	}); // KR_Timeline
 
 	return contact_data;
 }
@@ -185,6 +206,21 @@ exports.u_ConvertB2BKRContact = function (_contact, _req_data) {
 
 	//KR_LeadSource
 	SetFieldValue(_contact.fieldValues, "100384", "B2B사이트(LGE.co.kr)");
+
+	// KR_Business_Registration_Number
+	SetFieldValue(_contact.fieldValues, "100398", _req_data.bizRegisterNo);
+
+	// KR_Job_Function
+	SetFieldValue(_contact.fieldValues, "100399", _req_data.jobFunction);
+
+	// KR_Seniority
+	SetFieldValue(_contact.fieldValues, "100400", _req_data.seniority);
+
+	// KR_Budget
+	SetFieldValue(_contact.fieldValues, "100401", _req_data.budget);
+
+	// KR_Timeline
+	SetFieldValue(_contact.fieldValues, "100402", _req_data.purchaseTiming);
 
 	return contact;
 }
@@ -498,6 +534,26 @@ exports.convertCustomObjectData = function (_contact, _req_data) {
 		"id": "1904",
 		"value": "B2B사이트(LGE.co.kr)"
 	}); //KR_LeadSource 		
+	convert_data_entity.fieldValues.push({
+		"id": "2545",
+		"value": _req_data.jobFunction
+	}); // 주요업무
+	convert_data_entity.fieldValues.push({
+		"id": "2546",
+		"value": _req_data.seniority
+	}); // 직책/직위
+	convert_data_entity.fieldValues.push({
+		"id": "2549",
+		"value": _req_data.budget
+	}); // 예산
+	convert_data_entity.fieldValues.push({
+		"id": "2547",
+		"value": _req_data.purchaseTiming
+	}); // 구매시기
+	convert_data_entity.fieldValues.push({
+		"id": "2548",
+		"value": _req_data.purchaseQuantity
+	}); // 구매수량
 
 	return convert_data_entity;
 }
