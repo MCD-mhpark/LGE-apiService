@@ -501,7 +501,6 @@ function Convert_BS_CARD_DATA(body_data, status) {
             //ba_card_data.? = item.rank; //"rank": "이사/MBA", | Eloqua 필드 정보 없음 _ job title 예상
 
             bs_card_data.mobilePhone = regex_phone(item.hp);      // "hp": "010.9241.9080",
-            console.log(`${item.hp} >> ${bs_card_data.mobilePhone}`);
             bs_card_data.businessPhone = item.tel;                      // "tel": "03q.252.9127",
             bs_card_data.fax = item.fax;                                // "fax": "031.629,7826",
 
@@ -523,8 +522,7 @@ function Convert_BS_CARD_DATA(body_data, status) {
             bs_card_data.fieldValues.push({ "id": "100203", "value": item.campaignName + "|" + item.campaignDate });
 
             // product |  Business Unit || 100229
-            bs_card_data.fieldValues.push({ "id": "100229", "value": item.product });
-
+            // bs_card_data.fieldValues.push({ "id": "100229", "value": item.product });    // 230525 이슈
 
             if (item.krMkt == 'Y') {
                 if (status === "create") {
@@ -541,12 +539,13 @@ function Convert_BS_CARD_DATA(body_data, status) {
                     // KR_Privacy Policy_Consignment of PI || (현재 동의여부 필드만 있고, 데이트 관련 필드 없음) || 100316
                     bs_card_data.fieldValues.push({ "id": "100316", "value": "Yes" });
                     // KR_Privacy Policy_Transfer PI Aborad || (현재 동의여부 필드만 있고, 데이트 관련 필드 없음) || 100317
-                    bs_card_data.fieldValues.push({ "id": "100317", "value": "Yes" });
+                    bs_card_data.fieldValues
                 }
                 
                 //100196 Subsidiary custom field//"userCode": "LGEVU"
                 // krMkt Y인 경우 Subsidiary를 KR로 찍고 N인 경우 Global 이기에 Country 값을 봐도 되기 떄문에 빈값으로 찍는다.
                 bs_card_data.fieldValues.push({ "id": "100196", "value": "KR" });
+                bs_card_data.fieldValues.push({ "id": "100229", "value": ""});     // 230525 이슈 >> Country : South Korea => Subsidiary : KR => Business Unit : X
 
                 // KR_Product Category || 한영본 customer product || 100311
                 bs_card_data.fieldValues.push({ "id": "100311", "value": item.customerProduct });
@@ -558,7 +557,7 @@ function Convert_BS_CARD_DATA(body_data, status) {
                     // DirectMarketing_EM_TXT_SNS_AgreedDate || 글로벌 메일 발송 동의 날짜 || 100200
                     bs_card_data.fieldValues.push({ "id": "100200", "value": moment().tz('Asia/Seoul').unix() });
                     // Privacy Policy_Agreed || 개인정보 이용 동의 여부 || 100213 
-                    bs_card_data.fieldValues.push({ "id": "100213", "value": "Yes" });
+                    bs_card_data.fieldValues.push({ "id": "100213", "value": "Yes" }); 
                     // Privacy Policy_AgreedDate || 개인정보 이용 동의 날짜 || 100199
                     bs_card_data.fieldValues.push({ "id": "100199", "value": moment().tz('Asia/Seoul').unix() });
                     // TransferOutsideCountry || 개인정보 국외이전 동의 여부 || 100210
@@ -574,7 +573,11 @@ function Convert_BS_CARD_DATA(body_data, status) {
                 // LBCS_customerProduct || Global customer product || 100366
                 bs_card_data.fieldValues.push({ "id": "100366", "value": item.customerProduct });
 
+                // product |  Business Unit || 100229
+                bs_card_data.fieldValues.push({ "id": "100229", "value": item.product });    // 230525 이슈 >>Country : South Korea 외 => Subsidiary : X => Business Unit : 기존 로직 적용
+
             }
+            console.log(`business unit 로직 변경 >> ${bs_card_data.fieldValues}`);
 
             result_data.push(bs_card_data);
         }
