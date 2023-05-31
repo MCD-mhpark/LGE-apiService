@@ -552,7 +552,6 @@ function Convert_BS_CARD_DATA(body_data, status) {
                 // LBCS_customerProduct || Global customer product || 100366
                 bs_card_data.fieldValues.push({ "id": "100366", "value": item.customerProduct });
             }
-            console.log(`Business Unit 이슈 >> ${bs_card_data.fieldValues}`);
 
             result_data.push(bs_card_data);
         }
