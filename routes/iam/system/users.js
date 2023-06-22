@@ -734,6 +734,9 @@ async function authRespList(req, res) {
                             result_msg = "S";
                             logger.info(JSON.stringify(body.data[i]));
                         } else {
+                            // 사번과 이메일이 IAM과 Eloqua가 다른 경우
+
+
                             await lge_eloqua.system.users.delete(eloqua_id).then((rs) => {
                                 result_msg = 'S';
                             }).catch((err) => {
@@ -981,10 +984,10 @@ async function getSecuritygroupId(name) {
 // [송신] 삭제된 권한에 대한 정보 테스트  >>  삭제된 권한에 대한 정보 XX
 
 router.get('/securityDeleteUserTest', async function(req, res, next) {
-    var testEmail = "minhee.jung@lge.com";
-    console.log(testEmail);
+    var testEmail = "cristina.merono@lgepartner.com";
+    // console.log(testEmail);
 
-    await logs_test("log_test", testEmail);
+    // await logs_test("log_test", testEmail);
 
     let queryString = {};
     queryString = {
@@ -993,8 +996,10 @@ router.get('/securityDeleteUserTest', async function(req, res, next) {
     };
 
     await lge_eloqua.system.users.get(queryString).then(async(result) => {
-        addSecurityGroups("remove", result.data.elements[0].id, 36)
+        // addSecurityGroups("remove", result.data.elements[0].id, 36)
         console.log(result.data);
+        // federationId
+        // emailAddress
     }).catch((err) => {
         console.log(err);
     });
