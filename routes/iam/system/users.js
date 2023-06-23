@@ -722,7 +722,9 @@ async function authRespList(){
                     if(body.data[i].suspResignFlag === 'RT'){ 
                         logger.info("[AUTH_RESPONSE] DELETE USER : " + body.data[i].mailAddr);
                         
-                        if(eloqua_user.id === 0){
+                        if(eloqua_user.id === 0 || 
+                            eloqua_user.emailAddress !== body.data[i].empNo || 
+                            eloqua_user.federationId !== body.data[i].mailAddr){
                             result_msg = "S";
                             logger.info(JSON.stringify(body.data[i]))
                         }else{
