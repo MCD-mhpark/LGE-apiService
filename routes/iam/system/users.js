@@ -732,7 +732,9 @@ async function authRespList(req, res) {
                         logger.info("[AUTH_RESPONSE] DELETE USER : " + body.data[i].mailAddr);
 
                         // Eloqua에 조회했을 경우 유저가 없거나 사번과 이메일이 IAM과 Eloqua가 다른 경우
-                        if (eloqua_user.id === 0 || eloqua_user.emailAddress !== body.data[i].empNo || eloqua_user.federationId !== body.data[i].mailAddr) {
+                        if (eloqua_user.id === 0 || 
+                            eloqua_user.emailAddress !== body.data[i].empNo || 
+                            eloqua_user.federationId !== body.data[i].mailAddr) {
                             result_msg = "S";
                             logger.info(JSON.stringify(body.data[i]));
                         } else {
