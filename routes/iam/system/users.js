@@ -725,19 +725,18 @@ async function authRespList(req, res) {
             if (body.data.length > 0) {
                 for (let i = 0; i < body.data.length; i++) {
                     let result_msg = '';
-                    let eloqua_id = await getEloquaUserId(body.data[i].mailAddr);
+                    // let eloqua_id = await getEloquaUserId(body.data[i].mailAddr);
+                    let eloqua_user = await getEloquaUser(body.data[i].mailAddr);
                     
                     if(body.data[i].suspResignFlag === 'RT'){ 
                         logger.info("[AUTH_RESPONSE] DELETE USER : " + body.data[i].mailAddr);
 
-                        if (eloqua_id === 0) {
+                        // Eloqua에 조회했을 경우 유저가 없거나 사번과 이메일이 IAM과 Eloqua가 다른 경우
+                        if (eloqua_user.id === 0 || eloqua_user.emailAddress !== body.data[i].empNo || eloqua_user.federationId !== body.data[i].mailAddr) {
                             result_msg = "S";
                             logger.info(JSON.stringify(body.data[i]));
                         } else {
-                            // 사번과 이메일이 IAM과 Eloqua가 다른 경우
-
-
-                            await lge_eloqua.system.users.delete(eloqua_id).then((rs) => {
+                            await lge_eloqua.system.users.delete(eloqua_user.id).then((rs) => {
                                 result_msg = 'S';
                             }).catch((err) => {
 
@@ -770,7 +769,7 @@ async function authRespList(req, res) {
                         // 생성 구분 -  NEW DELETE UNCHANGE 
                         switch (body.data[i].dtlRespReqTypeCd) {
                             case 'NEW':
-                                if (eloqua_id == 0) {
+                                if (eloqua_user.id == 0) {
                                     
                                     // 유저 정보가 없을 경우 생성 후 권한 추가
                                     await lge_eloqua.system.users.create(convert_user_data).then(async(result) => {
@@ -807,9 +806,9 @@ async function authRespList(req, res) {
                                         }
                                     });
                                 } else {
-                                    await lge_eloqua.system.users.update(eloqua_id, convert_user_data).then(async(result) => {
+                                    await lge_eloqua.system.users.update(eloqua_user.id, convert_user_data).then(async(result) => {
                                         patchMethod = "add";
-                                        result_msg = await addSecurityGroups(patchMethod, eloqua_id, convert_user_data.securityGroups[0].id);
+                                        result_msg = await addSecurityGroups(patchMethod, eloqua_user.id, convert_user_data.securityGroups[0].id);
                                     }).catch((err) => {
                                         result_msg = 'F';
                                         logger.info('[ERROR] CREATE USER ERROR : ' + err.message);
@@ -823,9 +822,9 @@ async function authRespList(req, res) {
                                 break;
 
                             case 'DELETE':
-                                if (eloqua_id === 0) continue; // 유저 정보가 없을 경우 삭제 진행 X
+                                if (eloqua_user.id === 0) continue; // 유저 정보가 없을 경우 삭제 진행 X
                                 patchMethod = "remove";
-                                result_msg = await addSecurityGroups(patchMethod, eloqua_id, convert_user_data.securityGroups[0].id);
+                                result_msg = await addSecurityGroups(patchMethod, eloqua_user.id, convert_user_data.securityGroups[0].id);
                                 break;
                         }
                     }
@@ -961,6 +960,29 @@ async function getEloquaUserId(email) {
     return eloqua_user_id;
 }
 
+// 엘로코아 유저
+async function getEloquaUser(email) {
+    let queryString = {};
+    let eloqua_user = {
+        id: 0,
+        emailAddress : "",
+        federationId : ""
+    };
+
+    queryString['search'] = "emailAddress='" + email + "'";
+    await lge_eloqua.system.users.get(queryString).then((rs) => {
+        // logger.info('[USER] ' + JSON.stringify(rs.data));
+        if (rs.data.elements && rs.data.elements.length > 0) {
+            eloqua_user = rs.data.elements[0];
+        } else {}
+            
+    }).catch((err) => {
+        console.error("[ERROR] get user id : " + err);
+        console.error(err);
+    });
+    return eloqua_user;
+}
+
 // 권한 (보안그룹) ID
 async function getSecuritygroupId(name) {
     let responsibilityId = "";
@@ -997,11 +1019,14 @@ router.get('/securityDeleteUserTest', async function(req, res, next) {
 
     await lge_eloqua.system.users.get(queryString).then(async(result) => {
         // addSecurityGroups("remove", result.data.elements[0].id, 36)
-        console.log(result.data);
+        eloqua_user = result.data.elements[0]
+        console.log(eloqua_user.id, eloqua_user.federationId, eloqua_user.emailAddress);
+        res.json(result.data.elements[0])
         // federationId
         // emailAddress
     }).catch((err) => {
         console.log(err);
+        res.json(err)
     });
 });
 
