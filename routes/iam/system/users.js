@@ -932,6 +932,29 @@ async function getEloquaUserId(email){
     return eloqua_user_id;
 }
 
+// 엘로코아 유저
+async function getEloquaUser(email) {
+    let queryString = {};
+    let eloqua_user = {
+        id: 0,
+        emailAddress : "",
+        federationId : ""
+    };
+
+    queryString['search'] = "emailAddress='" + email + "'";
+    await lge_eloqua.system.users.get(queryString).then((rs) => {
+        // logger.info('[USER] ' + JSON.stringify(rs.data));
+        if (rs.data.elements && rs.data.elements.length > 0) {
+            eloqua_user = rs.data.elements[0];
+        } else {}
+            
+    }).catch((err) => {
+        console.error("[ERROR] get user id : " + err);
+        console.error(err);
+    });
+    return eloqua_user;
+}
+
 // 권한 (보안그룹) ID
 async function getSecuritygroupId(name){
     let responsibilityId = ""; 
