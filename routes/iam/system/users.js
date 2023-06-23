@@ -721,7 +721,7 @@ async function authRespList(){
                     
                     if(body.data[i].suspResignFlag === 'RT'){ 
                         logger.info("[AUTH_RESPONSE] DELETE USER : " + body.data[i].mailAddr);
-                        
+
                         // Eloqua에 조회했을 경우 유저가 없거나 사번과 이메일이 IAM과 Eloqua가 다른 경우
                         if(eloqua_user.id === 0 || 
                             eloqua_user.emailAddress !== body.data[i].empNo || 
@@ -950,7 +950,7 @@ async function getEloquaUser(email) {
         // logger.info('[USER] ' + JSON.stringify(rs.data));
         if (rs.data.elements && rs.data.elements.length > 0) {
             eloqua_user = rs.data.elements[0];
-        } else {}
+        }
             
     }).catch((err) => {
         console.error("[ERROR] get user id : " + err);
