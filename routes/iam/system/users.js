@@ -716,16 +716,17 @@ async function authRespList(){
             if(body.data.length > 0){
                 for(let i = 0; i < body.data.length; i++){ 
                     let result_msg = '';
-                    let eloqua_id = await getEloquaUserId(body.data[i].mailAddr); 
+                    // let eloqua_id = await getEloquaUserId(body.data[i].mailAddr);
+                    let eloqua_user = await getEloquaUser(body.data[i].mailAddr);
                     
                     if(body.data[i].suspResignFlag === 'RT'){ 
                         logger.info("[AUTH_RESPONSE] DELETE USER : " + body.data[i].mailAddr);
                         
-                        if(eloqua_id === 0){
+                        if(eloqua_user.id === 0){
                             result_msg = "S";
                             logger.info(JSON.stringify(body.data[i]))
                         }else{
-                            await lge_eloqua.system.users.delete(eloqua_id).then((rs)=>{
+                            await lge_eloqua.system.users.delete(eloqua_user.id).then((rs)=>{
                                 result_msg = 'S'; 
                             }).catch((err)=>{
                                 
@@ -756,7 +757,7 @@ async function authRespList(){
                         // 생성 구분 -  NEW DELETE UNCHANGE 
                         switch(body.data[i].dtlRespReqTypeCd){
                             case 'NEW':
-                                if (eloqua_id == 0){
+                                if (eloqua_user.id == 0){
                                     // 유저 정보가 없을 경우 생성 후 권한 추가
                                     await lge_eloqua.system.users.create(convert_user_data).then(async (result) => {
                                         patchMethod = "add";
@@ -780,9 +781,9 @@ async function authRespList(){
                                         }
                                     });
                                 }else{
-                                    await lge_eloqua.system.users.update(eloqua_id, convert_user_data).then(async (result) => {
+                                    await lge_eloqua.system.users.update(eloqua_user.id, convert_user_data).then(async (result) => {
                                         patchMethod = "add";
-                                        result_msg = await addSecurityGroups(patchMethod, eloqua_id, convert_user_data.securityGroups[0].id);
+                                        result_msg = await addSecurityGroups(patchMethod, eloqua_user.id, convert_user_data.securityGroups[0].id);
                                     }).catch((err) => {
                                         result_msg = 'F';
                                         logger.info('[ERROR] CREATE USER ERROR : ' + err.message);
@@ -796,9 +797,9 @@ async function authRespList(){
                                 break;
     
                             case 'DELETE':
-                                if (eloqua_id === 0) continue;  // 유저 정보가 없을 경우 삭제 진행 X
+                                if (eloqua_user.id === 0) continue;  // 유저 정보가 없을 경우 삭제 진행 X
                                 patchMethod = "remove";
-                                result_msg = await addSecurityGroups(patchMethod, eloqua_id, convert_user_data.securityGroups[0].id);
+                                result_msg = await addSecurityGroups(patchMethod, eloqua_user.id, convert_user_data.securityGroups[0].id);
                                 break; 
                         } 
                     }
