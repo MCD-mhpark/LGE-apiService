@@ -500,12 +500,9 @@ function Convert_BS_CARD_DATA(body_data, status) {
             bs_card_data.fieldValues.push({ "id": "100203", "value": item.campaignName + "|" + item.campaignDate });
 
             // product |  Business Unit || 100229
-            bs_card_data.fieldValues.push({ "id": "100229", "value": item.product });
-
+            // bs_card_data.fieldValues.push({ "id": "100229", "value": item.product });
 
             if (item.krMkt == 'Y') {
-
-
                 if (status === "create") {
                     //들어온 값이 없어도 자동으로 업데이트 해야하는 동의 여부 및 동의 날짜 필드
                     // KR_Privacy Policy_Optin || 한영본 메일 발송 동의 여부 || 100318
@@ -525,7 +522,7 @@ function Convert_BS_CARD_DATA(body_data, status) {
                 //100196 Subsidiary custom field//"userCode": "LGEVU"
                 // krMkt Y인 경우 Subsidiary를 KR로 찍고 N인 경우 Global 이기에 Country 값을 봐도 되기 떄문에 빈값으로 찍는다.
                 bs_card_data.fieldValues.push({ "id": "100196", "value": "KR" });
-
+                bs_card_data.fieldValues.push({ "id": "100229", "value": "" });     // Subsidiary가 KR인 경우 Business Unit = null
 
                 // KR_Product Category || 한영본 customer product || 100311
                 bs_card_data.fieldValues.push({ "id": "100311", "value": item.customerProduct });
@@ -550,11 +547,10 @@ function Convert_BS_CARD_DATA(body_data, status) {
                 //100196 Subsidiary custom field//"userCode": "LGEVU"
                 // krMkt Y인 경우 Subsidiary를 KR로 찍고 N인 경우 Global 이기에 Country 값을 봐도 되기 떄문에 빈값으로 찍는다.
                 bs_card_data.fieldValues.push({ "id": "100196", "value": "" });
-
+                bs_card_data.fieldValues.push({ "id": "100229", "value": item.product });   // Subsidiary가 KR이 아닌 경우에만 기존 로직
 
                 // LBCS_customerProduct || Global customer product || 100366
                 bs_card_data.fieldValues.push({ "id": "100366", "value": item.customerProduct });
-
             }
 
             result_data.push(bs_card_data);
