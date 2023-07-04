@@ -574,7 +574,12 @@ function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items) {
                 case "VS":
                     data.attribute4 = "268965" // 서판규 268965 ID, IT, LED, RBZ, Solar, Solution, VS
                     break;
-                    
+
+                case "Kitchen":
+                case "Kitchen Solution":
+                    data.attribute4 = "306713"
+                    break;
+                
                 default:
                     data.attribute4 = "268965" // 서판규 268965 HQ
                     break;
