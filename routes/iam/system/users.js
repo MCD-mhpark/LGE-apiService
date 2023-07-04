@@ -461,6 +461,10 @@ router.get('/user_responsibility', function(req, res, next) {
         let user_responsibility_data = CONVERT_IAM_USER_RESPONSIBILITY_DATA(result.data);
 
         user_responsibility_data = await get_IAM_USER_RESPONSIBILITY_SET_TOTAL_COUNT(user_responsibility_data); // 각 row 의 transmissionCount 를 전체 row 를 맞게 다시 세팅
+        
+        for (let i in req.body.data){
+            if (req.body.data[i].useflag === "N") user_responsibility_data[i].useFlag = "N";
+        }
 
         if (user_responsibility_data.length > 0) {
             return_data['systemId'] = "ELOQUA";
