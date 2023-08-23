@@ -346,7 +346,7 @@ async function convertData(data) {
 			"type": "FieldValue",
 			"id": "98578",
 			"name": "LG전자 마케팅 정보 수신 동의 여부",
-			"value": data.mktRecYn === 'N' ? "No" : "Yes"
+			"value": Object.keys(data).includes("mktRecYn") ? data.mktRecYn === 'N' ? "No" : "Yes" : "Yes"
 		},
 		{
 			"type": "FieldValue",
