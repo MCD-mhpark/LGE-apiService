@@ -10,7 +10,7 @@ path = "/home/LGE_logs/IAM/";
 function getDirPath(){
     let today = moment().tz('Asia/Seoul').format("YYYYMMDD");
     let dirExist = fs.existsSync(path + today);
-
+    let dirPath;
     if(!dirExist){
         var logPath = path + today;
         fs.mkdirSync( logPath, { recursive: true } ); 
