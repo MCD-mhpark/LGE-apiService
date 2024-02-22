@@ -589,6 +589,7 @@ function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items) {
                 case "AS":
                 case "ESS":
                 case "Kitchen Solution":
+                case "Advanced Materials":
                     data.attribute4 = "296736" // 최성아 296736 as, cls, cm, ess, kitchen solution 
                     break;
         
