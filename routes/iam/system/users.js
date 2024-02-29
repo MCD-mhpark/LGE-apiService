@@ -267,7 +267,7 @@ function ELOQUA_USER_ENTITY() {
     this.sourceTemplateId = "";
     this.state = ""; // 시/도
     this.type = "";
-    this.preferences = { "type": "UserPreferences", "timezoneId": "40" }; //시간 한국 시간 설정
+    this.preferences = { "type": "UserPreferences", "timezoneId": "64" }; //미국 동부 시간 기준 한국은 40
 
     // 보안그룹
     this.securityGroups = [];
