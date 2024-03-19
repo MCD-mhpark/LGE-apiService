@@ -8,7 +8,7 @@ var os = require('os');
 path = "/home/LGE_logs/IAM/"; 
 
 function getDirPath(){
-    let today = moment().tz('Asia/Seoul').format("YYYYMMDD");
+    let today = moment().tz('Asia/Seoul').format("YYYYMM");
     let dirExist = fs.existsSync(path + today);
     let dirPath;
     if(!dirExist){
@@ -63,7 +63,7 @@ const logger = winston.createLogger({
 
         new winston.transports.DailyRotateFile({
             level: 'info',
-            datePattern: 'YYYY-MM-DD',
+            datePattern: 'YYYY-MM',
             dirname: logDir,
             filename: `%DATE%.log`,
             zippedArchive: true,	
@@ -73,7 +73,7 @@ const logger = winston.createLogger({
 
         new winston.transports.DailyRotateFile({
             level: 'error',
-            datePattern: 'YYYY-MM-DD',
+            datePattern: 'YYYY-MM',
             dirname: logDir,  
             filename: `%DATE%.error.log`,
             zippedArchive: true,

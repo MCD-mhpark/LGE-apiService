@@ -589,6 +589,7 @@ function CONVERT_IAM_RESPONSIBILITY_DATA(_eloqua_items) {
                 case "AS":
                 case "ESS":
                 case "Kitchen Solution":
+                case "Advanced Materials":
                     data.attribute4 = "296736" // 최성아 296736 as, cls, cm, ess, kitchen solution 
                     break;
         
@@ -741,10 +742,10 @@ async function authRespList(req, res) {
     };
 
     // 개발 URL
-    // const send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/authRespList.do";
+    const send_url = "https://dev-apigw-ext.lge.com:7221/gateway/lgiam_api/api2api/api/v1/authRespList.do";
 
     // 운영 URL 
-    const send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam_api/api2api/api/v1/authRespList.do";
+    // const send_url = "https://apigw-ext.lge.com:7211/gateway/lgiam_api/api2api/api/v1/authRespList.do";
 
     const headers = {
         'Content-Type': "application/json",
@@ -796,9 +797,11 @@ async function authRespList(req, res) {
                                 if (err.message.includes("Dependencies Found")) {
                                     result_msg = 'S';
                                     const maillist = [
-                                        'hjmoon@goldenplanet.co.kr',
-                                        'jhbae@goldenplanet.co.kr',
-                                        'jwyi@goldenplanet.co.kr',
+                                        // 'jhbae@goldenplanet.co.kr',
+                                        // 'mjchai@goldenplanet.co.kr',
+                                        // 'shku@goldenplanet.co.kr',
+                                        'mhpark@goldenplanet.co.kr',
+                                        'hylee@goldenplanet.co.kr'
                                     ];
                                     let mailParam = {
                                         toEmail: maillist,
@@ -847,8 +850,14 @@ async function authRespList(req, res) {
                                             });
                                         }
                                         
-                                        const mailList = ['hjmoon@goldenplanet.co.kr', 'jhbae@goldenplanet.co.kr'];
-                                        if(err.response.status === 400 || err.response.status === 409){
+                                        const mailList = [
+                                            // 'jhbae@goldenplanet.co.kr',
+                                            // 'mjchai@goldenplanet.co.kr',
+                                            // 'shku@goldenplanet.co.kr',
+                                            'mhpark@goldenplanet.co.kr',
+                                            'hylee@goldenplanet.co.kr'
+                                        ];
+                                        if((err.response.status === 400 || err.response.status === 409) & convert_user_data.emailAddress != null){
                                             let mailParam = {
                                                 toEmail: mailList,
                                                 subject: '[IAM-Eloqua] Eloqua User Create Error',
